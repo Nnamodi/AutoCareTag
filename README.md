@@ -13,7 +13,7 @@ QuickContact is an Android app designed to digitize contact information sharing 
 ### Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/slowburn-404/QuickContact.github
+git clone https://github.com/slowburn-404/QuickContact.git
 ```
 ```bash
 cd QuickContact
