@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.borisochieng.quickcontact"
+    namespace = "dev.borisochieng.tagtidy"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "dev.borisochieng.quickcontact"
+        applicationId = "dev.borisochieng.tagtidy"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

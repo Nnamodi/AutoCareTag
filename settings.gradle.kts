@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "QuickContact"
+rootProject.name = "TagTidy"
 include(":app")
  

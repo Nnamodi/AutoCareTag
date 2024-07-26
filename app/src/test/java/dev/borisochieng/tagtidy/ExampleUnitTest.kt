@@ -1,4 +1,4 @@
-package dev.borisochieng.quickcontact
+package dev.borisochieng.tagtidy
 
 import org.junit.Test
 

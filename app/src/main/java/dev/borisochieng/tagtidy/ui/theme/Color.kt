@@ -1,4 +1,4 @@
-package dev.borisochieng.quickcontact.ui.theme
+package dev.borisochieng.tagtidy.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
