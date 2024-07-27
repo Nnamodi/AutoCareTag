@@ -1,4 +1,4 @@
-package dev.borisochieng.tagtidy.nfc_writer
+package dev.borisochieng.tagtidy.nfc_writer.data
 
 import android.content.Context
 import android.nfc.NdefMessage
@@ -7,6 +7,8 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.Ndef
 import com.google.gson.Gson
+import dev.borisochieng.tagtidy.nfc_writer.domain.LaundryInfo
+import dev.borisochieng.tagtidy.nfc_writer.domain.NfcWriteState
 
 class NfcWriter(private val context: Context,private val tag: Tag) {
 

@@ -1,10 +1,11 @@
-package dev.borisochieng.tagtidy.nfc_writer
+package dev.borisochieng.tagtidy.nfc_writer.domain
 
 
 
 data class LaundryInfo(
     val clothType: String,
     val customerName: String,
+    val customerPhoneNo: String,
     val washingInstructions: String,
     val customerAddress: String,
     val amountToBePaid: String,
