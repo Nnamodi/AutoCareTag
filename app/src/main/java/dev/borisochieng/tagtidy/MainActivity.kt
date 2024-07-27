@@ -1,5 +1,8 @@
 package dev.borisochieng.tagtidy
 
+import android.app.PendingIntent
+import android.content.Intent
+import android.nfc.NfcAdapter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import dev.borisochieng.tagtidy.ui.theme.TagTidyTheme
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -28,6 +33,17 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
+            // NFC tag discovered
+            // Handle the tag data (e.g., read/write operations)
+
+        }
+    }
+
+
 }
 
 @Composable
