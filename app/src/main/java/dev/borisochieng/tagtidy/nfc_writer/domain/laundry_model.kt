@@ -1,4 +1,4 @@
-package dev.borisochieng.tagtidy.nfc_writer
+package dev.borisochieng.tagtidy.nfc_writer.domain
 
 
 
