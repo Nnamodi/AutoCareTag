@@ -17,6 +17,10 @@ git clone https://github.com/slowburn-404/TagTidy.git
 ```bash
 cd TagTidy/
 ```
+
+## Contribution
+Following the guideline in [Contribution](./CONTRIBUTION.md)
+
 ## License
 This project is licensed under the Apache 2.0 License - see [LICENSE](./LICENSE) file for details.
 
