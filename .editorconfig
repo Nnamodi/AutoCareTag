@@ -1,0 +1,9 @@
+root = true
+
+[*]
+ktlint_experimental = disbaled
+ktlint_standard_final-newline = disabled
+ktlint_function_naming_ignore_when_annotated_with = Composable
+ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_trailing-comma-on-call-site = disabled
+ktlint_standard_import-ordering = disabled
