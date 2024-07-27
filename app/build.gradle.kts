@@ -1,4 +1,3 @@
-import io.gitlab.arturbosch.detekt.Detekt
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
@@ -6,7 +5,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ktlint.gradle)
-    alias(libs.plugins.detekt)
 }
 
 android {
@@ -61,18 +59,6 @@ ktlint {
     reporters {
         reporter(ReporterType.JSON)
         reporter(ReporterType.HTML)
-    }
-}
-
-detekt {
-    toolVersion = "1.23.3"
-    config.setFrom(file("../config/detekt/detekt.yml"))
-    buildUponDefaultConfig = true
-}
-
-tasks.withType<Detekt>().configureEach {
-    reports {
-        sarif.required.set(true)
     }
 }
 
