@@ -19,7 +19,7 @@ cd TagTidy/
 ```
 
 ## Contribution
-Following the guideline in ./CONTRIBUTION.md
+Following the guideline in [Contribution](./CONTRIBUTION.md)
 
 ## License
 This project is licensed under the Apache 2.0 License - see [LICENSE](./LICENSE) file for details.
