@@ -2,7 +2,7 @@ package dev.borisochieng.tagtidy
 
 import android.app.Application
 import dev.borisochieng.tagtidy.nfc_reader.repository.NFCReaderRepository
-import dev.borisochieng.tagtidy.nfc_reader.NFCReaderViewModel
+import dev.borisochieng.tagtidy.nfc_reader.ui.NFCReaderViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
