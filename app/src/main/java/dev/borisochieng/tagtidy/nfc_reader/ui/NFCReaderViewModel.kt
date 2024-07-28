@@ -1,4 +1,4 @@
-package dev.borisochieng.tagtidy.nfc_reader
+package dev.borisochieng.tagtidy.nfc_reader.ui
 
 import android.content.Intent
 import androidx.compose.runtime.getValue
