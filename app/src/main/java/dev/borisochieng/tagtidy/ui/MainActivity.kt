@@ -8,7 +8,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import dev.borisochieng.tagtidy.nfc_reader.NFCReaderViewModel
+import dev.borisochieng.tagtidy.nfc_reader.ui.NFCReaderViewModel
 import dev.borisochieng.tagtidy.ui.theme.TagTidyTheme
 import org.koin.android.ext.android.inject
 
