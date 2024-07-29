@@ -15,8 +15,6 @@ import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.ui.commons.NavBar
 import dev.borisochieng.autocaretag.ui.navigation.AppRoute
 import dev.borisochieng.autocaretag.ui.navigation.NavActions
-import dev.borisochieng.autocaretag.ui.screens.Client
-import dev.borisochieng.autocaretag.ui.screens.HomeScreen
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import org.koin.android.ext.android.inject
 
@@ -25,87 +23,12 @@ class MainActivity : ComponentActivity() {
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
 
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var intentFilters: Array<IntentFilter>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
         enableEdgeToEdge()
         setContent {
-            AutoCareTagTheme {
-                val fakeClients = listOf(
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "Mark Joe",
-                        vehicleName = "Ford Ranger"
-                    ),
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-                    ,
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-                    ,
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-                    ,
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-                    ,
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-                    ,
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-
-                )
-                HomeScreen(
-                    onNavigateToScan = { startNfcScanning() },
-                    onNavigateToNotifications = { /*TODO*/ },
-                    onNavigateToClient = {},
-                    clients = emptyList()
-                )
-            }
             val navController = rememberNavController()
 
             AutoCareTagTheme {
@@ -113,32 +36,14 @@ class MainActivity : ComponentActivity() {
                     AppRoute(
                         navActions = NavActions(navController),
                         navController = navController,
-                        paddingValues = paddingValues
+                        paddingValues = paddingValues,
+                        scanNfc = { shouldScan ->
+                            if (shouldScan) startNfcScanning() else stopNfcScanning()
+                        }
                     )
                 }
             }
         }
-        pendingIntent = PendingIntent.getActivity(
-            this, 0,
-            Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-            PendingIntent.FLAG_MUTABLE
-        )
-
-        intentFilters = arrayOf(
-            IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
-        )
-    }
-
-    private fun startNfcScanning() {
-        // Enable foreground dispatch to handle NFC intents
-        nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
-        Toast.makeText(this, "NFC scanning started", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun stopNfcScanning() {
-        // Disable foreground dispatch to stop handling NFC intents
-        nfcAdapter?.disableForegroundDispatch(this)
-        Toast.makeText(this, "NFC scanning stopped", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -150,6 +55,16 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        startNfcScanning(alertUser = false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        nfcAdapter?.disableForegroundDispatch(this)
+    }
+
+    private fun startNfcScanning(alertUser: Boolean = true) {
+        // Enable foreground dispatch to handle NFC intents
         val intent = Intent(this, javaClass)
             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val pendingIntent = PendingIntent
@@ -158,10 +73,13 @@ class MainActivity : ComponentActivity() {
             IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
         )
         nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
+        if (!alertUser) return
+        Toast.makeText(this, "NFC scanning started", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onPause() {
-        super.onPause()
+    private fun stopNfcScanning() {
+        // Disable foreground dispatch to stop handling NFC intents
         nfcAdapter?.disableForegroundDispatch(this)
+        Toast.makeText(this, "NFC scanning stopped", Toast.LENGTH_SHORT).show()
     }
 }
