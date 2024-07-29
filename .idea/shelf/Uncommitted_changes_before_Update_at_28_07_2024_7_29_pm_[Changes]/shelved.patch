@@ -1,0 +1,48 @@
+Index: gradle/libs.versions.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[versions]\r\nagp = \"8.5.1\"\r\nkotlin = \"1.9.0\"\r\n\r\nactivityCompose = \"1.9.0\"\r\ncomposeBom = \"2024.04.01\"\r\ncoreKtx = \"1.13.1\"\r\ngson = \"2.11.0\"\r\nkoinBom = \"3.6.0-wasm-alpha2\"\r\nlifecycleRuntimeKtx = \"2.8.3\"\r\n\r\nespressoCore = \"3.6.1\"\r\njunit = \"4.13.2\"\r\njunitVersion = \"1.2.1\"\r\n\r\n[libraries]\r\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\nandroidx-lifecycle-runtime-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-ktx\", version.ref = \"lifecycleRuntimeKtx\" }\r\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\r\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\r\nandroidx-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\r\nandroidx-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\r\nandroidx-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\r\nandroidx-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }\r\ngson = { module = \"com.google.code.gson:gson\", version.ref = \"gson\" }\r\nkoin-android = { module = \"io.insert-koin:koin-android\" }\r\nkoin-bom = { module = \"io.insert-koin:koin-bom\", version.ref = \"koinBom\" }\r\nkoin-core = { module = \"io.insert-koin:koin-core\" }\r\n\r\nandroidx-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nandroidx-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"junitVersion\" }\r\nandroidx-ui-test-junit4 = { group = \"androidx.compose.ui\", name = \"ui-test-junit4\" }\r\nandroidx-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\r\njunit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\njetbrains-kotlin-android = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+--- a/gradle/libs.versions.toml	(revision 722b4700019277ee16468a7f05422cddf644b5c2)
++++ b/gradle/libs.versions.toml	(date 1722102674432)
+@@ -1,13 +1,14 @@
+ [versions]
+ agp = "8.5.1"
+ kotlin = "1.9.0"
++ktlint = "12.1.1"
+ 
+-activityCompose = "1.9.0"
+-composeBom = "2024.04.01"
++activityCompose = "1.9.1"
++composeBom = "2024.06.00"
+ coreKtx = "1.13.1"
+ gson = "2.11.0"
+ koinBom = "3.6.0-wasm-alpha2"
+-lifecycleRuntimeKtx = "2.8.3"
++lifecycleRuntimeKtx = "2.8.4"
+ 
+ espressoCore = "3.6.1"
+ junit = "4.13.2"
+@@ -36,5 +37,7 @@
+ 
+ [plugins]
+ android-application = { id = "com.android.application", version.ref = "agp" }
++compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
++ktlint-gradle = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+ 
+Index: .idea/.name
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.name b/.idea/.name
+new file mode 100644
+--- /dev/null	(date 1722102469857)
++++ b/.idea/.name	(date 1722102469857)
+@@ -0,0 +1,1 @@
++TagTidy
+\ No newline at end of file
