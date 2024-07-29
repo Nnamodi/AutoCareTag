@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.borisochieng.tagtidy"
+    namespace = "dev.borisochieng.autocaretag"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "dev.borisochieng.tagtidy"
+        applicationId = "dev.borisochieng.autocaretag"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

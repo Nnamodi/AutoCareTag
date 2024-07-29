@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.NFC" />
 
     <application
-        android:name=".TagTidyApp"
+        android:name=".AutoCareTagApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TagTidy"
+        android:theme="@style/Theme.AutoCareTag"
         tools:targetApi="31">
         <activity
             android:name=".ui.MainActivity"
@@ -28,7 +28,7 @@
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="application/json" /> // This mimeType was used to create the tag, so we listen for it.
+                <data android:mimeType="application/json" /> <!-- This mimeType was used to create the tag, so we listen for it. -->
 <!--                <data android:mimeType="text/plain" />-->
             </intent-filter>
         </activity>
