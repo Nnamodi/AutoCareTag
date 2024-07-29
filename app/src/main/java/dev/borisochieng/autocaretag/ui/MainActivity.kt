@@ -9,9 +9,12 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.Scaffold
+import androidx.navigation.compose.rememberNavController
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
-import dev.borisochieng.autocaretag.ui.screens.Client
-import dev.borisochieng.autocaretag.ui.screens.HomeScreen
+import dev.borisochieng.autocaretag.ui.commons.NavBar
+import dev.borisochieng.autocaretag.ui.navigation.AppRoute
+import dev.borisochieng.autocaretag.ui.navigation.NavActions
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import org.koin.android.ext.android.inject
 
@@ -29,6 +32,16 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
+
+            AutoCareTagTheme {
+                Scaffold(bottomBar = { NavBar(navController) }) { paddingValues ->
+                    AppRoute(
+                        navActions = NavActions(navController),
+                        navController = navController,
+                        paddingValues = paddingValues
+                    )
+                }
             AutoCareTagTheme {
                 val fakeClients = listOf(
                     Client(
