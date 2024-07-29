@@ -1,4 +1,4 @@
-package dev.borisochieng.tagtidy.room_db
+package dev.borisochieng.autocaretag.room_db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

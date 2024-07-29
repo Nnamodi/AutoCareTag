@@ -1,15 +1,17 @@
-package dev.borisochieng.tagtidy.room_db
+package dev.borisochieng.autocaretag.room_db
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ClientDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(client: Client)
 
     @Update
@@ -19,10 +21,10 @@ interface ClientDao {
     suspend fun delete(client: Client)
 
     @Query("SELECT * FROM Client")
-    fun getAllClients(): LiveData<List<Client>>
+    fun getAllClients(): Flow<List<Client>>
 
     @Query("SELECT * FROM Client WHERE clientId = :clientId")
-    fun getClientById(clientId: Long): LiveData<Client>
+    fun getClientById(clientId: Long): Flow<Client>
 }
 
 @Dao
@@ -37,14 +39,14 @@ interface VehicleDao {
     suspend fun delete(vehicle: Vehicle)
 
     @Query("SELECT * FROM Vehicle")
-    fun getAllVehicles(): LiveData<List<Vehicle>>
+    fun getAllVehicles(): Flow<List<Vehicle>>
 
-    @Query("SELECT * FROM Vehicle WHERE vehicleId = :vehicleId")
-    fun getVehicleById(vehicleId: Long): LiveData<Vehicle>
+    @Query("SELECT * FROM Vehicle WHERE clientId = :clientId")
+    fun getVehiclesById(clientId: Long): Flow<List<Vehicle>>
 }
 @Dao
 interface RepairDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(repair: Repair)
 
     @Update
@@ -54,8 +56,11 @@ interface RepairDao {
     suspend fun delete(repair: Repair)
 
     @Query("SELECT * FROM Repair")
-    fun getAllRepairs(): LiveData<List<Repair>>
+    fun getAllRepairs(): Flow<List<Repair>>
 
     @Query("SELECT * FROM Repair WHERE repairId = :repairId")
-    fun getRepairById(repairId: Long): LiveData<Repair>
+    fun getRepairById(repairId: Long): Flow<Repair?>
+
+    @Query("SELECT * FROM Repair WHERE vehicleId = :vehicleId")
+    fun getRepairByVehicleId(vehicleId: Long): Flow<List<Repair>>
 }

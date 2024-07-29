@@ -1,4 +1,4 @@
-package dev.borisochieng.tagtidy.nfc_writer.data
+package dev.borisochieng.autocaretag.nfc_writer.data
 
 import android.app.PendingIntent
 import android.content.Context
@@ -11,6 +11,7 @@ import android.nfc.tech.Ndef
 import com.google.gson.Gson
 import dev.borisochieng.autocaretag.nfc_writer.domain.LaundryInfo
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
+import dev.borisochieng.autocaretag.ui.MainActivity
 
 class NfcWriter(private val context: Context,private val tag: Tag) {
     private lateinit var nfcAdapter: NfcAdapter
