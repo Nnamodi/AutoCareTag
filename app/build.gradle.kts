@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+  //  implementation(libs.androidx.constraint.layout.compose)
 
     // gson
     implementation(libs.gson)
@@ -84,6 +85,9 @@ dependencies {
     implementation(libs.koin.android)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
+
+    // gson
+    implementation(libs.gson)
 
     // test
     testImplementation(libs.junit)
