@@ -13,6 +13,7 @@ lifecycleRuntimeKtx = "2.8.4"
 material3 = "1.2.1"
 navigation = "2.7.7"
 
+
 espressoCore = "3.6.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
