@@ -4,18 +4,23 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import dev.borisochieng.autocaretag.ui.screens.HomeScreen
 import dev.borisochieng.autocaretag.utils.animatedComposable
 
-@androidx.compose.runtime.Composable
+typealias ShouldScan = Boolean
+
+@Composable
 fun AppRoute(
 	navActions: NavActions,
 	navController: NavHostController,
-	paddingValues: PaddingValues
+	paddingValues: PaddingValues,
+	scanNfc: (ShouldScan) -> Unit
 ) {
 	val layoutDirection = LocalLayoutDirection.current
 
@@ -30,7 +35,16 @@ fun AppRoute(
 			)
 		)
 	) {
-		composable(AppRoute.HomeScreen.route) {}
+		composable(AppRoute.HomeScreen.route) {
+			HomeScreen(
+				onNavigateToScan = { scanNfc(true) },
+				onNavigateToNotifications = { /*TODO*/ },
+				onNavigateToClient = {
+					navActions.navigate(Screens.ClientDetailsScreen("client_id"))
+				},
+				clients = emptyList()
+			)
+		}
 		composable(AppRoute.AddScreen.route) {}
 		animatedComposable(AppRoute.AddRepairDetailsScreen.route) { backStackEntry ->
 			val vehicleId = backStackEntry.arguments?.getString("vehicleId") ?: ""

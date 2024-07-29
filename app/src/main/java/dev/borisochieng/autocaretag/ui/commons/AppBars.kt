@@ -39,7 +39,7 @@ fun NavBar(
 	Row(
 		modifier = modifier
 			.fillMaxWidth()
-			.padding(16.dp, 6.dp),
+			.padding(16.dp),
 		horizontalArrangement = Arrangement.Center,
 		verticalAlignment = Alignment.CenterVertically
 	) {
@@ -58,6 +58,7 @@ fun NavBar(
 				selected = selected,
 				icon = painterResource(item.icon),
 				label = stringResource(item.title),
+				modifier = Modifier.weight(1f),
 				onClick = {
 					navController.navigate(item.route) {
 						popUpTo(navController.graph.findStartDestination().id) {
@@ -84,8 +85,10 @@ private fun NavigationBarItem(
 
 	Column(
 		modifier = modifier
+			.fillMaxWidth()
 			.padding(horizontal = 8.dp)
-			.clickable { onClick() },
+			.clickable { onClick() }
+			.padding(vertical = 6.dp),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		Icon(

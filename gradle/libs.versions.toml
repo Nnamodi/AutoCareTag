@@ -12,7 +12,7 @@ koinBom = "3.6.0-wasm-alpha2"
 lifecycleRuntimeKtx = "2.8.4"
 material3 = "1.2.1"
 navigation = "2.7.7"
-
+composeConstraintLayout = "1.0.1"
 
 espressoCore = "3.6.1"
 junit = "4.13.2"
@@ -33,6 +33,7 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-constraint-layout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "composeConstraintLayout" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }

@@ -1,6 +1,5 @@
 package dev.borisochieng.autocaretag.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
