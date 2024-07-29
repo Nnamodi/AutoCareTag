@@ -20,6 +20,9 @@ class MainActivity : ComponentActivity() {
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
 
+    private lateinit var pendingIntent: PendingIntent
+    private lateinit var intentFilters: Array<IntentFilter>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
@@ -92,13 +95,34 @@ class MainActivity : ComponentActivity() {
 
                 )
                 HomeScreen(
-                    onNavigateToScan = { /*TODO*/ },
+                    onNavigateToScan = { startNfcScanning() },
                     onNavigateToNotifications = { /*TODO*/ },
                     onNavigateToClient = {},
-                    clients = fakeClients
+                    clients = emptyList()
                 )
             }
         }
+        pendingIntent = PendingIntent.getActivity(
+            this, 0,
+            Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_MUTABLE
+        )
+
+        intentFilters = arrayOf(
+            IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
+        )
+    }
+    
+    private fun startNfcScanning() {
+        // Enable foreground dispatch to handle NFC intents
+        nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
+        Toast.makeText(this, "NFC scanning started", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun stopNfcScanning() {
+        // Disable foreground dispatch to stop handling NFC intents
+        nfcAdapter?.disableForegroundDispatch(this)
+        Toast.makeText(this, "NFC scanning stopped", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNewIntent(intent: Intent) {
