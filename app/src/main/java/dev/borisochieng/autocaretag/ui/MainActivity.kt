@@ -42,88 +42,18 @@ class MainActivity : ComponentActivity() {
                         paddingValues = paddingValues
                     )
                 }
-            AutoCareTagTheme {
-                val fakeClients = listOf(
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "Mark Joe",
-                        vehicleName = "Ford Ranger"
-                    ),
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-                    ,
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-                    ,
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-                    ,
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-                    ,
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
-                    ,
-                    Client(
-                        name = "Sarah",
-                        vehicleName = "Benz E200"
-                    ),
-                    Client(
-                        name = "John Doe",
-                        vehicleName = "Benz E200"
-                    )
 
-                )
-                HomeScreen(
-                    onNavigateToScan = { startNfcScanning() },
-                    onNavigateToNotifications = { /*TODO*/ },
-                    onNavigateToClient = {},
-                    clients = emptyList()
-                )
             }
-        }
-        pendingIntent = PendingIntent.getActivity(
-            this, 0,
-            Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-            PendingIntent.FLAG_MUTABLE
-        )
+            pendingIntent = PendingIntent.getActivity(
+                this, 0,
+                Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                PendingIntent.FLAG_MUTABLE
+            )
 
-        intentFilters = arrayOf(
-            IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
-        )
+            intentFilters = arrayOf(
+                IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
+            )
+        }
     }
     
     private fun startNfcScanning() {
