@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -104,6 +105,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         if (intent.action != NfcAdapter.ACTION_NDEF_DISCOVERED) return
         nfcReaderViewModel.readNFCTag(intent)
+        Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
     }
 
     override fun onResume() {
