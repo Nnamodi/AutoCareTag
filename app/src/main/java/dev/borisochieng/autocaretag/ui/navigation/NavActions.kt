@@ -10,7 +10,7 @@ class NavActions(private val navController: NavHostController) {
 			Screens.AddScreen -> navigateToAddScreen()
 			is Screens.AddRepairDetailsScreen -> navigateToAddRepairDetailsScreen(screen.vehicleId)
 			Screens.ManageScreen -> navigateToManageScreen()
-			Screens.ClientDetailsScreen -> navigateToClientDetailsScreen()
+			is Screens.ClientDetailsScreen -> navigateToClientDetailsScreen(screen.clientId)
 			is Screens.VehicleDetailsScreen -> navigateToVehicleDetailsScreen(screen.clientId)
 			is Screens.RepairHistoryScreen -> navigateToRepairHistoryScreen(screen.vehicleId)
 			Screens.Back -> navController.navigateUp()
@@ -35,8 +35,10 @@ class NavActions(private val navController: NavHostController) {
 		navController.navigate(AppRoute.ManageScreen.route)
 	}
 
-	private fun navigateToClientDetailsScreen() {
-		navController.navigate(AppRoute.ClientDetailsScreen.route)
+	private fun navigateToClientDetailsScreen(clientId: String) {
+		navController.navigate(
+			AppRoute.ClientDetailsScreen.routeWithId(clientId)
+		)
 	}
 
 	private fun navigateToVehicleDetailsScreen(clientId: String) {
@@ -60,7 +62,9 @@ sealed class AppRoute(val route: String) {
 		fun routeWithId(vehicleId: String) = String.format("add_repair_details_screen/%s", vehicleId)
 	}
 	data object ManageScreen: AppRoute("manage_screen")
-	data object ClientDetailsScreen: AppRoute("client_details_screen")
+	data object ClientDetailsScreen: AppRoute("client_details_screen/{clientId}") {
+		fun routeWithId(clientId: String) = String.format("vehicle_details_screen/%s", clientId)
+	}
 	data object VehicleDetailsScreen: AppRoute("vehicle_details_screen/{clientId}") {
 		fun routeWithId(clientId: String) = String.format("vehicle_details_screen/%s", clientId)
 	}
@@ -74,7 +78,7 @@ sealed class Screens {
 	data object AddScreen : Screens() // This is the `add client` screen
 	data class AddRepairDetailsScreen(val vehicleId: String) : Screens()
 	data object ManageScreen : Screens()
-	data object ClientDetailsScreen : Screens()
+	data class ClientDetailsScreen(val clientId: String) : Screens()
 	data class VehicleDetailsScreen(val clientId: String) : Screens()
 	data class RepairHistoryScreen(val vehicleId: String) : Screens()
 	data object Back : Screens()

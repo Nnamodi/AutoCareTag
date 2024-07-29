@@ -1,0 +1,233 @@
+Index: app/src/main/java/dev/borisochieng/autocaretag/nfc_writer/data/NFC_Writer_Manager.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.nfc_writer.data\r\n\r\nimport android.app.PendingIntent\r\nimport android.content.Context\r\nimport android.content.Intent\r\nimport android.nfc.NdefMessage\r\nimport android.nfc.NdefRecord\r\nimport android.nfc.NfcAdapter\r\nimport android.nfc.Tag\r\nimport android.nfc.tech.Ndef\r\nimport com.google.gson.Gson\r\nimport dev.borisochieng.autocaretag.nfc_writer.domain.LaundryInfo\r\nimport dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState\r\nimport dev.borisochieng.autocaretag.ui.MainActivity\r\n\r\nclass NfcWriter(private val context: Context,private val tag: Tag) {\r\n    private lateinit var nfcAdapter: NfcAdapter\r\n    private lateinit var pendingIntent: PendingIntent\r\n    fun writeLaundryInfoToNfcTag(tag: Tag, info: LaundryInfo): NfcWriteState<LaundryInfo> {\r\n        // Initialize NFC adapter and check if NFC is available\r\n        val nfcAdapter = NfcAdapter.getDefaultAdapter(context)\r\n        if (nfcAdapter == null) {\r\n            // NFC not available on this device\r\n            return NfcWriteState.error(\"NFC not available on this device\")\r\n        }\r\n        val json = Gson().toJson(info)\r\n        val ndefRecord = NdefRecord.createMime(\"application/json\", json.toByteArray())\r\n        val ndefMessage = NdefMessage(arrayOf(ndefRecord))\r\n\r\n        try {\r\n            val ndef = Ndef.get(tag)\r\n            ndef.connect()\r\n            ndef.writeNdefMessage(ndefMessage)\r\n            ndef.close()\r\n            // Writing success\r\n            return NfcWriteState.success(info)\r\n        } catch (e: Exception) {\r\n            // Writing error\r\n            return NfcWriteState.error(\"Error writing LaundryInfo to NFC tag: ${e.message}\")\r\n        }\r\n    }\r\n\r\n     fun setupNfc() {\r\n\r\n        nfcAdapter = NfcAdapter.getDefaultAdapter(context)\r\n        val intent = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)\r\n        pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/nfc_writer/data/NFC_Writer_Manager.kt b/app/src/main/java/dev/borisochieng/autocaretag/nfc_writer/data/NFC_Writer_Manager.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/nfc_writer/data/NFC_Writer_Manager.kt	(revision 91e6d63d296c00b045c9a18d4b367872cf2ef3f3)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/nfc_writer/data/NFC_Writer_Manager.kt	(date 1722275880784)
+@@ -16,6 +16,7 @@
+ class NfcWriter(private val context: Context,private val tag: Tag) {
+     private lateinit var nfcAdapter: NfcAdapter
+     private lateinit var pendingIntent: PendingIntent
++
+     fun writeLaundryInfoToNfcTag(tag: Tag, info: LaundryInfo): NfcWriteState<LaundryInfo> {
+         // Initialize NFC adapter and check if NFC is available
+         val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
+Index: app/src/main/java/dev/borisochieng/autocaretag/TagTidyApp.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag\r\n\r\nimport android.app.Application\r\nimport dev.borisochieng.autocaretag.nfc_reader.repository.NFCReaderRepository\r\nimport dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel\r\nimport org.koin.android.ext.koin.androidContext\r\nimport org.koin.android.ext.koin.androidLogger\r\nimport org.koin.androidx.viewmodel.dsl.viewModel\r\nimport org.koin.core.context.startKoin\r\nimport org.koin.core.logger.Level\r\nimport org.koin.dsl.module\r\n\r\nclass AutoCareTagApp : Application() {\r\n\r\n\toverride fun onCreate() {\r\n\t\tsuper.onCreate()\r\n\t\tstartKoin {\r\n\t\t\tandroidContext(this@AutoCareTagApp)\r\n\t\t\tandroidLogger(Level.INFO)\r\n\t\t\tmodules(appModule)\r\n\t\t}\r\n\t}\r\n\r\n}\r\n\r\nval appModule = module {\r\n\tfactory { NFCReaderRepository() }\r\n\tviewModel { NFCReaderViewModel() }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/TagTidyApp.kt b/app/src/main/java/dev/borisochieng/autocaretag/TagTidyApp.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/TagTidyApp.kt	(revision 91e6d63d296c00b045c9a18d4b367872cf2ef3f3)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/TagTidyApp.kt	(date 1722275880650)
+@@ -1,8 +1,10 @@
+ package dev.borisochieng.autocaretag
+ 
+ import android.app.Application
++import dev.borisochieng.autocaretag.di.PersistenceModule.persistenceModule
+ import dev.borisochieng.autocaretag.nfc_reader.repository.NFCReaderRepository
+ import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
++import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
+ import org.koin.android.ext.koin.androidContext
+ import org.koin.android.ext.koin.androidLogger
+ import org.koin.androidx.viewmodel.dsl.viewModel
+@@ -17,7 +19,7 @@
+ 		startKoin {
+ 			androidContext(this@AutoCareTagApp)
+ 			androidLogger(Level.INFO)
+-			modules(appModule)
++			modules(appModule, persistenceModule)
+ 		}
+ 	}
+ 
+@@ -25,5 +27,6 @@
+ 
+ val appModule = module {
+ 	factory { NFCReaderRepository() }
++	viewModel { AddInfoViewModel() }
+ 	viewModel { NFCReaderViewModel() }
+ }
+Index: app/src/main/java/dev/borisochieng/autocaretag/room_db/repository/RepositoryImpl.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.room_db.repository\r\n\r\nimport dev.borisochieng.autocaretag.room_db.Client\r\nimport dev.borisochieng.autocaretag.room_db.ClientDao\r\nimport dev.borisochieng.autocaretag.room_db.Repair\r\nimport dev.borisochieng.autocaretag.room_db.RepairDao\r\nimport dev.borisochieng.autocaretag.room_db.Vehicle\r\nimport dev.borisochieng.autocaretag.room_db.VehicleDao\r\nimport kotlinx.coroutines.flow.Flow\r\n\r\nclass ClientRepositoryImpl(private val clientDao: ClientDao) : ClientRepository {\r\n    override suspend fun insert(client: Client) {\r\n        return clientDao.insert(client)\r\n    }\r\n\r\n    override suspend fun update(client: Client) {\r\n        return clientDao.update(client)\r\n    }\r\n\r\n    override suspend fun delete(client: Client) {\r\n        return clientDao.delete(client)\r\n    }\r\n\r\n    override suspend fun getAllClients(): Flow<List<Client>> {\r\n        return clientDao.getAllClients()\r\n    }\r\n\r\n    override suspend fun getClientById(clientId: Long): Flow<Client?> {\r\n        return clientDao.getClientById(clientId) // Handle null case appropriately\r\n    }\r\n}\r\n\r\nclass VehicleRepositoryImpl(private val vehicleDao: VehicleDao) : VehicleRepository {\r\n    override suspend fun insert(vehicle: Vehicle){\r\n        return vehicleDao.insert(vehicle)\r\n    }\r\n\r\n    override suspend fun update(vehicle: Vehicle) {\r\n        return vehicleDao.update(vehicle)\r\n    }\r\n\r\n    override suspend fun delete(vehicle: Vehicle) {\r\n        return vehicleDao.delete(vehicle)\r\n    }\r\n\r\n    override suspend fun getAllVehicles(): Flow<List<Vehicle>> {\r\n        return vehicleDao.getAllVehicles()\r\n    }\r\n\r\n    override suspend fun getVehiclesById(clientId: Long): Flow<List<Vehicle>> {\r\n        return vehicleDao.getVehiclesById(clientId)\r\n    }\r\n}\r\n\r\nclass RepairRepositoryImpl(private val repairDao: RepairDao) : RepairRepository {\r\n    override suspend fun insert(repair: Repair){\r\n        return repairDao.insert(repair)\r\n    }\r\n\r\n    override suspend fun update(repair: Repair) {\r\n        return repairDao.update(repair)\r\n    }\r\n\r\n    override suspend fun delete(repair: Repair) {\r\n        return repairDao.delete(repair)\r\n    }\r\n\r\n    override suspend fun getAllRepairs(): Flow<List<Repair>> {\r\n        return repairDao.getAllRepairs()\r\n    }\r\n\r\n    override suspend fun getRepairById(repairId: Long): Flow<Repair?> {\r\n        return repairDao.getRepairById(repairId)// Handle null case appropriately\r\n    }\r\n\r\n    override suspend fun getRepairByVehicleId(vehicleId: Long): Flow<List<Repair>> {\r\n        return repairDao.getRepairByVehicleId(vehicleId)\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/room_db/repository/RepositoryImpl.kt b/app/src/main/java/dev/borisochieng/autocaretag/room_db/repository/RepositoryImpl.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/room_db/repository/RepositoryImpl.kt	(revision 91e6d63d296c00b045c9a18d4b367872cf2ef3f3)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/room_db/repository/RepositoryImpl.kt	(date 1722275881050)
+@@ -7,8 +7,12 @@
+ import dev.borisochieng.autocaretag.room_db.Vehicle
+ import dev.borisochieng.autocaretag.room_db.VehicleDao
+ import kotlinx.coroutines.flow.Flow
++import org.koin.core.component.KoinComponent
++import org.koin.core.component.inject
+ 
+-class ClientRepositoryImpl(private val clientDao: ClientDao) : ClientRepository {
++class ClientRepositoryImpl : ClientRepository, KoinComponent {
++    private val clientDao: ClientDao by inject()
++
+     override suspend fun insert(client: Client) {
+         return clientDao.insert(client)
+     }
+@@ -30,7 +34,9 @@
+     }
+ }
+ 
+-class VehicleRepositoryImpl(private val vehicleDao: VehicleDao) : VehicleRepository {
++class VehicleRepositoryImpl : VehicleRepository, KoinComponent {
++    private val vehicleDao: VehicleDao by inject()
++
+     override suspend fun insert(vehicle: Vehicle){
+         return vehicleDao.insert(vehicle)
+     }
+@@ -52,7 +58,9 @@
+     }
+ }
+ 
+-class RepairRepositoryImpl(private val repairDao: RepairDao) : RepairRepository {
++class RepairRepositoryImpl : RepairRepository, KoinComponent {
++    private val repairDao: RepairDao by inject()
++
+     override suspend fun insert(repair: Repair){
+         return repairDao.insert(repair)
+     }
+Index: app/src/main/java/dev/borisochieng/autocaretag/di/PersistenceModule.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/di/PersistenceModule.kt b/app/src/main/java/dev/borisochieng/autocaretag/di/PersistenceModule.kt
+new file mode 100644
+--- /dev/null	(date 1722275880699)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/di/PersistenceModule.kt	(date 1722275880699)
+@@ -0,0 +1,51 @@
++package dev.borisochieng.autocaretag.di
++
++import android.content.Context
++import androidx.room.Room
++import dev.borisochieng.autocaretag.room_db.AutoCareTagDatabase
++import dev.borisochieng.autocaretag.room_db.ClientDao
++import dev.borisochieng.autocaretag.room_db.RepairDao
++import dev.borisochieng.autocaretag.room_db.VehicleDao
++import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
++import dev.borisochieng.autocaretag.room_db.repository.ClientRepositoryImpl
++import dev.borisochieng.autocaretag.room_db.repository.RepairRepository
++import dev.borisochieng.autocaretag.room_db.repository.RepairRepositoryImpl
++import dev.borisochieng.autocaretag.room_db.repository.VehicleRepository
++import dev.borisochieng.autocaretag.room_db.repository.VehicleRepositoryImpl
++import org.koin.dsl.module
++
++object PersistenceModule {
++
++	private fun provideAppDatabase(context: Context): AutoCareTagDatabase {
++		return Room.databaseBuilder(
++			context = context,
++			klass = AutoCareTagDatabase::class.java,
++			name = "auto_care_tag_database"
++		)
++			.fallbackToDestructiveMigration()
++			.build()
++	}
++
++	private fun provideClientDao(autoCareTagDatabase: AutoCareTagDatabase): ClientDao {
++		return autoCareTagDatabase.clientDao()
++	}
++
++	private fun provideRepairDao(autoCareTagDatabase: AutoCareTagDatabase): RepairDao {
++		return autoCareTagDatabase.repairDao()
++	}
++
++	private fun provideVehicleDao(autoCareTagDatabase: AutoCareTagDatabase): VehicleDao {
++		return autoCareTagDatabase.vehicleDao()
++	}
++
++	val persistenceModule = module {
++		single { provideAppDatabase(get<Context>().applicationContext) }
++		single { provideClientDao(get()) }
++		single { provideRepairDao(get()) }
++		single { provideVehicleDao(get()) }
++		factory<ClientRepository> { ClientRepositoryImpl() }
++		factory<RepairRepository> { RepairRepositoryImpl() }
++		factory<VehicleRepository> { VehicleRepositoryImpl() }
++	}
++
++}
+\ No newline at end of file
+Index: app/src/main/java/dev/borisochieng/autocaretag/room_db/db.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.room_db\r\n\r\nimport android.content.Context\r\nimport androidx.room.Database\r\nimport androidx.room.Room\r\nimport androidx.room.RoomDatabase\r\n\r\n@Database(entities = [Client::class,Vehicle::class,Repair::class], version = 1)\r\n\r\nabstract class AutoCareTagDatabase : RoomDatabase() {\r\n\r\n    abstract fun clientDao(): ClientDao\r\n    abstract fun vehicleDao(): VehicleDao\r\n    abstract fun repairDao(): RepairDao\r\n    companion object {\r\n\r\n        @Volatile\r\n        private var instance: AutoCareTagDatabase? = null\r\n\r\n        /**\r\n         * Returns an instance of Room Database.\r\n         *\r\n         * @param context application context\r\n         * @return The singleton LetterDatabase\r\n         */\r\n        fun getInstance(context: Context): AutoCareTagDatabase {\r\n            return instance ?: synchronized(this) {\r\n                instance ?: Room.databaseBuilder(\r\n                    context,\r\n                    AutoCareTagDatabase::class.java,\r\n                    \"auto_care_tag_database\"\r\n                )\r\n                    .fallbackToDestructiveMigration() // Add this line if you want to handle migrations by destroying and recreating the database\r\n                    .build().also { instance = it }\r\n                // .build()\r\n            }\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/room_db/db.kt b/app/src/main/java/dev/borisochieng/autocaretag/room_db/db.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/room_db/db.kt	(revision 91e6d63d296c00b045c9a18d4b367872cf2ef3f3)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/room_db/db.kt	(date 1722275880948)
+@@ -1,8 +1,6 @@
+ package dev.borisochieng.autocaretag.room_db
+ 
+-import android.content.Context
+ import androidx.room.Database
+-import androidx.room.Room
+ import androidx.room.RoomDatabase
+ 
+ @Database(entities = [Client::class,Vehicle::class,Repair::class], version = 1)
+@@ -10,30 +8,9 @@
+ abstract class AutoCareTagDatabase : RoomDatabase() {
+ 
+     abstract fun clientDao(): ClientDao
++
+     abstract fun vehicleDao(): VehicleDao
++
+     abstract fun repairDao(): RepairDao
+-    companion object {
+ 
+-        @Volatile
+-        private var instance: AutoCareTagDatabase? = null
+-
+-        /**
+-         * Returns an instance of Room Database.
+-         *
+-         * @param context application context
+-         * @return The singleton LetterDatabase
+-         */
+-        fun getInstance(context: Context): AutoCareTagDatabase {
+-            return instance ?: synchronized(this) {
+-                instance ?: Room.databaseBuilder(
+-                    context,
+-                    AutoCareTagDatabase::class.java,
+-                    "auto_care_tag_database"
+-                )
+-                    .fallbackToDestructiveMigration() // Add this line if you want to handle migrations by destroying and recreating the database
+-                    .build().also { instance = it }
+-                // .build()
+-            }
+-        }
+-    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/dev/borisochieng/autocaretag/room_db/dao.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.room_db\r\n\r\nimport androidx.lifecycle.LiveData\r\nimport androidx.room.Dao\r\nimport androidx.room.Delete\r\nimport androidx.room.Insert\r\nimport androidx.room.OnConflictStrategy\r\nimport androidx.room.Query\r\nimport androidx.room.Update\r\nimport kotlinx.coroutines.flow.Flow\r\n\r\n@Dao\r\ninterface ClientDao {\r\n    @Insert(onConflict = OnConflictStrategy.REPLACE)\r\n    suspend fun insert(client: Client)\r\n\r\n    @Update\r\n    suspend fun update(client: Client)\r\n\r\n    @Delete\r\n    suspend fun delete(client: Client)\r\n\r\n    @Query(\"SELECT * FROM Client\")\r\n    fun getAllClients(): Flow<List<Client>>\r\n\r\n    @Query(\"SELECT * FROM Client WHERE clientId = :clientId\")\r\n    fun getClientById(clientId: Long): Flow<Client>\r\n}\r\n\r\n@Dao\r\ninterface VehicleDao {\r\n    @Insert\r\n    suspend fun insert(vehicle: Vehicle)\r\n\r\n    @Update\r\n    suspend fun update(vehicle: Vehicle)\r\n\r\n    @Delete\r\n    suspend fun delete(vehicle: Vehicle)\r\n\r\n    @Query(\"SELECT * FROM Vehicle\")\r\n    fun getAllVehicles(): Flow<List<Vehicle>>\r\n\r\n    @Query(\"SELECT * FROM Vehicle WHERE clientId = :clientId\")\r\n    fun getVehiclesById(clientId: Long): Flow<List<Vehicle>>\r\n}\r\n@Dao\r\ninterface RepairDao {\r\n    @Insert(onConflict = OnConflictStrategy.REPLACE)\r\n    suspend fun insert(repair: Repair)\r\n\r\n    @Update\r\n    suspend fun update(repair: Repair)\r\n\r\n    @Delete\r\n    suspend fun delete(repair: Repair)\r\n\r\n    @Query(\"SELECT * FROM Repair\")\r\n    fun getAllRepairs(): Flow<List<Repair>>\r\n\r\n    @Query(\"SELECT * FROM Repair WHERE repairId = :repairId\")\r\n    fun getRepairById(repairId: Long): Flow<Repair?>\r\n\r\n    @Query(\"SELECT * FROM Repair WHERE vehicleId = :vehicleId\")\r\n    fun getRepairByVehicleId(vehicleId: Long): Flow<List<Repair>>\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/room_db/dao.kt b/app/src/main/java/dev/borisochieng/autocaretag/room_db/dao.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/room_db/dao.kt	(revision 91e6d63d296c00b045c9a18d4b367872cf2ef3f3)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/room_db/dao.kt	(date 1722275880869)
+@@ -1,6 +1,5 @@
+ package dev.borisochieng.autocaretag.room_db
+ 
+-import androidx.lifecycle.LiveData
+ import androidx.room.Dao
+ import androidx.room.Delete
+ import androidx.room.Insert
