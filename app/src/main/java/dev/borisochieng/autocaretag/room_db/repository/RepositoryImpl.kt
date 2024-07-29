@@ -7,8 +7,12 @@ import dev.borisochieng.autocaretag.room_db.RepairDao
 import dev.borisochieng.autocaretag.room_db.Vehicle
 import dev.borisochieng.autocaretag.room_db.VehicleDao
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class ClientRepositoryImpl(private val clientDao: ClientDao) : ClientRepository {
+class ClientRepositoryImpl : ClientRepository, KoinComponent {
+    private val clientDao: ClientDao by inject()
+
     override suspend fun insert(client: Client) {
         return clientDao.insert(client)
     }
@@ -30,7 +34,9 @@ class ClientRepositoryImpl(private val clientDao: ClientDao) : ClientRepository 
     }
 }
 
-class VehicleRepositoryImpl(private val vehicleDao: VehicleDao) : VehicleRepository {
+class VehicleRepositoryImpl : VehicleRepository, KoinComponent {
+    private val vehicleDao: VehicleDao by inject()
+
     override suspend fun insert(vehicle: Vehicle){
         return vehicleDao.insert(vehicle)
     }
@@ -52,7 +58,9 @@ class VehicleRepositoryImpl(private val vehicleDao: VehicleDao) : VehicleReposit
     }
 }
 
-class RepairRepositoryImpl(private val repairDao: RepairDao) : RepairRepository {
+class RepairRepositoryImpl : RepairRepository, KoinComponent {
+    private val repairDao: RepairDao by inject()
+
     override suspend fun insert(repair: Repair){
         return repairDao.insert(repair)
     }

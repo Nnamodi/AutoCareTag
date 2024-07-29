@@ -23,9 +23,6 @@ class MainActivity : ComponentActivity() {
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
 
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var intentFilters: Array<IntentFilter>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
@@ -39,9 +36,13 @@ class MainActivity : ComponentActivity() {
                     AppRoute(
                         navActions = NavActions(navController),
                         navController = navController,
-                        paddingValues = paddingValues
+                        paddingValues = paddingValues,
+                        scanNfc = { shouldScan ->
+                            if (shouldScan) startNfcScanning() else stopNfcScanning()
+                        }
                     )
                 }
+<<<<<<< HEAD
 
             }
             pendingIntent = PendingIntent.getActivity(
@@ -66,6 +67,10 @@ class MainActivity : ComponentActivity() {
         // Disable foreground dispatch to stop handling NFC intents
         nfcAdapter?.disableForegroundDispatch(this)
         Toast.makeText(this, "NFC scanning stopped", Toast.LENGTH_SHORT).show()
+=======
+            }
+        }
+>>>>>>> 9c2428321389c83a922b0de40b10cc0b75f2d513
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -77,6 +82,16 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        startNfcScanning(alertUser = false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        nfcAdapter?.disableForegroundDispatch(this)
+    }
+
+    private fun startNfcScanning(alertUser: Boolean = true) {
+        // Enable foreground dispatch to handle NFC intents
         val intent = Intent(this, javaClass)
             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val pendingIntent = PendingIntent
@@ -85,10 +100,13 @@ class MainActivity : ComponentActivity() {
             IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
         )
         nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
+        if (!alertUser) return
+        Toast.makeText(this, "NFC scanning started", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onPause() {
-        super.onPause()
+    private fun stopNfcScanning() {
+        // Disable foreground dispatch to stop handling NFC intents
         nfcAdapter?.disableForegroundDispatch(this)
+        Toast.makeText(this, "NFC scanning stopped", Toast.LENGTH_SHORT).show()
     }
 }

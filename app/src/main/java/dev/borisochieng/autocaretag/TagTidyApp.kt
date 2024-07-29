@@ -1,8 +1,11 @@
 package dev.borisochieng.autocaretag
 
 import android.app.Application
+import dev.borisochieng.autocaretag.di.AppModule.appModule
+import dev.borisochieng.autocaretag.di.PersistenceModule.persistenceModule
 import dev.borisochieng.autocaretag.nfc_reader.repository.NFCReaderRepository
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
+import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -17,13 +20,8 @@ class AutoCareTagApp : Application() {
 		startKoin {
 			androidContext(this@AutoCareTagApp)
 			androidLogger(Level.INFO)
-			modules(appModule)
+			modules(appModule, persistenceModule)
 		}
 	}
 
-}
-
-val appModule = module {
-	factory { NFCReaderRepository() }
-	viewModel { NFCReaderViewModel() }
 }
