@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TagTidy"
+rootProject.name = "AutoCareTag"
 include(":app")
  
