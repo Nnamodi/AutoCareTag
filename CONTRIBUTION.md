@@ -1,8 +1,8 @@
 
-# TagTidy App
+# AutoCareTag App
 
 ## Overview
-TagTidy is designed to help laundromat owners manage laundry items efficiently using NFC technology.
+AutoCareTag is designed to help vehicle service technicians steamline the process of logging, tracking and managing vehicle maintenance using NFC technology.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -14,11 +14,11 @@ TagTidy is designed to help laundromat owners manage laundry items efficiently u
 1. Set up SSH access for this repository. Instructions [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
 2. Clone the repository:
    ```bash
-   git clone git@github.com:slowburn-404/TagTidy.git
+   git clone git@github.com:slowburn-404/AutoCareTag.git
    ```
 3. Navigate to the project directory:
    ```bash
-   cd TagTidy/
+   cd AutoCareTag/
    ```
 4. Open in Android Studio, build and run.
 
