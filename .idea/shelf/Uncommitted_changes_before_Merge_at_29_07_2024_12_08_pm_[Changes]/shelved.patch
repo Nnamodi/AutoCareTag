@@ -1,0 +1,20 @@
+Index: app/src/main/java/dev/borisochieng/tagtidy/nfc_reader/repository/NFCReaderRepository.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.tagtidy.nfc_reader.repository\r\n\r\nimport android.content.Intent\r\nimport android.nfc.NdefMessage\r\nimport android.nfc.NdefRecord\r\nimport android.nfc.NfcAdapter\r\nimport com.google.gson.Gson\r\nimport dev.borisochieng.tagtidy.nfc_reader.data.LaundryInfo\r\nimport dev.borisochieng.tagtidy.nfc_reader.data.State\r\n\r\nclass NFCReaderRepository {\r\n\r\n\tfun readNFCTag(intent: Intent): State<LaundryInfo> {\r\n//\t\tval tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)\r\n\t\tval ndefMessage = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)\r\n\t\tndefMessage?.forEach { message ->\r\n\t\t\t(message as NdefMessage).records.forEach { record ->\r\n\t\t\t\tif (\r\n\t\t\t\t\trecord.tnf == NdefRecord.TNF_WELL_KNOWN &&\r\n\t\t\t\t\trecord.type.contentEquals(NdefRecord.RTD_TEXT)\r\n\t\t\t\t) {\r\n\t\t\t\t\tval payload = record.payload\r\n\t\t\t\t\tval jsonString = String(payload, Charsets.UTF_8)\r\n\t\t\t\t\tval gson = Gson()\r\n\t\t\t\t\tval laundryInfo = gson.fromJson(jsonString, LaundryInfo::class.java)\r\n\t\t\t\t\treturn State.Success(laundryInfo)\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn State.Error(\"Unable to read tag\")\r\n\t}\r\n\r\n}
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/tagtidy/nfc_reader/repository/NFCReaderRepository.kt b/app/src/main/java/dev/borisochieng/tagtidy/nfc_reader/repository/NFCReaderRepository.kt
+--- a/app/src/main/java/dev/borisochieng/tagtidy/nfc_reader/repository/NFCReaderRepository.kt	
++++ b/app/src/main/java/dev/borisochieng/tagtidy/nfc_reader/repository/NFCReaderRepository.kt	
+@@ -13,8 +13,9 @@
+ 	fun readNFCTag(intent: Intent): State<LaundryInfo> {
+ //		val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+ 		val ndefMessage = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
+-		ndefMessage?.forEach { message ->
+-			(message as NdefMessage).records.forEach { record ->
++		ndefMessage?.also { rawMessages ->
++			val message = rawMessages.map { it as NdefMessage }
++			message[0].records.forEach { record ->
+ 				if (
+ 					record.tnf == NdefRecord.TNF_WELL_KNOWN &&
+ 					record.type.contentEquals(NdefRecord.RTD_TEXT)

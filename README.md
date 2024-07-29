@@ -1,9 +1,10 @@
-# TagTidy
-TagTidy is an Android app designed to help laundromat owners manage and track clients' laundry information.
+# AutoCareTag
+This is an Android application that aims to streamline the process of logging, tracking and managing vehicle maintenance.
 
 ## Features
-- Write laundry information to NFC Tags.
-- Read laundry information from NFC Tags.
+- Write vehicle information to NFC Tags.
+- Read vehicle information from NFC Tags.
+- Push notifications
 
 ## Getting Started
 ### Prerequisites
@@ -12,10 +13,10 @@ TagTidy is an Android app designed to help laundromat owners manage and track cl
 ### Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/slowburn-404/TagTidy.git
+git clone https://github.com/slowburn-404/AutoCareTag.git
 ```
 ```bash
-cd TagTidy/
+cd AutoCareTag/
 ```
 
 ## Contribution
