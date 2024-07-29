@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ktlint.gradle)
+    id ("kotlin-kapt")
 }
 
 android {
@@ -63,7 +64,7 @@ ktlint {
 }
 
 dependencies {
-
+    val room_version = "2.6.1"
     // android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -95,4 +96,16 @@ dependencies {
 
     //Gson
     implementation (libs.gson)
+
+    //room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.paging)
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation(libs.androidx.room.ktx)
+}
+kapt {
+    correctErrorTypes = true
+    arguments {
+        arg ("room.schemaLocation", "$projectDir/schemas".toString())
+    }
 }

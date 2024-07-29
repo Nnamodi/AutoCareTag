@@ -41,7 +41,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
+fun AddAddress(viewModel: AddInfoViewModel, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     //Date data
     val year: Int
@@ -69,15 +69,17 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
     )
 
     val systemTime = System.currentTimeMillis()
-    val deliveryDateLong = if(viewModel.deliveryDate.value.deliveryDate.isNotEmpty())viewModel.deliveryDate.value.deliveryDate.toLong() else systemTime
+    val deliveryDateLong =
+        if (viewModel.deliveryDate.value.deliveryDate.isNotEmpty()) viewModel.deliveryDate.value.deliveryDate.toLong() else systemTime
     val simpleDate = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
     val deliveryDate = simpleDate.format(deliveryDateLong)
 
 
 
 
-        LazyColumn {
-            item {Column(
+    LazyColumn {
+        item {
+            Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = modifier.padding(16.dp)
@@ -98,14 +100,11 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
                     )
 
 
-                    OutlinedTextField(
-                        value = viewModel.customerName.value.customerName//viewModel.lastName,
-                        ,
-                        onValueChange = {
+                    OutlinedTextField(value = viewModel.customerName.value.customerName//viewModel.lastName,
+                        , onValueChange = {
 
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(it))
-                        },
-                        placeholder = {
+                        }, placeholder = {
                             Text(
                                 text = "Enter Customer  name",
 // Text/md: Regular
@@ -116,12 +115,13 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
 
                                     )
                             )
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                        }, modifier = Modifier.fillMaxWidth()
                     )
                 }
-                Row( verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp,Alignment.Start) )   {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start)
+                ) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         horizontalAlignment = Alignment.Start
@@ -138,8 +138,7 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
                         )
 
 
-                        OutlinedTextField(
-                            value = viewModel.clothType.value.clothType,
+                        OutlinedTextField(value = viewModel.clothType.value.clothType,
                             onValueChange = {
 
                                 viewModel.onEvent(InfoScreenEvents.EnteredClothType(it))
@@ -159,13 +158,11 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
                             modifier = Modifier.size(width = 220.dp, height = 56.dp)
                         )
                     }
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp),
                         horizontalAlignment = Alignment.Start,
                         modifier = Modifier.clickable {
                             datePickerDialog.show()
-                        }
-                    ) {
+                        }) {
                         androidx.compose.material3.Text(
                             text = "Delivery Date",
 // Text/md: Regular
@@ -177,7 +174,8 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
                                 )
                         )
                         OutlinedTextField(
-                            value = deliveryDate?:"Choose the delivery Date", //viewModel.lastName,
+                            value = deliveryDate
+                                ?: "Choose the delivery Date", //viewModel.lastName,
                             onValueChange = {
 
                             },
@@ -195,15 +193,13 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
                             },
                             readOnly = true,
                             leadingIcon = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.calendar_month_fill1_wght400_grad0_opsz48),
+                                Icon(painter = painterResource(id = R.drawable.calendar_month_fill1_wght400_grad0_opsz48),
                                     contentDescription = "",
                                     modifier = Modifier
                                         .clickable {
                                             datePickerDialog.show()
                                         }
-                                        .size(24.dp)
-                                )
+                                        .size(24.dp))
                             },
 
 
@@ -335,13 +331,11 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
 
                             )
                     )
-                    OutlinedTextField(
-                        value = viewModel.customerAddress.value.customerAddress, //viewModel.lastName,
+                    OutlinedTextField(value = viewModel.customerAddress.value.customerAddress, //viewModel.lastName,
                         onValueChange = {
                             //   viewModel.onEvent(AddInfoEvent.EnteredLastName(it))
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerAddress(it))
-                        },
-                        placeholder = {
+                        }, placeholder = {
                             Text(
                                 text = "Enter Customer's Address",
 // Text/md: Regular
@@ -352,14 +346,15 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
 
                                     )
                             )
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                        }, modifier = Modifier.fillMaxWidth()
                     )
                 }
 
 
-                Row( verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp) )   {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         horizontalAlignment = Alignment.Start
@@ -374,13 +369,11 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
 
                                 )
                         )
-                        OutlinedTextField(
-                            value = viewModel.amountToBePaid.value.amountToBePaid, //viewModel.lastName,
+                        OutlinedTextField(value = viewModel.amountToBePaid.value.amountToBePaid, //viewModel.lastName,
                             onValueChange = {
                                 //   viewModel.onEvent(AddInfoEvent.EnteredLastName(it))
                                 viewModel.onEvent(InfoScreenEvents.EnteredAmountToBePaid(it))
-                            },
-                            placeholder = {
+                            }, placeholder = {
                                 Text(
                                     text = "Enter Price",
 // Text/md: Regular
@@ -391,8 +384,7 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
 
                                         )
                                 )
-                            },
-                            modifier = Modifier.size(width = 220.dp, height = 56.dp)
+                            }, modifier = Modifier.size(width = 220.dp, height = 56.dp)
                         )
                     }
                     Column(
@@ -430,64 +422,74 @@ fun AddAddress(viewModel: AddInfoViewModel,modifier:Modifier=Modifier) {
                         )
                     }
                 }
-            } }
-            item{
-               Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                    Surface(onClick = { /*TODO*/ }, color = Color(0x8D89FD8D), modifier = Modifier
+            }
+        }
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Surface(
+                    onClick = { /*TODO*/ },
+                    color = Color(0x8D89FD8D),
+                    modifier = Modifier
                         .padding(8.dp)
                         .size(width = 320.dp, height = 200.dp),
-                        shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.icons8_nfc_round_tag_50),
-                                contentDescription = "",
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Text(text = "Tap to check connectivity")
-
-                        }
-                    }
-                }
-            }
-            item{
-                Spacer(modifier = Modifier.size(24.dp))
-                Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth())   {
-                    
-                    Button(modifier = Modifier
-                        .width(141.dp)
-                        .height(42.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF0072C6),
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(size = 8.dp),
-                        onClick = {
-
-                        }) {
-
-                        Spacer(modifier = Modifier.size(8.dp))
-                        Text(
-                            text = "Write",
-
-                            // Text/lg: SemiBold
-                            style = TextStyle(
-                                fontSize = 15.sp,
-
-                                fontWeight = FontWeight(600),
-                                color = Color.White,
-                            )
+                        Image(
+                            painter = painterResource(id = R.drawable.icons8_nfc_round_tag_50),
+                            contentDescription = "",
+                            modifier = Modifier.size(48.dp)
                         )
+                        Text(text = "Tap to check connectivity")
+
                     }
                 }
             }
         }
+        item {
+            Spacer(modifier = Modifier.size(24.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
 
+                Button(modifier = Modifier
+                    .width(141.dp)
+                    .height(42.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0072C6), contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(size = 8.dp),
+                    onClick = {
 
+                    }) {
+
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(
+                        text = "Write",
+
+                        // Text/lg: SemiBold
+                        style = TextStyle(
+                            fontSize = 15.sp,
+
+                            fontWeight = FontWeight(600),
+                            color = Color.White,
+                        )
+                    )
+                }
+            }
+        }
     }
+
+
+}
 
 
