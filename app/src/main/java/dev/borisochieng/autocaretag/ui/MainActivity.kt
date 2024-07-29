@@ -9,6 +9,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
+import dev.borisochieng.autocaretag.ui.screens.Client
+import dev.borisochieng.autocaretag.ui.screens.HomeScreen
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import org.koin.android.ext.android.inject
 
@@ -23,7 +25,78 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            AutoCareTagTheme {}
+            AutoCareTagTheme {
+                val fakeClients = listOf(
+                    Client(
+                        name = "John Doe",
+                        vehicleName = "Benz E200"
+                    ),
+                    Client(
+                        name = "Mark Joe",
+                        vehicleName = "Ford Ranger"
+                    ),
+                    Client(
+                        name = "Sarah",
+                        vehicleName = "Benz E200"
+                    ),
+                    Client(
+                        name = "John Doe",
+                        vehicleName = "Benz E200"
+                    )
+                    ,
+                    Client(
+                        name = "Sarah",
+                        vehicleName = "Benz E200"
+                    ),
+                    Client(
+                        name = "John Doe",
+                        vehicleName = "Benz E200"
+                    )
+                    ,
+                    Client(
+                        name = "Sarah",
+                        vehicleName = "Benz E200"
+                    ),
+                    Client(
+                        name = "John Doe",
+                        vehicleName = "Benz E200"
+                    )
+                    ,
+                    Client(
+                        name = "Sarah",
+                        vehicleName = "Benz E200"
+                    ),
+                    Client(
+                        name = "John Doe",
+                        vehicleName = "Benz E200"
+                    )
+                    ,
+                    Client(
+                        name = "Sarah",
+                        vehicleName = "Benz E200"
+                    ),
+                    Client(
+                        name = "John Doe",
+                        vehicleName = "Benz E200"
+                    )
+                    ,
+                    Client(
+                        name = "Sarah",
+                        vehicleName = "Benz E200"
+                    ),
+                    Client(
+                        name = "John Doe",
+                        vehicleName = "Benz E200"
+                    )
+
+                )
+                HomeScreen(
+                    onNavigateToScan = { /*TODO*/ },
+                    onNavigateToNotifications = { /*TODO*/ },
+                    onNavigateToClient = {},
+                    clients = fakeClients
+                )
+            }
         }
     }
 

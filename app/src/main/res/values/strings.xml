@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">AutoCareTag</string>
+    <string name="notifications">Notifications</string>
+    <string name="scan_nfc">Scan NFC</string>
+    <string name="client_avatar">Client Avatar</string>
+    <string name="view_details">View Details</string>
+    <string name="auto">Auto</string>
+    <string name="care">Care</string>
+    <string name="recent_activity">Recent Activity</string>
 </resources>
