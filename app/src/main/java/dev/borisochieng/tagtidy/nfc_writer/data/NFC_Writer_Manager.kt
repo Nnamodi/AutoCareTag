@@ -9,9 +9,9 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.Ndef
 import com.google.gson.Gson
-import dev.borisochieng.tagtidy.MainActivity
 import dev.borisochieng.tagtidy.nfc_writer.domain.LaundryInfo
 import dev.borisochieng.tagtidy.nfc_writer.domain.NfcWriteState
+import dev.borisochieng.tagtidy.ui.MainActivity
 
 class NfcWriter(private val context: Context,private val tag: Tag) {
     private lateinit var nfcAdapter: NfcAdapter
