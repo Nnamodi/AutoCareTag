@@ -2,6 +2,7 @@ package dev.borisochieng.autocaretag.ui.screens
 
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
+import android.nfc.Tag
 import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.borisochieng.autocaretag.R
+import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents
 import dev.borisochieng.autocaretag.ui.components.CustomTextField
@@ -53,6 +56,8 @@ fun AddScreen(
     onNavigateToScanTag: () -> Unit,
     onNavigateUp: () -> Unit,
     viewModel: AddInfoViewModel,
+    tag: Tag? = null,
+    setupNfc: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var contact by remember { mutableStateOf("") }
@@ -116,8 +121,8 @@ fun AddScreen(
         selectedAppointmentDate,
         selectedNextAppointmentDate
     ).all { it.isNotEmpty() } && appointmentDateError == null && nextAppointmentDateError == null
-
-    if (viewModel.buttonEnabled.value) {
+val value = viewModel.buttonEnabled.collectAsState()
+    if (value.value) {
         WriteDialog(
             viewModel = viewModel,
             onCancel = {
@@ -287,6 +292,7 @@ fun AddScreen(
 
                 PrimaryButton(
                     onClick = {
+                     if(tag != null)   { viewModel.uploadInfo(tag = tag,setupNfc=setupNfc  ) }
                         onNavigateToScanTag()
                               viewModel.writeButtonState(true)
                               },

@@ -15,11 +15,11 @@ import kotlinx.coroutines.launch
 
 class AddInfoViewModel (
 
-    private val context: Context
+    private val nfcWriter: NfcWriter
 
-) : ViewModel() {
+) : ViewModel(
+) {
 
-val nfcWriter:NfcWriter = NfcWriter(context = context )
 
     private val _customerName = mutableStateOf(
         InfoScreenState()
@@ -41,8 +41,8 @@ val nfcWriter:NfcWriter = NfcWriter(context = context )
     )
 private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
     val nfcWriteState = nfcWriteStateFlow.asStateFlow()
-    private val _buttonEnabled = mutableStateOf(false)
-    val  buttonEnabled: State<Boolean> = _buttonEnabled
+    private val _buttonEnabled = MutableStateFlow(false)
+    val  buttonEnabled: MutableStateFlow<Boolean> = _buttonEnabled
 
 
     val customerName: State<InfoScreenState> = _customerName
@@ -92,9 +92,10 @@ private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = Mutabl
     }
 
 
-    fun uploadInfo(tag:Tag){
+    fun uploadInfo(tag: Tag,setupNfc:()->Unit){
       viewModelScope.launch  {
-            val tagInfo = TagInfo(
+          setupNfc()
+          val tagInfo = TagInfo(
                 customerName = customerName.value.customerName,
                 customerPhoneNo = customerPhoneNo.value.customerPhoneNo,
                 vehicleModel = vehicleModel.value.vehicleModel,
@@ -102,7 +103,10 @@ private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = Mutabl
                 nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate,
                 appointmentDate = appointmentDate.value.appointmentDate
             )
-            nfcWriteStateFlow.value = nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo)
+          nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo).collect{
+              nfcWriteStateFlow.value = it
+
+          }
 
         }
 
