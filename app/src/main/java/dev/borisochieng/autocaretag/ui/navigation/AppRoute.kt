@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import dev.borisochieng.autocaretag.ui.manage.ManageScreen
 import dev.borisochieng.autocaretag.ui.screens.HomeScreen
 import dev.borisochieng.autocaretag.utils.animatedComposable
 
@@ -49,7 +50,9 @@ fun AppRoute(
 		animatedComposable(AppRoute.AddRepairDetailsScreen.route) { backStackEntry ->
 			val vehicleId = backStackEntry.arguments?.getString("vehicleId") ?: ""
 		}
-		composable(AppRoute.ManageScreen.route) {}
+		composable(AppRoute.ManageScreen.route) {
+			ManageScreen()
+		}
 		animatedComposable(AppRoute.ClientDetailsScreen.route) {}
 		animatedComposable(AppRoute.VehicleDetailsScreen.route) { backStackEntry ->
 			val clientId = backStackEntry.arguments?.getString("clientId") ?: ""

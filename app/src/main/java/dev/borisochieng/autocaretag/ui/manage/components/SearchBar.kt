@@ -60,7 +60,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManageScreen() {
+fun ManageSearchBar() {
     var text by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -70,6 +70,12 @@ fun ManageScreen() {
 
 
     SearchBar(
+        modifier = Modifier
+            .clickable {
+                isSearchViewVisible.value = true
+            }
+           // .border(width = 1.dp, color = Color(0xFFBDE3FF)),
+                ,
         query = text,
         onQueryChange = { text = it },
         onSearch = { },
@@ -113,21 +119,15 @@ fun ManageScreen() {
                             bottomEnd = 8.dp
                         )
                     )
-                    .fillMaxHeight()
-
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.filter),
-                    contentDescription = "filter"
+                    contentDescription = "filter",
+                    tint = Color.White
                 )
             }
-        },
-        modifier = Modifier
-            .clickable {
-                isSearchViewVisible.value = true
-            }
-            .border(width = 1.dp, color = Color(0xFFBDE3FF))
-            .padding(0.dp)
+        }
+
     ) {
 
 
@@ -149,5 +149,5 @@ fun ManageScreenPreview() {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxSize()
-        ){ ManageScreen() }
+        ){ ManageSearchBar() }
 }
