@@ -29,8 +29,8 @@
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="application/json" /> <!-- This mimeType was used to create the tag, so we listen for it. -->
-<!--                <data android:mimeType="text/plain" />-->
+<!--                <data android:mimeType="application/json" /> &lt;!&ndash; This mimeType was used to create the tag, so we listen for it. &ndash;&gt;-->
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
     </application>

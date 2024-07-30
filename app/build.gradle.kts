@@ -82,9 +82,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.navigation)
 
-    // gson
-    implementation(libs.gson)
-
     // di
     implementation(libs.koin.android)
     implementation(platform(libs.koin.bom))
@@ -102,9 +99,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    //Gson
-    implementation (libs.gson)
 
     //room
     implementation(libs.androidx.room.runtime)
