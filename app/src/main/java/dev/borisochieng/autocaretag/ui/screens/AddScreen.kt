@@ -261,7 +261,8 @@ fun AddScreen(
                       //viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(it))
                         appointmentDateError = validateTextField("Appointment Date", it)
                     },
-                    errorMessage = appointmentDateError
+                    errorMessage = appointmentDateError,
+                    isReadable = true
                 )
 
 
@@ -280,7 +281,8 @@ fun AddScreen(
                         nextAppointmentDateError =
                             validateTextField("Next Appointment Date", it)
                     },
-                    errorMessage = nextAppointmentDateError
+                    errorMessage = nextAppointmentDateError,
+                    isReadable = true
                 )
 
                 Spacer(modifier = Modifier.weight(1f))

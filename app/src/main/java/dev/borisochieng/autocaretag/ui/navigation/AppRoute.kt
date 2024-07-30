@@ -17,6 +17,7 @@ import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoVie
 import dev.borisochieng.autocaretag.ui.manage.ManageScreen
 import dev.borisochieng.autocaretag.ui.screens.AddScreen
 import dev.borisochieng.autocaretag.ui.screens.HomeScreen
+import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 import dev.borisochieng.autocaretag.utils.animatedComposable
 
 typealias ShouldScan = Boolean
@@ -42,7 +43,7 @@ fun AppRoute(
                 onNavigateToClient = {
                     navActions.navigate(Screens.ClientDetailsScreen("client_id"))
                 },
-                clients = emptyList()
+                clients = fakeClients
             )
         }
         composable(AppRoute.AddScreen.route) {
@@ -60,7 +61,9 @@ fun AppRoute(
             val vehicleId = backStackEntry.arguments?.getString("vehicleId") ?: ""
         }
         composable(AppRoute.ManageScreen.route) {
-            ManageScreen()
+            ManageScreen( onNavigateUp = {
+                navController.navigateUp()
+            })
         }
         animatedComposable(AppRoute.ClientDetailsScreen.route) {}
         animatedComposable(AppRoute.VehicleDetailsScreen.route) { backStackEntry ->

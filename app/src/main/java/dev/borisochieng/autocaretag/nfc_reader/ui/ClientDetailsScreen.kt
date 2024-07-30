@@ -3,6 +3,7 @@ package dev.borisochieng.autocaretag.nfc_reader.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -26,6 +27,7 @@ import dev.borisochieng.autocaretag.ui.commons.CustomTextField
 import dev.borisochieng.autocaretag.ui.commons.TopBar
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
+import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.onBackgroundVariant
 
 @Composable
@@ -64,9 +66,14 @@ fun ClientDetailsScreen(
 				onValueChange = { note.value = it }
 			)
 
+			Spacer(modifier = Modifier.weight(1f))
+
 			Button(
 				onClick = { navigate(Screens.ClientDetailsScreen(client.clientId.toString())) },
-				modifier = Modifier.padding(top = 40.dp, bottom = 80.dp)
+				modifier = Modifier
+					.padding(16.dp)
+					.fillMaxWidth(),
+				shape = shape.button
 			) {
 				Text(text = stringResource(R.string.update))
 			}

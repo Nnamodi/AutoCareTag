@@ -1,6 +1,8 @@
 package dev.borisochieng.autocaretag.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.Button
@@ -24,8 +27,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -50,15 +58,20 @@ fun HomeScreen(
     onNavigateToClient: (Client) -> Unit,
     clients: List<Client>
 ) {
+    var showBottomSheet by remember { mutableStateOf(false) }
     val screenTitle = buildAnnotatedString {
-        withStyle(style = SpanStyle(
-            color = colorScheme.onBackground
-        )){
+        withStyle(
+            style = SpanStyle(
+                color = colorScheme.onBackground
+            )
+        ) {
             append(stringResource(R.string.auto))
         }
-        withStyle(style = SpanStyle(
-            color = colorScheme.primary
-        )){
+        withStyle(
+            style = SpanStyle(
+                color = colorScheme.primary
+            )
+        ) {
             append(stringResource(R.string.care))
         }
     }
@@ -71,17 +84,6 @@ fun HomeScreen(
                         style = typography.title
                     )
                 },
-                actions = {
-                    IconButton(onClick = onNavigateToNotifications) {
-                        Icon(
-                            imageVector = Icons.Rounded.Notifications,
-                            contentDescription = stringResource(
-                                id = R.string.notifications
-                            )
-                        )
-
-                    }
-                }
             )
         }
     ) { innerPadding ->
@@ -112,7 +114,7 @@ fun HomeScreen(
                         .padding(horizontal = 16.dp)
                         .fillMaxWidth()
                         .height(50.dp),
-                    onClick = onNavigateToScan,
+                    onClick = { showBottomSheet = true },
                     shape = shape.button,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorScheme.secondary,
@@ -157,6 +159,11 @@ fun HomeScreen(
 
         }
 
+        ScanningBottomSheet(
+            showBottomSheet = showBottomSheet,
+            onDismiss = { showBottomSheet = false })
+
+
     }
 
 }
@@ -182,5 +189,10 @@ fun HomeScreenPreview() {
             vehicleName = "Benz E200"
         )
     )
-    HomeScreen(onNavigateToScan = {}, onNavigateToNotifications = {}, onNavigateToClient = {}, clients = fakeClients)
+    HomeScreen(
+        onNavigateToScan = {},
+        onNavigateToNotifications = {},
+        onNavigateToClient = {},
+        clients = fakeClients
+    )
 }
