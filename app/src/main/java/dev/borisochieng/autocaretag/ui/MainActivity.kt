@@ -40,7 +40,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-
+if (addInfoViewModel.buttonEnabled.value){
+    setupNfc()
+}
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
@@ -123,5 +125,11 @@ class MainActivity : ComponentActivity() {
         // Disable foreground dispatch to stop handling NFC intents
         nfcAdapter?.disableForegroundDispatch(this)
         Toast.makeText(this, "NFC scanning stopped", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setupNfc() {
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        val intent = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 }
