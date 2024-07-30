@@ -27,6 +27,9 @@ class MainActivity : ComponentActivity() {
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
 
+    private lateinit var pendingIntent: PendingIntent
+    private lateinit var intentFilters: Array<IntentFilter>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
