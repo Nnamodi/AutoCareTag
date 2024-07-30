@@ -35,6 +35,7 @@ fun AppRoute(
     paddingValues: PaddingValues,
     scanNfc: (ShouldScan) -> Unit,
     viewModel: AddInfoViewModel = koinViewModel(),
+    nfcReaderViewModel: NFCReaderViewModel = koinViewModel(),
     tag: Tag? = null,
     setupNfc: () -> Unit,
 ) {
@@ -76,9 +77,9 @@ fun AppRoute(
             })
         }
         animatedComposable(AppRoute.ClientDetailsScreen.route) {
-			val viewModel: NFCReaderViewModel = koinViewModel()
 			ClientDetailsScreen(
-                uiState = viewModel.clientUiState,
+                uiState = nfcReaderViewModel.clientUiState,
+                updateClientInfo = nfcReaderViewModel::updateClientDetails,
                 navigate = navActions::navigate
             )
         }

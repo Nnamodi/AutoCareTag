@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
+import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.commons.NavBar
 import dev.borisochieng.autocaretag.ui.navigation.AppRoute
 import dev.borisochieng.autocaretag.ui.navigation.NavActions
@@ -47,7 +48,8 @@ class MainActivity : ComponentActivity() {
             AutoCareTagTheme {
                 Scaffold(
                     modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
-                    bottomBar = { NavBar(navController) }) { paddingValues ->
+                    bottomBar = { NavBar(navController) }
+                ) { paddingValues ->
                     AppRoute(
                         navActions = navActions,
                         navController = navController,
@@ -59,17 +61,7 @@ class MainActivity : ComponentActivity() {
                         setupNfc = { setupNfc() }
                     )
                 }
-
             }
-            pendingIntent = PendingIntent.getActivity(
-                this, 0,
-                Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-                PendingIntent.FLAG_MUTABLE
-            )
-
-            intentFilters = arrayOf(
-                IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
-            )
         }
     }
 
@@ -77,25 +69,26 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         if (intent.action != NfcAdapter.ACTION_NDEF_DISCOVERED) return
         nfcReaderViewModel.readNFCTag(intent)
-        startNfcScanning(alertUser = false)
+        Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
+
         val screen = if (nfcReaderViewModel.tagIsEmpty) {
             Screens.AddScreen
         } else Screens.ClientDetailsScreen(
             nfcReaderViewModel.clientUiState.client.clientId.toString()
         )
         navActions.navigate(screen)
-
         Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
 
         if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
             // NFC tag discovered
-           tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+            tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
         }
+
     }
 
     override fun onResume() {
         super.onResume()
-
+        startNfcScanning(alertUser = false)
     }
 
     override fun onPause() {

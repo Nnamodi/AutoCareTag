@@ -12,14 +12,13 @@ import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class AddInfoViewModel (
+class AddInfoViewModel() : ViewModel(), KoinComponent {
+    
 
-    private val nfcWriter: NfcWriter
-
-) : ViewModel(
-) {
-
+    private val nfcWriter: NfcWriter by inject()
 
     private val _customerName = mutableStateOf(
         InfoScreenState()
@@ -39,7 +38,7 @@ class AddInfoViewModel (
     private val _nextAppointmentDate = mutableStateOf(
         InfoScreenState()
     )
-private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
+    private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
     val nfcWriteState = nfcWriteStateFlow.asStateFlow()
     private val _buttonEnabled = MutableStateFlow(false)
     val  buttonEnabled: MutableStateFlow<Boolean> = _buttonEnabled
@@ -96,6 +95,7 @@ private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = Mutabl
       viewModelScope.launch  {
           setupNfc()
           val tagInfo = TagInfo(
+                /* Tag id should go here */
                 customerName = customerName.value.customerName,
                 customerPhoneNo = customerPhoneNo.value.customerPhoneNo,
                 vehicleModel = vehicleModel.value.vehicleModel,

@@ -7,8 +7,10 @@ import androidx.room.PrimaryKey
 data class Client(
     @PrimaryKey(autoGenerate = true) val clientId: Long = 0,
     val name: String,
-    val contactInfo: String
+    val contactInfo: String,
+    val note: String
 )
+
 @Entity
 data class Vehicle(
     @PrimaryKey(autoGenerate = true) val vehicleId: Long = 0,
@@ -19,6 +21,7 @@ data class Vehicle(
     val vin: String,
     val clientId: Long // Foreign key linking to Client
 )
+
 @Entity
 data class Repair(
     @PrimaryKey(autoGenerate = true) val repairId: Long = 0,
