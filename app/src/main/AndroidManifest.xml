@@ -20,7 +20,8 @@
         tools:targetApi="31">
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,8 +29,8 @@
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="application/json" /> <!-- This mimeType was used to create the tag, so we listen for it. -->
-<!--                <data android:mimeType="text/plain" />-->
+<!--                <data android:mimeType="application/json" /> &lt;!&ndash; This mimeType was used to create the tag, so we listen for it. &ndash;&gt;-->
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
     </application>

@@ -5,7 +5,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ktlint.gradle)
-    id ("kotlin-kapt")
+    alias(libs.plugins.ksp.kotlin)
+    alias(libs.plugins.androidx.room)
 }
 
 android {
@@ -22,6 +23,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+
+        room {
+            schemaDirectory(path = "$projectDir/schemas")
         }
     }
 
@@ -64,7 +69,6 @@ ktlint {
 }
 
 dependencies {
-    val room_version = "2.6.1"
     // android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -76,11 +80,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.compose.navigation)
-    implementation(libs.androidx.constraint.layout.compose)
-
-    // gson
-    implementation(libs.gson)
+    implementation(libs.androidx.compose.navigation)
 
     // di
     implementation(libs.koin.android)
@@ -99,18 +99,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //Gson
-    implementation (libs.gson)
-
     //room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.paging)
-    kapt("androidx.room:room-compiler:$room_version")
     implementation(libs.androidx.room.ktx)
-}
-kapt {
-    correctErrorTypes = true
-    arguments {
-        arg ("room.schemaLocation", "$projectDir/schemas".toString())
-    }
+    annotationProcessor(libs.room.annotation.processor)
+    ksp(libs.room.annotation.processor)
 }

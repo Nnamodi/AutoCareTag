@@ -1,38 +1,39 @@
-package dev.borisochieng.autocaretag.ui.screens
+package dev.borisochieng.autocaretag.ui.manage.components
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.borisochieng.autocaretag.R
+import dev.borisochieng.autocaretag.ui.manage.Vehicle
+import dev.borisochieng.autocaretag.ui.screens.Client
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 
 @Composable
-fun RecentActivityCard(
+fun ManageVehicleCard(
     modifier: Modifier = Modifier,
-    client: Client,
-    onNavigateToClient: (Client) -> Unit
+    vehicle: Vehicle,
+    onNavigateToClient: (Vehicle) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -43,23 +44,27 @@ fun RecentActivityCard(
         colors = CardDefaults.cardColors(Color.Transparent)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .clip(CircleShape),
-                contentAlignment = Alignment.Center
+                    .background(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = CircleShape
+                    )
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 3.dp,
+                        color = Color.Transparent,
+                        shape = CircleShape
+                    )
 
             ) {
-                Image(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape),
-                    painter = painterResource(id = R.drawable.homescreen_image),
-                    contentDescription = stringResource(
-                        R.string.client_avatar
-                    ),
-                    contentScale = ContentScale.Fit
+                Text(
+                    text = if(vehicle.vehicleName!="") "${vehicle.vehicleName[0].uppercaseChar()}" else ""
                 )
             }
 
@@ -70,12 +75,12 @@ fun RecentActivityCard(
             ) {
                 Text(
                     modifier = Modifier.padding(vertical = 4.dp),
-                    text = client.name,
+                    text = vehicle.vehicleName,
                     style = typography.bodyLarge
                 )
                 Text(
                     modifier = Modifier.padding(vertical = 2.dp),
-                    text = client.vehicleName,
+                    text = vehicle.licencePlate,
                     style = typography.bodyLight
                 )
             }
@@ -85,23 +90,11 @@ fun RecentActivityCard(
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterVertically)
-                    .clickable { onNavigateToClient(client) },
+                    .clickable { onNavigateToClient(vehicle) },
                 text = stringResource(R.string.view_details),
                 style = typography.bodyLight
             )
         }
 
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RecentActivityCardPreview() {
-    val fakeClient = Client(
-        name = "John Doe",
-        vehicleName = "Benz E200"
-    )
-    RecentActivityCard(client = fakeClient, modifier = Modifier, onNavigateToClient = {})
-
-
 }
