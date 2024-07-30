@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.1"
+koinAndroidxCompose = "3.4.2"
 kotlin = "2.0.0"
 ktlint = "12.1.1"
 room =  "2.6.1"
@@ -28,6 +29,7 @@ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", versi
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "roomPaging" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroidxCompose" }
 room-annotation-processor = { group = "androidx.room", name = "room-compiler", version.ref = "room"}
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }

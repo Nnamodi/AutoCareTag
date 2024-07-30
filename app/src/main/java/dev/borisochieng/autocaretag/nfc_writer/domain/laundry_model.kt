@@ -12,3 +12,11 @@ data class LaundryInfo(
     val deliveryDate: String,
     val status: String
 )
+data class TagInfo(
+    val customerName: String,
+    val customerPhoneNo: String,
+    val vehicleModel: String,
+    val workDone: String,
+    val appointmentDate: String,
+    val nextAppointmentDate: String,
+)

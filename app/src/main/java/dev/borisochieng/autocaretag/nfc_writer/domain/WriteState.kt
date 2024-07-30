@@ -4,7 +4,8 @@ package dev.borisochieng.autocaretag.nfc_writer.domain
 data class NfcWriteState<out T>(
     val status: NfcWriteStatus,
     val data: T? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+
 ) {
     companion object {
         // NFC tag writing success
@@ -18,6 +19,7 @@ data class NfcWriteState<out T>(
         // NFC tag writing in progress (loading)
         fun <T> loading(): NfcWriteState<T> =
             NfcWriteState(NfcWriteStatus.LOADING)
+        fun <T> idle(): NfcWriteState<T> = NfcWriteState(NfcWriteStatus.IDLE)
     }
 }
 
@@ -25,5 +27,6 @@ data class NfcWriteState<out T>(
 enum class NfcWriteStatus {
     SUCCESS,
     ERROR,
-    LOADING
+    LOADING,
+    IDLE
 }

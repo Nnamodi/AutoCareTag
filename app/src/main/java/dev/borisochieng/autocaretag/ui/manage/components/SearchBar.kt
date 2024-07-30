@@ -74,8 +74,7 @@ fun ManageSearchBar() {
             .clickable {
                 isSearchViewVisible.value = true
             }
-           // .border(width = 1.dp, color = Color(0xFFBDE3FF)),
-                ,
+            .border(shape = RoundedCornerShape(8.dp), width = 1.dp, color = Color(0xFFBDE3FF)),
         query = text,
         onQueryChange = { text = it },
         onSearch = { },
@@ -105,27 +104,38 @@ fun ManageSearchBar() {
         },
         trailingIcon = {
 
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .width(46.dp)
-                    .height(56.dp)
-                    .background(
-                        color = Color(0xFF0983FF),
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 8.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 8.dp
+           if(!expanded) {
+                IconButton(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier
+                        .width(46.dp)
+                        .height(56.dp)
+                        .background(
+                            color = Color(0xFF0983FF),
+                            shape = RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 8.dp,
+                                bottomStart = 0.dp,
+                                bottomEnd = 8.dp
+                            )
                         )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.filter),
+                        contentDescription = "filter",
+                        tint = Color.White
                     )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.filter),
-                    contentDescription = "filter",
-                    tint = Color.White
-                )
+                }
             }
+            else{
+                Icon(painter = painterResource(id = R.drawable.close_fill0_wght400_grad0_opsz24),
+                    modifier = Modifier.clickable {
+
+                    },
+
+                    contentDescription ="Close" )
+           }
+
         }
 
     ) {
