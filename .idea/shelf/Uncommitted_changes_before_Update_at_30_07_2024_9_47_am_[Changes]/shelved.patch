@@ -1,0 +1,377 @@
+Index: app/src/main/java/dev/borisochieng/autocaretag/ui/commons/Components.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/ui/commons/Components.kt b/app/src/main/java/dev/borisochieng/autocaretag/ui/commons/Components.kt
+new file mode 100644
+--- /dev/null	(date 1722301280579)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/ui/commons/Components.kt	(date 1722301280579)
+@@ -0,0 +1,70 @@
++package dev.borisochieng.autocaretag.ui.commons
++
++import androidx.compose.foundation.background
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.shape.CircleShape
++import androidx.compose.material3.OutlinedTextField
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.draw.clip
++import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.text.TextStyle
++import androidx.compose.ui.text.font.FontWeight
++import androidx.compose.ui.unit.TextUnit
++import androidx.compose.ui.unit.dp
++import androidx.compose.ui.unit.sp
++import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents
++
++@Composable
++fun Avatar(
++	name: String,
++	modifier: Modifier = Modifier,
++	avatarTextSize: TextUnit = 15.sp
++) {
++	Box(
++		modifier
++			.clip(CircleShape)
++			.background(Color.Blue)
++	) {
++		Text(
++			text = name.take(1),
++			modifier = Modifier.padding(12.dp),
++			color = Color.Black,
++			fontSize = avatarTextSize,
++			fontWeight = FontWeight.SemiBold,
++			letterSpacing = 0.sp
++		)
++	}
++}
++
++@Composable
++fun CustomTextField(
++	header: String,
++	value: String,
++	placeholder: String,
++	modifier: Modifier = Modifier,
++	onValueChange: (String) -> Unit
++) {
++	Column(modifier) {
++		Text(header, Modifier.padding(bottom = 8.dp))
++		OutlinedTextField(
++			value = value,
++			onValueChange = onValueChange,
++			modifier = Modifier.fillMaxWidth(),
++			placeholder = {
++				Text(
++					text = placeholder,
++					style = TextStyle(
++						fontSize = 12.sp,
++						fontWeight = FontWeight(400),
++						color = Color(0xFF9D9D9D)
++					)
++				)
++			}
++		)
++	}
++}
+\ No newline at end of file
+Index: gradle/libs.versions.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[versions]\r\nagp = \"8.5.1\"\r\nkotlin = \"2.0.0\"\r\nktlint = \"12.1.1\"\r\nroom =  \"2.6.1\"\r\n\r\nactivityCompose = \"1.9.1\"\r\ncomposeBom = \"2024.06.00\"\r\ncoreKtx = \"1.13.1\"\r\ngson = \"2.11.0\"\r\nkoinBom = \"3.6.0-wasm-alpha2\"\r\nlifecycleRuntimeKtx = \"2.8.4\"\r\nmaterial3 = \"1.2.1\"\r\nnavigation = \"2.7.7\"\r\ncomposeNavigation = \"2.7.7\"\r\ncomposeConstraintLayout = \"1.0.1\"\r\n\r\nespressoCore = \"3.6.1\"\r\njunit = \"4.13.2\"\r\njunitVersion = \"1.2.1\"\r\nroomKtx = \"2.6.1\"\r\nroomPaging = \"2.6.1\"\r\nroomRuntime = \"2.6.1\"\r\n\r\n[libraries]\r\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\nandroidx-lifecycle-runtime-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-ktx\", version.ref = \"lifecycleRuntimeKtx\" }\r\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\r\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\r\nandroidx-room-ktx = { module = \"androidx.room:room-ktx\", version.ref = \"roomKtx\" }\r\nandroidx-room-paging = { module = \"androidx.room:room-paging\", version.ref = \"roomPaging\" }\r\nandroidx-room-runtime = { module = \"androidx.room:room-runtime\", version.ref = \"roomRuntime\" }\r\nandroidx-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\r\nandroidx-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\r\nandroidx-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\r\nandroidx-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }\r\nandroidx-navigation-compose = { group = \"androidx.navigation\", name = \"navigation-compose\", version.ref = \"composeNavigation\" }\r\nandroidx-constraint-layout-compose = { group = \"androidx.constraintlayout\", name = \"constraintlayout-compose\", version.ref = \"composeConstraintLayout\"}\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\", version.ref = \"material3\" }\r\ncompose-navigation = { group = \"androidx.navigation\", name = \"navigation-compose\", version.ref = \"navigation\" }\r\ngson = { module = \"com.google.code.gson:gson\", version.ref = \"gson\" }\r\nkoin-android = { module = \"io.insert-koin:koin-android\" }\r\nkoin-bom = { module = \"io.insert-koin:koin-bom\", version.ref = \"koinBom\" }\r\nkoin-core = { module = \"io.insert-koin:koin-core\" }\r\n\r\nandroidx-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nandroidx-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"junitVersion\" }\r\nandroidx-ui-test-junit4 = { group = \"androidx.compose.ui\", name = \"ui-test-junit4\" }\r\nandroidx-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\r\njunit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\ncompose-compiler = { id = \"org.jetbrains.kotlin.plugin.compose\", version.ref = \"kotlin\" }\r\njetbrains-kotlin-android = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }\r\nktlint-gradle = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }\r\nandroidx-room = { id = \"androidx.room\", version.ref = \"room\"}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+--- a/gradle/libs.versions.toml	(revision d45e1cbfde387baaea8a7ac4c623971615c4abad)
++++ b/gradle/libs.versions.toml	(date 1722290476434)
+@@ -34,7 +34,6 @@
+ androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+ androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
+ androidx-constraint-layout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "composeConstraintLayout"}
+ androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+Index: app/src/main/java/dev/borisochieng/autocaretag/ui/commons/AppBars.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.ui.commons\r\n\r\nimport android.annotation.SuppressLint\r\nimport androidx.annotation.DrawableRes\r\nimport androidx.annotation.StringRes\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.collectAsState\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.painter.Painter\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.res.stringResource\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.NavGraph.Companion.findStartDestination\r\nimport androidx.navigation.compose.currentBackStackEntryAsState\r\nimport dev.borisochieng.autocaretag.R\r\nimport dev.borisochieng.autocaretag.ui.navigation.AppRoute\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme\r\n\r\n@SuppressLint(\"RestrictedApi\")\r\n@Composable\r\nfun NavBar(\r\n\tnavController: NavController,\r\n\tmodifier: Modifier = Modifier\r\n) {\r\n\tval navBackStackEntry = navController.currentBackStackEntryAsState()\r\n\tval currentRoute = navBackStackEntry.value?.destination?.route\r\n\tval backStack = navController.currentBackStack.collectAsState().value.map { it.destination.route }\r\n\r\n\tRow(\r\n\t\tmodifier = modifier\r\n\t\t\t.fillMaxWidth()\r\n\t\t\t.padding(16.dp),\r\n\t\thorizontalArrangement = Arrangement.Center,\r\n\t\tverticalAlignment = Alignment.CenterVertically\r\n\t) {\r\n\t\tNavBarItems.entries.forEach { item ->\r\n\t\t\tval inBackStack = item.route == currentRoute || item.route in backStack\r\n\t\t\tval selected = when (item) {\r\n\t\t\t\tNavBarItems.Home -> {\r\n\t\t\t\t\tval noHomeScreenInStack = NavBarItems.entries.filter { it != NavBarItems.Home }\r\n\t\t\t\t\t\t.all { it.route !in backStack }\r\n\t\t\t\t\tinBackStack && noHomeScreenInStack\r\n\t\t\t\t}\r\n\t\t\t\telse -> inBackStack\r\n\t\t\t}\r\n\r\n\t\t\tNavigationBarItem(\r\n\t\t\t\tselected = selected,\r\n\t\t\t\ticon = painterResource(item.icon),\r\n\t\t\t\tlabel = stringResource(item.title),\r\n\t\t\t\tmodifier = Modifier.weight(1f),\r\n\t\t\t\tonClick = {\r\n\t\t\t\t\tnavController.navigate(item.route) {\r\n\t\t\t\t\t\tpopUpTo(navController.graph.findStartDestination().id) {\r\n\t\t\t\t\t\t\tsaveState = item.route != currentRoute\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tlaunchSingleTop = true\r\n\t\t\t\t\t\trestoreState = true\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t)\r\n\t\t}\r\n\t}\r\n}\r\n\r\n@Composable\r\nprivate fun NavigationBarItem(\r\n\tselected: Boolean,\r\n\ticon: Painter,\r\n\tlabel: String,\r\n\tmodifier: Modifier = Modifier,\r\n\tonClick: () -> Unit\r\n) {\r\n\tval color = if (selected) colorScheme.primary else colorScheme.onBackgroundVariant\r\n\r\n\tColumn(\r\n\t\tmodifier = modifier\r\n\t\t\t.fillMaxWidth()\r\n\t\t\t.padding(horizontal = 8.dp)\r\n\t\t\t.clickable { onClick() }\r\n\t\t\t.padding(vertical = 6.dp),\r\n\t\thorizontalAlignment = Alignment.CenterHorizontally\r\n\t) {\r\n\t\tIcon(\r\n\t\t\tpainter = icon,\r\n\t\t\tcontentDescription = label,\r\n\t\t\tmodifier = Modifier.padding(start = 12.5.dp, end = 12.5.dp, bottom = 4.dp),\r\n\t\t\ttint = color\r\n\t\t)\r\n\t\tText(text = label, color = color)\r\n\t}\r\n}\r\n\r\nprivate enum class NavBarItems(\r\n\t@StringRes val title: Int,\r\n\t@DrawableRes val icon: Int,\r\n\tval route: String\r\n) {\r\n\tHome(\r\n\t\ttitle = R.string.home,\r\n\t\ticon = R.drawable.home_icon,\r\n\t\troute = AppRoute.HomeScreen.route\r\n\t),\r\n\tAdd(\r\n\t\ttitle = R.string.add,\r\n\t\ticon = R.drawable.add_icon,\r\n\t\troute = AppRoute.AddScreen.route\r\n\t),\r\n\tManage(\r\n\t\ttitle = R.string.manage,\r\n\t\ticon = R.drawable.manage_icon,\r\n\t\troute = AppRoute.ManageScreen.route\r\n\t)\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/ui/commons/AppBars.kt b/app/src/main/java/dev/borisochieng/autocaretag/ui/commons/AppBars.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/ui/commons/AppBars.kt	(revision d45e1cbfde387baaea8a7ac4c623971615c4abad)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/ui/commons/AppBars.kt	(date 1722302281875)
+@@ -9,8 +9,12 @@
+ import androidx.compose.foundation.layout.Row
+ import androidx.compose.foundation.layout.fillMaxWidth
+ import androidx.compose.foundation.layout.padding
++import androidx.compose.material3.ExperimentalMaterial3Api
+ import androidx.compose.material3.Icon
++import androidx.compose.material3.IconButton
+ import androidx.compose.material3.Text
++import androidx.compose.material3.TopAppBar
++import androidx.compose.material3.TopAppBarState
+ import androidx.compose.runtime.Composable
+ import androidx.compose.runtime.collectAsState
+ import androidx.compose.ui.Alignment
+@@ -24,8 +28,28 @@
+ import androidx.navigation.compose.currentBackStackEntryAsState
+ import dev.borisochieng.autocaretag.R
+ import dev.borisochieng.autocaretag.ui.navigation.AppRoute
++import dev.borisochieng.autocaretag.ui.navigation.Screens
+ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
+ 
++@OptIn(ExperimentalMaterial3Api::class)
++@Composable
++fun TopBar(
++	title: String,
++	navigate: (Screens) -> Unit
++) {
++	TopAppBar(
++		title = { Text(title) },
++		navigationIcon = {
++			IconButton(onClick = { navigate(Screens.Back) }) {
++				Icon(
++					painter = painterResource(R.drawable.back_arrow_icon),
++					contentDescription = stringResource(R.string.back)
++				)
++			}
++		}
++	)
++}
++
+ @SuppressLint("RestrictedApi")
+ @Composable
+ fun NavBar(
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <string name=\"app_name\">AutoCareTag</string>\r\n    <string name=\"home\">Home</string>\r\n    <string name=\"add\">Add</string>\r\n    <string name=\"manage\">Manage</string>\r\n    <string name=\"notifications\">Notifications</string>\r\n    <string name=\"scan_nfc\">Scan NFC</string>\r\n    <string name=\"client_avatar\">Client Avatar</string>\r\n    <string name=\"view_details\">View Details</string>\r\n    <string name=\"auto\">Auto</string>\r\n    <string name=\"care\">Care</string>\r\n    <string name=\"recent_activity\">Recent Activity</string>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+--- a/app/src/main/res/values/strings.xml	(revision d45e1cbfde387baaea8a7ac4c623971615c4abad)
++++ b/app/src/main/res/values/strings.xml	(date 1722302282031)
+@@ -10,4 +10,14 @@
+     <string name="auto">Auto</string>
+     <string name="care">Care</string>
+     <string name="recent_activity">Recent Activity</string>
++    <string name="note">Note</string>
++    <string name="note_placeholder">Suspension gear is worn out and needs to be replaced in few months.</string>
++    <string name="name">Name</string>
++    <string name="contact">Contact</string>
++    <string name="vehicle">Vehicle</string>
++    <string name="car_model">Car model</string>
++    <string name="last_issue_resolved">Last issue resolved</string>
++    <string name="last_appointment">Last appointment</string>
++    <string name="update">Update</string>
++    <string name="back">Back</string>
+ </resources>
+\ No newline at end of file
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-feature\r\n        android:name=\"android.hardware.nfc\"\r\n        android:required=\"true\" />\r\n    <uses-permission android:name=\"android.permission.NFC\" />\r\n\r\n    <application\r\n        android:name=\".AutoCareTagApp\"\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.AutoCareTag\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".ui.MainActivity\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n            <intent-filter>\r\n                <action android:name=\"android.nfc.action.NDEF_DISCOVERED\" />\r\n                <category android:name=\"android.intent.category.DEFAULT\" />\r\n                <data android:mimeType=\"application/json\" /> <!-- This mimeType was used to create the tag, so we listen for it. -->\r\n<!--                <data android:mimeType=\"text/plain\" />-->\r\n            </intent-filter>\r\n        </activity>\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision d45e1cbfde387baaea8a7ac4c623971615c4abad)
++++ b/app/src/main/AndroidManifest.xml	(date 1722292184882)
+@@ -28,8 +28,8 @@
+             <intent-filter>
+                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                 <category android:name="android.intent.category.DEFAULT" />
+-                <data android:mimeType="application/json" /> <!-- This mimeType was used to create the tag, so we listen for it. -->
+-<!--                <data android:mimeType="text/plain" />-->
++<!--                <data android:mimeType="application/json" /> &lt;!&ndash; This mimeType was used to create the tag, so we listen for it. &ndash;&gt;-->
++                <data android:mimeType="text/plain" />
+             </intent-filter>
+         </activity>
+     </application>
+Index: app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/ClientDetailsScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/ClientDetailsScreen.kt b/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/ClientDetailsScreen.kt
+new file mode 100644
+--- /dev/null	(date 1722302281546)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/ClientDetailsScreen.kt	(date 1722302281546)
+@@ -0,0 +1,107 @@
++package dev.borisochieng.autocaretag.nfc_reader.ui
++
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Row
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.rememberScrollState
++import androidx.compose.foundation.verticalScroll
++import androidx.compose.material3.Button
++import androidx.compose.material3.HorizontalDivider
++import androidx.compose.material3.Scaffold
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.saveable.rememberSaveable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.res.stringResource
++import androidx.compose.ui.tooling.preview.Preview
++import androidx.compose.ui.unit.dp
++import androidx.compose.ui.unit.sp
++import dev.borisochieng.autocaretag.R
++import dev.borisochieng.autocaretag.ui.commons.Avatar
++import dev.borisochieng.autocaretag.ui.commons.CustomTextField
++import dev.borisochieng.autocaretag.ui.commons.TopBar
++import dev.borisochieng.autocaretag.ui.navigation.Screens
++import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
++import dev.borisochieng.autocaretag.ui.theme.onBackgroundVariant
++
++@Composable
++fun ClientDetailsScreen(
++	uiState: ClientUiState,
++	navigate: (Screens) -> Unit
++) {
++	val (client, vehicles) = uiState
++	val note = rememberSaveable { mutableStateOf("") }
++
++	Scaffold(
++		topBar = { TopBar(stringResource(R.string.view_details), navigate) }
++	) { paddingValues ->
++		Column(
++			Modifier
++				.padding(paddingValues)
++				.padding(horizontal = 16.dp)
++				.verticalScroll(rememberScrollState()),
++			horizontalAlignment = Alignment.CenterHorizontally
++		) {
++			Avatar(
++				name = client.name,
++				modifier = Modifier.padding(top = 25.dp, bottom = 21.dp),
++				avatarTextSize = 18.sp
++			)
++			DetailItem(title = stringResource(R.string.name), detail = uiState.client.name)
++			DetailItem(title = stringResource(R.string.contact), detail = uiState.client.contactInfo)
++			DetailItem(title = stringResource(R.string.vehicle), detail = "Mercedes")
++			DetailItem(title = stringResource(R.string.car_model), detail = "2024")
++			DetailItem(title = stringResource(R.string.last_issue_resolved), detail = "Suspended check")
++			DetailItem(title = stringResource(R.string.last_appointment), detail = "05/15/2024")
++			CustomTextField(
++				header = stringResource(R.string.note),
++				value = note.value,
++				placeholder = stringResource(R.string.note_placeholder),
++				onValueChange = { note.value = it }
++			)
++
++			Button(
++				onClick = { navigate(Screens.ClientDetailsScreen(client.clientId.toString())) },
++				modifier = Modifier.padding(top = 40.dp, bottom = 80.dp)
++			) {
++				Text(text = stringResource(R.string.update))
++			}
++		}
++	}
++}
++
++@Composable
++private fun DetailItem(
++	title: String,
++	detail: String,
++	modifier: Modifier = Modifier
++) {
++	Column(modifier) {
++		Row(
++			modifier = Modifier.fillMaxWidth(),
++			horizontalArrangement = Arrangement.SpaceBetween,
++			verticalAlignment = Alignment.CenterVertically
++		) {
++			Text(
++				text = title,
++				color = onBackgroundVariant
++			)
++			Text(text = detail)
++		}
++		HorizontalDivider(
++			Modifier.padding(top = 8.dp, bottom = 18.dp)
++		)
++	}
++}
++
++@Preview
++@Composable
++private fun ClientDetailsScreenPreview() {
++	AutoCareTagTheme {
++		ClientDetailsScreen(uiState = ClientUiState()) {}
++	}
++}
+Index: app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/UiState.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/UiState.kt b/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/UiState.kt
+new file mode 100644
+--- /dev/null	(date 1722302281797)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/UiState.kt	(date 1722302281797)
+@@ -0,0 +1,9 @@
++package dev.borisochieng.autocaretag.nfc_reader.ui
++
++import dev.borisochieng.autocaretag.room_db.Client
++import dev.borisochieng.autocaretag.room_db.Vehicle
++
++data class ClientUiState(
++	val client: Client = Client(name = "Jay Abbah", contactInfo = "+23472537353"),
++	val clientVehicles: List<Vehicle> = emptyList()
++)
+\ No newline at end of file
+Index: app/src/main/java/dev/borisochieng/autocaretag/room_db/model.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.room_db\r\n\r\nimport androidx.room.Entity\r\nimport androidx.room.PrimaryKey\r\n@Entity\r\ndata class Client(\r\n    @PrimaryKey(autoGenerate = true) val clientId: Long = 0,\r\n    val name: String,\r\n    val contactInfo: String\r\n)\r\n@Entity\r\ndata class Vehicle(\r\n    @PrimaryKey(autoGenerate = true) val vehicleId: Long = 0,\r\n    val make: String,\r\n    val model: String,\r\n    val year: Int,\r\n    val licensePlate: String,\r\n    val vin: String,\r\n    val clientId: Long // Foreign key linking to Client\r\n)\r\n@Entity\r\ndata class Repair(\r\n    @PrimaryKey(autoGenerate = true) val repairId: Long = 0,\r\n    val date: Long, // Timestamp\r\n    val description: String,\r\n    val partsReplaced: String,\r\n    val laborCost: Double,\r\n    val partsCost: Double,\r\n    val totalCost: Double,\r\n    val mechanicNotes: String,\r\n    val vehicleId: Long // Foreign key linking to Vehicle\r\n)\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/room_db/model.kt b/app/src/main/java/dev/borisochieng/autocaretag/room_db/model.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/room_db/model.kt	(revision d45e1cbfde387baaea8a7ac4c623971615c4abad)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/room_db/model.kt	(date 1722292472182)
+@@ -2,6 +2,7 @@
+ 
+ import androidx.room.Entity
+ import androidx.room.PrimaryKey
++
+ @Entity
+ data class Client(
+     @PrimaryKey(autoGenerate = true) val clientId: Long = 0,
+Index: app/src/main/res/drawable/back_arrow_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/back_arrow_icon.xml b/app/src/main/res/drawable/back_arrow_icon.xml
+new file mode 100644
+--- /dev/null	(date 1722301780920)
++++ b/app/src/main/res/drawable/back_arrow_icon.xml	(date 1722301780920)
+@@ -0,0 +1,14 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportHeight="24"
++    android:viewportWidth="24">
++
++        <path android:pathData="M15.808 21.6165L6.5 12.3085L15.808 3.00049L16.872 4.06449L8.627 12.3085L16.871 20.5525L15.808 21.6165Z"
++            android:strokeColor="#393938"
++            android:strokeWidth="2"
++            android:strokeLineCap="round"
++            android:strokeLineJoin="round" />
++
++</vector>
