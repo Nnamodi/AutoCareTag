@@ -266,7 +266,8 @@ val value = viewModel.buttonEnabled.collectAsState()
                       //viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(it))
                         appointmentDateError = validateTextField("Appointment Date", it)
                     },
-                    errorMessage = appointmentDateError
+                    errorMessage = appointmentDateError,
+                    isReadable = true
                 )
 
 
@@ -285,7 +286,8 @@ val value = viewModel.buttonEnabled.collectAsState()
                         nextAppointmentDateError =
                             validateTextField("Next Appointment Date", it)
                     },
-                    errorMessage = nextAppointmentDateError
+                    errorMessage = nextAppointmentDateError,
+                    isReadable = true
                 )
 
                 Spacer(modifier = Modifier.weight(1f))

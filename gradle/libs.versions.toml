@@ -39,6 +39,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3",
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
+koin-compose = { module = "io.insert-koin:koin-androidx-compose" }
 koin-core = { module = "io.insert-koin:koin-core" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose"}
 
