@@ -53,15 +53,6 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
-            pendingIntent = PendingIntent.getActivity(
-                this, 0,
-                Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-                PendingIntent.FLAG_MUTABLE
-            )
-
-            intentFilters = arrayOf(
-                IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
-            )
         }
     }
 

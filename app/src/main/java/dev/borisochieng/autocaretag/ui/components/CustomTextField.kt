@@ -40,7 +40,8 @@ fun CustomTextField(
     onTrailingIconClick: () -> Unit,
     onInputValueChange: (String) -> Unit,
     inputValue: String,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    isReadable: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -58,6 +59,7 @@ fun CustomTextField(
                 onInputValueChange(it)
 
             },
+            readOnly = isReadable,
             shape = shape.button,
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = checkInputType(inputType)),
