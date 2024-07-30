@@ -17,7 +17,8 @@ private val LightColorScheme =
         onBackground = onBackground,
         container = container,
         onContainer = onContainer,
-        onBackgroundVariant = onBackgroundVariant
+        onBackgroundVariant = onBackgroundVariant,
+        error = error
 
 
     )

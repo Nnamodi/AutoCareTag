@@ -13,7 +13,8 @@ data class AutoCareColorScheme(
     val onBackground: Color,
     val container: Color,
     val onContainer: Color,
-    val onBackgroundVariant: Color
+    val onBackgroundVariant: Color,
+    val error: Color
 )
 
 data class AutoCareTypography(
@@ -37,7 +38,8 @@ val LocalColorScheme = staticCompositionLocalOf {
         onBackground = Color.Unspecified,
         container = Color.Unspecified,
         onContainer = Color.Unspecified,
-        onBackgroundVariant = Color.Unspecified
+        onBackgroundVariant = Color.Unspecified,
+        error = Color.Unspecified
     )
 }
 

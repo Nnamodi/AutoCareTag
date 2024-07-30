@@ -12,14 +12,7 @@ gson = "2.11.0"
 koinBom = "3.6.0-wasm-alpha2"
 lifecycleRuntimeKtx = "2.8.4"
 material3 = "1.2.1"
-<<<<<<< HEAD
 navigationCompose = "2.7.7"
-
-=======
-navigation = "2.7.7"
-composeConstraintLayout = "1.0.1"
->>>>>>> 9c2428321389c83a922b0de40b10cc0b75f2d513
-
 espressoCore = "3.6.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -40,13 +33,12 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-constraint-layout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "composeConstraintLayout" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
 koin-core = { module = "io.insert-koin:koin-core" }
-androidx-compose-navigation = { group = "androiodx.navigation", name = "navigation-compose", version.ref = "navigationCompose"}
+androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose"}
 
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

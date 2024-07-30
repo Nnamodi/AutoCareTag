@@ -37,6 +37,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.borisochieng.autocaretag.R
+import dev.borisochieng.autocaretag.ui.components.RecentActivityCard
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
@@ -62,7 +63,6 @@ fun HomeScreen(
         }
     }
     Scaffold(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
         topBar = {
             TopAppBar(
                 title = {
