@@ -13,10 +13,13 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import dev.borisochieng.autocaretag.nfc_reader.ui.ClientDetailsScreen
+import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.ui.manage.ManageScreen
 import dev.borisochieng.autocaretag.ui.screens.AddScreen
 import dev.borisochieng.autocaretag.ui.screens.HomeScreen
 import dev.borisochieng.autocaretag.utils.animatedComposable
+import org.koin.androidx.compose.koinViewModel
 
 typealias ShouldScan = Boolean
 
@@ -59,7 +62,13 @@ fun AppRoute(
         composable(AppRoute.ManageScreen.route) {
             ManageScreen()
         }
-        animatedComposable(AppRoute.ClientDetailsScreen.route) {}
+        animatedComposable(AppRoute.ClientDetailsScreen.route) {
+			val viewModel: NFCReaderViewModel = koinViewModel()
+			ClientDetailsScreen(
+                uiState = viewModel.clientUiState,
+                navigate = navActions::navigate
+            )
+        }
         animatedComposable(AppRoute.VehicleDetailsScreen.route) { backStackEntry ->
             val clientId = backStackEntry.arguments?.getString("clientId") ?: ""
         }

@@ -85,6 +85,7 @@ dependencies {
     // di
     implementation(libs.koin.android)
     implementation(platform(libs.koin.bom))
+    implementation(libs.koin.compose)
     implementation(libs.koin.core)
 
     // gson
