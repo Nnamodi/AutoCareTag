@@ -7,7 +7,6 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.Ndef
 import com.google.gson.Gson
-import dev.borisochieng.autocaretag.nfc_writer.domain.LaundryInfo
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
 import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 

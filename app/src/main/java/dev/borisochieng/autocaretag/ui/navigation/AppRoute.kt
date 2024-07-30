@@ -1,15 +1,9 @@
 package dev.borisochieng.autocaretag.ui.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,20 +25,20 @@ fun AppRoute(
     navController: NavHostController,
     paddingValues: PaddingValues,
     scanNfc: (ShouldScan) -> Unit,
-    viewModel: AddInfoViewModel,
+    viewModel: AddInfoViewModel = koinViewModel(),
+    nfcReaderViewModel: NFCReaderViewModel = koinViewModel()
 ) {
     NavHost(
         navController = navController,
         startDestination = AppRoute.HomeScreen.route,
-        modifier = Modifier
-            .padding(paddingValues)
+        modifier = Modifier.padding(paddingValues)
     ) {
         composable(AppRoute.HomeScreen.route) {
             HomeScreen(
                 onNavigateToScan = { scanNfc(true) },
                 onNavigateToNotifications = { /*TODO*/ },
                 onNavigateToClient = {
-                    navActions.navigate(Screens.ClientDetailsScreen("client_id"))
+                    navActions.navigate(Screens.ClientDetailsScreen("client_id")) /* TODO(an actual client_id should go in here) */
                 },
                 clients = fakeClients
             )
@@ -69,9 +63,9 @@ fun AppRoute(
             })
         }
         animatedComposable(AppRoute.ClientDetailsScreen.route) {
-			val viewModel: NFCReaderViewModel = koinViewModel()
 			ClientDetailsScreen(
-                uiState = viewModel.clientUiState,
+                uiState = nfcReaderViewModel.clientUiState,
+                updateClientInfo = nfcReaderViewModel::updateClientDetails,
                 navigate = navActions::navigate
             )
         }

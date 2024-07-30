@@ -6,9 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.borisochieng.autocaretag.nfc_reader.repository.NFCReaderRepository
 import dev.borisochieng.autocaretag.nfc_reader.data.State
-import dev.borisochieng.autocaretag.room_db.Vehicle
+import dev.borisochieng.autocaretag.nfc_reader.repository.NFCReaderRepository
+import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
+import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -21,17 +22,17 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
 	private val nfcReaderRepository: NFCReaderRepository by inject()
 	private val clientRepository: ClientRepository by inject()
 
-	private val _vehicleInfo = MutableStateFlow<State<Vehicle>>(State.Loading)
+	private val _tagInfo = MutableStateFlow<State<TagInfo>>(State.Loading)
 	private val _clientUiState = MutableStateFlow(ClientUiState())
 	var clientUiState by mutableStateOf(_clientUiState.value); private set
 	var tagIsEmpty by mutableStateOf(false); private set
 
 	init {
 		viewModelScope.launch {
-			_vehicleInfo.collect {
+			_tagInfo.collect {
 				if (it !is State.Success) return@collect
-				tagIsEmpty = it.data.clientId.toString().isEmpty()
-				fetchClientDetails(it.data.clientId)
+				tagIsEmpty = it.data.vehicleModel.isEmpty()
+				fetchClientDetails(it.data.id)
 			}
 		}
 		viewModelScope.launch {
@@ -42,7 +43,7 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
 	}
 
 	fun readNFCTag(intent: Intent) {
-		_vehicleInfo.value = nfcReaderRepository.readNFCTag(intent)
+		_tagInfo.value = nfcReaderRepository.readNFCTag(intent)
 	}
 
 	private fun fetchClientDetails(clientId: Long) {
@@ -51,6 +52,12 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
 				if (client == null) return@collect
 				_clientUiState.update { it.copy(client = client) }
 			}
+		}
+	}
+
+	fun updateClientDetails(client: Client) {
+		viewModelScope.launch {
+			clientRepository.update(client)
 		}
 	}
 

@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.borisochieng.autocaretag.R
+import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.commons.Avatar
 import dev.borisochieng.autocaretag.ui.commons.CustomTextField
 import dev.borisochieng.autocaretag.ui.commons.TopBar
@@ -33,6 +34,7 @@ import dev.borisochieng.autocaretag.ui.theme.onBackgroundVariant
 @Composable
 fun ClientDetailsScreen(
 	uiState: ClientUiState,
+	updateClientInfo: (Client) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
 	val (client, vehicles) = uiState
@@ -69,7 +71,16 @@ fun ClientDetailsScreen(
 			Spacer(modifier = Modifier.weight(1f))
 
 			Button(
-				onClick = { navigate(Screens.ClientDetailsScreen(client.clientId.toString())) },
+				onClick = {
+					val updatedInfo = Client(
+						clientId = client.clientId,
+						name = client.name,
+						contactInfo = client.contactInfo,
+						note = note.value.takeIf { it.isNotEmpty() } ?: client.note
+					)
+					updateClientInfo(updatedInfo)
+					navigate(Screens.ClientDetailsScreen(client.clientId.toString()))
+				},
 				modifier = Modifier
 					.padding(16.dp)
 					.fillMaxWidth(),
@@ -109,6 +120,6 @@ private fun DetailItem(
 @Composable
 private fun ClientDetailsScreenPreview() {
 	AutoCareTagTheme {
-		ClientDetailsScreen(uiState = ClientUiState()) {}
+		ClientDetailsScreen(uiState = ClientUiState(), {}) {}
 	}
 }
