@@ -9,6 +9,7 @@ import android.nfc.tech.Ndef
 import com.google.gson.Gson
 import dev.borisochieng.autocaretag.nfc_writer.domain.LaundryInfo
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
+import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 
 class NfcWriter(private val context: Context) {
 //    private lateinit var nfcAdapter: NfcAdapter
@@ -16,8 +17,8 @@ class NfcWriter(private val context: Context) {
 
     fun writeLaundryInfoToNfcTag(
         tag: Tag,
-        info: LaundryInfo
-    ): NfcWriteState<LaundryInfo> {
+        info: TagInfo
+    ): NfcWriteState<TagInfo> {
         // Initialize NFC adapter and check if NFC is available
         val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
         if (nfcAdapter == null) {

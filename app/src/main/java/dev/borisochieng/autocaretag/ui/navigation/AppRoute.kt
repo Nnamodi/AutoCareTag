@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.manage.ManageScreen
 import dev.borisochieng.autocaretag.ui.screens.AddScreen
 import dev.borisochieng.autocaretag.ui.screens.HomeScreen
@@ -25,7 +26,8 @@ fun AppRoute(
     navActions: NavActions,
     navController: NavHostController,
     paddingValues: PaddingValues,
-    scanNfc: (ShouldScan) -> Unit
+    scanNfc: (ShouldScan) -> Unit,
+    viewModel: AddInfoViewModel,
 ) {
     NavHost(
         navController = navController,
@@ -48,7 +50,8 @@ fun AppRoute(
                 onNavigateToScanTag = { /*TODO(Navigate to Scanning Screen)*/ },
                 onNavigateUp = {
                     navController.navigateUp()
-                }
+                },
+                viewModel = viewModel,
             )
 
 
