@@ -22,6 +22,7 @@ import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoVie
 import dev.borisochieng.autocaretag.ui.commons.NavBar
 import dev.borisochieng.autocaretag.ui.navigation.AppRoute
 import dev.borisochieng.autocaretag.ui.navigation.NavActions
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import org.koin.android.ext.android.inject
 
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
     private val addInfoViewModel: AddInfoViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
+    private lateinit var navActions: NavActions
     val nfcWriter = NfcWriter(this)
 
     private lateinit var pendingIntent: PendingIntent
@@ -43,19 +45,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-if (addInfoViewModel.buttonEnabled.value){
-    setupNfc()
-}
+        if (addInfoViewModel.buttonEnabled.value) {
+            setupNfc()
+        }
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+            navActions = NavActions(navController)
 
             AutoCareTagTheme {
                 Scaffold(
                     modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
                     bottomBar = { NavBar(navController) }) { paddingValues ->
                     AppRoute(
-                        navActions = NavActions(navController),
+                        navActions = navActions,
                         navController = navController,
                         paddingValues = paddingValues,
                         scanNfc = { shouldScan ->
@@ -78,13 +81,6 @@ if (addInfoViewModel.buttonEnabled.value){
         }
     }
 
-
-    private fun startNfcScanning() {
-        // Enable foreground dispatch to handle NFC intents
-        nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
-        Toast.makeText(this, "NFC scanning started", Toast.LENGTH_SHORT).show()
-    }
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.action != NfcAdapter.ACTION_NDEF_DISCOVERED) return
@@ -103,6 +99,12 @@ if (addInfoViewModel.buttonEnabled.value){
     override fun onResume() {
         super.onResume()
         startNfcScanning(alertUser = false)
+        val screen = if (nfcReaderViewModel.tagIsEmpty) {
+            Screens.AddScreen
+        } else Screens.ClientDetailsScreen(
+            nfcReaderViewModel.clientUiState.client.clientId.toString()
+        )
+        navActions.navigate(screen)
     }
 
     override fun onPause() {
