@@ -10,9 +10,14 @@ import com.google.gson.Gson
 import dev.borisochieng.autocaretag.nfc_writer.domain.LaundryInfo
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
 
-class NfcWriter(private val context: Context,private val tag: Tag) {
+class NfcWriter(private val context: Context) {
+//    private lateinit var nfcAdapter: NfcAdapter
+//    private lateinit var pendingIntent: PendingIntent
 
-    fun writeLaundryInfoToNfcTag(tag: Tag, info: LaundryInfo): NfcWriteState<LaundryInfo> {
+    fun writeLaundryInfoToNfcTag(
+        tag: Tag,
+        info: LaundryInfo
+    ): NfcWriteState<LaundryInfo> {
         // Initialize NFC adapter and check if NFC is available
         val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
         if (nfcAdapter == null) {
@@ -35,5 +40,11 @@ class NfcWriter(private val context: Context,private val tag: Tag) {
             return NfcWriteState.error("Error writing LaundryInfo to NFC tag: ${e.message}")
         }
     }
+
+//     fun setupNfc() {
+//        nfcAdapter = NfcAdapter.getDefaultAdapter(context)
+//        val intent = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+//        pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+//    }
 
 }

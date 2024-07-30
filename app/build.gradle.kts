@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ktlint.gradle)
+    alias(libs.plugins.ksp.kotlin)
+    alias(libs.plugins.androidx.room)
 }
 
 android {
@@ -21,6 +23,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+
+        room {
+            schemaDirectory(path = "$projectDir/schemas")
         }
     }
 
@@ -63,7 +69,6 @@ ktlint {
 }
 
 dependencies {
-
     // android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -75,8 +80,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.constraint.layout.compose)
+    implementation(libs.androidx.compose.navigation)
 
     // gson
     implementation(libs.gson)
@@ -85,6 +89,9 @@ dependencies {
     implementation(libs.koin.android)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
+
+    // gson
+    implementation(libs.gson)
 
     // test
     testImplementation(libs.junit)
@@ -97,4 +104,11 @@ dependencies {
 
     //Gson
     implementation (libs.gson)
+
+    //room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.paging)
+    implementation(libs.androidx.room.ktx)
+    annotationProcessor(libs.room.annotation.processor)
+    ksp(libs.room.annotation.processor)
 }
