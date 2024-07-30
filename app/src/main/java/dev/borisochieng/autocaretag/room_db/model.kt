@@ -1,5 +1,6 @@
 package dev.borisochieng.autocaretag.room_db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -8,7 +9,7 @@ data class Client(
     @PrimaryKey(autoGenerate = true) val clientId: Long = 0,
     val name: String,
     val contactInfo: String,
-    val note: String
+    @ColumnInfo(defaultValue = "") val note: String
 )
 
 @Entity

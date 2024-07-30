@@ -1,14 +1,23 @@
 package dev.borisochieng.autocaretag.ui.navigation
 
+import android.nfc.Tag
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import dev.borisochieng.autocaretag.nfc_reader.ui.ClientDetailsScreen
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
+import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.manage.ManageScreen
 import dev.borisochieng.autocaretag.ui.screens.AddScreen
@@ -26,19 +35,22 @@ fun AppRoute(
     paddingValues: PaddingValues,
     scanNfc: (ShouldScan) -> Unit,
     viewModel: AddInfoViewModel = koinViewModel(),
-    nfcReaderViewModel: NFCReaderViewModel = koinViewModel()
+    nfcReaderViewModel: NFCReaderViewModel = koinViewModel(),
+    tag: Tag? = null,
+    setupNfc: () -> Unit,
 ) {
     NavHost(
         navController = navController,
         startDestination = AppRoute.HomeScreen.route,
-        modifier = Modifier.padding(paddingValues)
+        modifier = Modifier
+            .padding(paddingValues)
     ) {
         composable(AppRoute.HomeScreen.route) {
             HomeScreen(
                 onNavigateToScan = { scanNfc(true) },
                 onNavigateToNotifications = { /*TODO*/ },
                 onNavigateToClient = {
-                    navActions.navigate(Screens.ClientDetailsScreen("client_id")) /* TODO(an actual client_id should go in here) */
+                    navActions.navigate(Screens.ClientDetailsScreen("client_id"))
                 },
                 clients = fakeClients
             )
@@ -50,6 +62,8 @@ fun AppRoute(
                     navController.navigateUp()
                 },
                 viewModel = viewModel,
+                tag = tag,
+                setupNfc = setupNfc
             )
 
 

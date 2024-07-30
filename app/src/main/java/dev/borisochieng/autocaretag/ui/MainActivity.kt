@@ -28,19 +28,17 @@ import org.koin.android.ext.android.inject
 class MainActivity : ComponentActivity() {
 
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
-//    private val nfcWriter : NfcWriter by inject()
-    private val addInfoViewModel: AddInfoViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
     private lateinit var navActions: NavActions
+
+    private var tag: Tag? = null
+    private lateinit var pendingIntent: PendingIntent
+    private lateinit var intentFilters: Array<IntentFilter>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
-         /** startNfcScanning() takes care of this */
-//        if (addInfoViewModel.buttonEnabled.value) {
-//            setupNfc()
-//        }
 
         enableEdgeToEdge()
         setContent {
@@ -58,7 +56,9 @@ class MainActivity : ComponentActivity() {
                         paddingValues = paddingValues,
                         scanNfc = { shouldScan ->
                             if (shouldScan) startNfcScanning() else stopNfcScanning()
-                        }
+                        },
+                        tag = tag,
+                        setupNfc = { setupNfc() }
                     )
                 }
             }
@@ -77,14 +77,13 @@ class MainActivity : ComponentActivity() {
             nfcReaderViewModel.clientUiState.client.clientId.toString()
         )
         navActions.navigate(screen)
+        Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
 
-        if (addInfoViewModel.buttonEnabled.value) {
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
             // NFC tag discovered
-            val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
-            if (tag != null) {
-                addInfoViewModel.uploadInfo(tag = tag)
-            }
+            tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
         }
+
     }
 
     override fun onResume() {
@@ -117,10 +116,9 @@ class MainActivity : ComponentActivity() {
         Toast.makeText(this, "NFC scanning stopped", Toast.LENGTH_SHORT).show()
     }
 
-    /** startNfcScanning() handles this */
-//    private fun setupNfc() {
-//        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-//        val intent = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-//        pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-//    }
+    private fun setupNfc() {
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        val intent = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+    }
 }

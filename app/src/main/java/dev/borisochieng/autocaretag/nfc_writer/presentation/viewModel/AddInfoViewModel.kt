@@ -1,5 +1,6 @@
 package dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel
 
+import android.content.Context
 import android.nfc.Tag
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class AddInfoViewModel : ViewModel(), KoinComponent {
+class AddInfoViewModel() : ViewModel(), KoinComponent {
+    
 
     private val nfcWriter: NfcWriter by inject()
 
@@ -38,8 +40,8 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
     )
     private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
     val nfcWriteState = nfcWriteStateFlow.asStateFlow()
-    private val _buttonEnabled = mutableStateOf(false)
-    val  buttonEnabled: State<Boolean> = _buttonEnabled
+    private val _buttonEnabled = MutableStateFlow(false)
+    val  buttonEnabled: MutableStateFlow<Boolean> = _buttonEnabled
 
 
     val customerName: State<InfoScreenState> = _customerName
@@ -89,9 +91,10 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
     }
 
 
-    fun uploadInfo(tag:Tag){
+    fun uploadInfo(tag: Tag,setupNfc:()->Unit){
       viewModelScope.launch  {
-            val tagInfo = TagInfo(
+          setupNfc()
+          val tagInfo = TagInfo(
                 /* Tag id should go here */
                 customerName = customerName.value.customerName,
                 customerPhoneNo = customerPhoneNo.value.customerPhoneNo,
@@ -100,7 +103,10 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
                 nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate,
                 appointmentDate = appointmentDate.value.appointmentDate
             )
-            nfcWriteStateFlow.value = nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo)
+          nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo).collect{
+              nfcWriteStateFlow.value = it
+
+          }
 
         }
 
