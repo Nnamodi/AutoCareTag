@@ -29,7 +29,6 @@ class MainActivity : ComponentActivity() {
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
     private lateinit var navActions: NavActions
-    val nfcWriter = NfcWriter(this)
 
     private var tag: Tag? = null
     private lateinit var pendingIntent: PendingIntent
@@ -78,6 +77,14 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         if (intent.action != NfcAdapter.ACTION_NDEF_DISCOVERED) return
         nfcReaderViewModel.readNFCTag(intent)
+        startNfcScanning(alertUser = false)
+        val screen = if (nfcReaderViewModel.tagIsEmpty) {
+            Screens.AddScreen
+        } else Screens.ClientDetailsScreen(
+            nfcReaderViewModel.clientUiState.client.clientId.toString()
+        )
+        navActions.navigate(screen)
+
         Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
 
         if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
@@ -88,13 +95,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        startNfcScanning(alertUser = false)
-        val screen = if (nfcReaderViewModel.tagIsEmpty) {
-            Screens.AddScreen
-        } else Screens.ClientDetailsScreen(
-            nfcReaderViewModel.clientUiState.client.clientId.toString()
-        )
-        navActions.navigate(screen)
+
     }
 
     override fun onPause() {
