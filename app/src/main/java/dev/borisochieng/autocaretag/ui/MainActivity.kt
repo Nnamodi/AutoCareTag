@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
-import dev.borisochieng.autocaretag.nfc_writer.data.NfcWriter
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.commons.NavBar
 import dev.borisochieng.autocaretag.ui.navigation.AppRoute
@@ -29,25 +28,20 @@ import org.koin.android.ext.android.inject
 class MainActivity : ComponentActivity() {
 
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
+//    private val nfcWriter : NfcWriter by inject()
     private val addInfoViewModel: AddInfoViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
     private lateinit var navActions: NavActions
-    val nfcWriter = NfcWriter(this)
-
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var intentFilters: Array<IntentFilter>
-
-
-
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var intentFilters: Array<IntentFilter>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        if (addInfoViewModel.buttonEnabled.value) {
-            setupNfc()
-        }
+
+         /** startNfcScanning() takes care of this */
+//        if (addInfoViewModel.buttonEnabled.value) {
+//            setupNfc()
+//        }
+
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
@@ -56,28 +50,18 @@ class MainActivity : ComponentActivity() {
             AutoCareTagTheme {
                 Scaffold(
                     modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
-                    bottomBar = { NavBar(navController) }) { paddingValues ->
+                    bottomBar = { NavBar(navController) }
+                ) { paddingValues ->
                     AppRoute(
                         navActions = navActions,
                         navController = navController,
                         paddingValues = paddingValues,
                         scanNfc = { shouldScan ->
                             if (shouldScan) startNfcScanning() else stopNfcScanning()
-                        },
-                        viewModel = addInfoViewModel
+                        }
                     )
                 }
-
             }
-            pendingIntent = PendingIntent.getActivity(
-                this, 0,
-                Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-                PendingIntent.FLAG_MUTABLE
-            )
-
-            intentFilters = arrayOf(
-                IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
-            )
         }
     }
 
@@ -87,7 +71,14 @@ class MainActivity : ComponentActivity() {
         nfcReaderViewModel.readNFCTag(intent)
         Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
 
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action && addInfoViewModel.buttonEnabled.value) {
+        val screen = if (nfcReaderViewModel.tagIsEmpty) {
+            Screens.AddScreen
+        } else Screens.ClientDetailsScreen(
+            nfcReaderViewModel.clientUiState.client.clientId.toString()
+        )
+        navActions.navigate(screen)
+
+        if (addInfoViewModel.buttonEnabled.value) {
             // NFC tag discovered
             val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
             if (tag != null) {
@@ -99,12 +90,6 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         startNfcScanning(alertUser = false)
-        val screen = if (nfcReaderViewModel.tagIsEmpty) {
-            Screens.AddScreen
-        } else Screens.ClientDetailsScreen(
-            nfcReaderViewModel.clientUiState.client.clientId.toString()
-        )
-        navActions.navigate(screen)
     }
 
     override fun onPause() {
@@ -132,9 +117,10 @@ class MainActivity : ComponentActivity() {
         Toast.makeText(this, "NFC scanning stopped", Toast.LENGTH_SHORT).show()
     }
 
-    private fun setupNfc() {
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        val intent = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-    }
+    /** startNfcScanning() handles this */
+//    private fun setupNfc() {
+//        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+//        val intent = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+//        pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+//    }
 }

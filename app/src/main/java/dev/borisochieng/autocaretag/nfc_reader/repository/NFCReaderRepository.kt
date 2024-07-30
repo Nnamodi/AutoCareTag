@@ -6,11 +6,11 @@ import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
 import com.google.gson.Gson
 import dev.borisochieng.autocaretag.nfc_reader.data.State
-import dev.borisochieng.autocaretag.room_db.Vehicle
+import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 
 class NFCReaderRepository {
 
-	fun readNFCTag(intent: Intent): State<Vehicle> {
+	fun readNFCTag(intent: Intent): State<TagInfo> {
 //		val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
 		val ndefMessage = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
 		ndefMessage?.forEach { message ->
@@ -22,8 +22,8 @@ class NFCReaderRepository {
 					val payload = record.payload
 					val jsonString = String(payload, Charsets.UTF_8)
 					val gson = Gson()
-					val vehicleInfo = gson.fromJson(jsonString, Vehicle::class.java)
-					return State.Success(vehicleInfo)
+					val tagInfo = gson.fromJson(jsonString, TagInfo::class.java)
+					return State.Success(tagInfo)
 				}
 			}
 		}

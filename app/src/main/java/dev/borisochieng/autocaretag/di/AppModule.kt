@@ -13,7 +13,7 @@ object AppModule {
 	val appModule = module {
 		factory { NFCReaderRepository() }
 		factory { NfcWriter(get<Context>().applicationContext) }
-		viewModel { AddInfoViewModel(context = get<Context>().applicationContext) }
+		viewModel { AddInfoViewModel() }
 		viewModel { NFCReaderViewModel() }
 	}
 
