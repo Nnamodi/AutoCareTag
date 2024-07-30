@@ -36,10 +36,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.borisochieng.autocaretag.R
+import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
+import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents
 import dev.borisochieng.autocaretag.ui.components.CustomTextField
 import dev.borisochieng.autocaretag.ui.components.PrimaryButton
+import dev.borisochieng.autocaretag.ui.components.WriteDialog
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
+import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -47,7 +51,8 @@ import java.util.Locale
 @Composable
 fun AddScreen(
     onNavigateToScanTag: () -> Unit,
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
+    viewModel: AddInfoViewModel,
 ) {
     var name by remember { mutableStateOf("") }
     var contact by remember { mutableStateOf("") }
@@ -75,6 +80,7 @@ fun AddScreen(
             { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
                 selectedAppointmentDate =
                     formatDate(day = selectedDayOfMonth, month = selectedMonth, year = selectedYear)
+                viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(selectedAppointmentDate))
                 Log.d("Selected Date", selectedAppointmentDate)
                 appointmentDateError = checkIfDateIsToday(selectedAppointmentDate)
                 isDialogForAppointmentDate = false
@@ -84,12 +90,14 @@ fun AddScreen(
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         ).show()
-    } else if (isDialogForNextAppointmentDate) {
+    }
+    if (isDialogForNextAppointmentDate) {
         DatePickerDialog(
             context,
             { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
                 selectedNextAppointmentDate =
                     formatDate(day = selectedDayOfMonth, month = selectedMonth, year = selectedYear)
+                viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(selectedNextAppointmentDate))
                 nextAppointmentDateError = checkIfDateIsInFuture(selectedNextAppointmentDate)
                 isDialogForNextAppointmentDate = false
 
@@ -101,7 +109,7 @@ fun AddScreen(
     }
 
     val isButtonEnabled = listOf(
-        name,
+        viewModel.customerName.value.customerName,
         contact,
         vehicleModel,
         repair,
@@ -109,6 +117,19 @@ fun AddScreen(
         selectedNextAppointmentDate
     ).all { it.isNotEmpty() } && appointmentDateError == null && nextAppointmentDateError == null
 
+    if (viewModel.buttonEnabled.value) {
+        WriteDialog(
+            viewModel = viewModel,
+            onCancel = {
+                viewModel.writeButtonState(false)
+            },
+            onOk = {
+                viewModel.writeButtonState(false)
+
+            }
+        )
+
+    }
 
     Scaffold(
         topBar = {
@@ -166,8 +187,9 @@ fun AddScreen(
                     inputType = String,
                     isTrailingIcon = false,
                     onTrailingIconClick = {},
-                    inputValue = name,
+                    inputValue = viewModel.customerName.value.customerName,
                     onInputValueChange = {
+                        viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(it))
                         name = it
                         nameError = validateTextField("Name", it)
                     },
@@ -182,8 +204,9 @@ fun AddScreen(
                     inputType = Int,
                     isTrailingIcon = false,
                     onTrailingIconClick = {},
-                    inputValue = contact,
-                    onInputValueChange = {
+                    inputValue = viewModel.customerPhoneNo.value.customerPhoneNo,
+                    onInputValueChange = {it ->
+                        viewModel.onEvent(InfoScreenEvents.EnteredCustomerPhoneNo(it))
                         contact = it
                         contactError = validateTextField("Contact Details", it)
                     },
@@ -198,8 +221,9 @@ fun AddScreen(
                     inputType = String,
                     isTrailingIcon = false,
                     onTrailingIconClick = {},
-                    inputValue = vehicleModel,
+                    inputValue = viewModel.vehicleModel.value.vehicleModel,
                     onInputValueChange = {
+                        viewModel.onEvent(InfoScreenEvents.EnteredVehicleModel(it))
                         vehicleModel = it
                         vehicleModelError = validateTextField("Vehicle Model", it)
                     },
@@ -213,8 +237,9 @@ fun AddScreen(
                     inputType = String,
                     isTrailingIcon = false,
                     onTrailingIconClick = {},
-                    inputValue = repair,
+                    inputValue = viewModel.workDone.value.workDone,
                     onInputValueChange = {
+                        viewModel.onEvent(InfoScreenEvents.EnteredWorkDone(it))
                         repair = it
                         repairError = validateTextField("Maintenance Done", it)
                     },
@@ -231,9 +256,9 @@ fun AddScreen(
                     onTrailingIconClick = {
                         isDialogForAppointmentDate = !isDialogForAppointmentDate
                     },
-                    inputValue = selectedAppointmentDate,
+                    inputValue = viewModel.appointmentDate.value.appointmentDate ?: "DD-MM-YYYY",
                     onInputValueChange = {
-                        selectedAppointmentDate = it
+                      //viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(it))
                         appointmentDateError = validateTextField("Appointment Date", it)
                     },
                     errorMessage = appointmentDateError
@@ -249,7 +274,7 @@ fun AddScreen(
                     onTrailingIconClick = {
                         isDialogForNextAppointmentDate = !isDialogForNextAppointmentDate
                     },
-                    inputValue = selectedNextAppointmentDate,
+                    inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate?: " DD-MM-YYYY",
                     onInputValueChange = {
                         selectedNextAppointmentDate = it
                         nextAppointmentDateError =
@@ -261,7 +286,10 @@ fun AddScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 PrimaryButton(
-                    onClick = onNavigateToScanTag,
+                    onClick = {
+                        onNavigateToScanTag()
+                              viewModel.writeButtonState(true)
+                              },
                     label = stringResource(R.string.bt_write_to_nfc),
                     isEnabled = isButtonEnabled
                 )
@@ -321,8 +349,9 @@ fun checkIfDateIsToday(dateString: String): String? {
 fun validateTextField(label: String, input: String): String? =
     if (input.isEmpty()) "$label cannot be empty" else null
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun AddScreenPreview() {
-    AddScreen(onNavigateToScanTag = {}, onNavigateUp = {})
-}
+    AddScreen(onNavigateToScanTag = {}, onNavigateUp = {}, viewModel = AddInfoViewModel())
+}*/
