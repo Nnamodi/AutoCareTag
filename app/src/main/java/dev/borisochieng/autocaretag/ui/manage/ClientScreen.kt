@@ -33,16 +33,15 @@ import androidx.compose.ui.unit.sp
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.ui.components.ClientCard
 import dev.borisochieng.autocaretag.ui.manage.components.ClientSearchBar
-import dev.borisochieng.autocaretag.ui.screens.Client
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClientScreen(
-    onNavigateUp: () -> Unit,
-    onNavigateToClient: (Client) -> Unit,
-    viewModel: ClientScreenViewModel
+    viewModel: ClientScreenViewModel,
+    navigate: (Screens) -> Unit
 ) {
 
     var searchQuery by remember {
@@ -56,7 +55,7 @@ fun ClientScreen(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
+                    IconButton(onClick = { navigate(Screens.Back) }) {
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_back_ios),
                             contentDescription = "Back Arrow"
@@ -122,7 +121,10 @@ fun ClientScreen(
                     }
                 } else {
                     items(clientsUIState.clients) { client ->
-                        ClientCard(client = client, onNavigateToClient = onNavigateToClient)
+                        ClientCard(
+                            client = client,
+                            onNavigateToClient = { Screens.ClientDetailsScreen(client.id) }
+                        )
                     }
                 }
             }

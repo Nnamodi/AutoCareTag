@@ -17,6 +17,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,15 +35,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
+import dev.borisochieng.autocaretag.nfc_reader.data.State
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
-import dev.borisochieng.autocaretag.nfc_reader.ui.NfcReadStatus
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
+import kotlinx.coroutines.delay
 
 @Composable
 fun ReadDialog(
     viewModel: NFCReaderViewModel,
+    navigate: (Screens) -> Unit,
     onCancel: () -> Unit
 ) {
     var readyToScan by remember { mutableStateOf("") }
@@ -59,7 +63,6 @@ fun ReadDialog(
                 containerColor = colorScheme.background
             ),
             shape = shape.card
-
         ) {
             // Add your UI elements here
             Column(
@@ -67,9 +70,11 @@ fun ReadDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Sorry Toby. I had to refactor this
+
                 val nfcReadState by viewModel.nfcReadState.collectAsState()
-                when (nfcReadState.status) {
-                    NfcReadStatus.SUCCESS -> {
+                when (nfcReadState) {
+                    is State.Success -> {
                         // Show success UI
                         readyToScan = "Successful"
                         supportingText = "Details imported successfully"
@@ -102,10 +107,9 @@ fun ReadDialog(
                         }
                     }
 
-                    NfcReadStatus.ERROR -> {
+                    is State.Error -> {
                         // Show error UI
-                        supportingText =
-                            nfcReadState.errorMessage ?: "Something went wrong, please try again"
+                        supportingText = (nfcReadState as State.Error).errorMessage
 
                         Text(
                             text = supportingText,
@@ -131,14 +135,10 @@ fun ReadDialog(
                         }
                     }
 
-                    NfcReadStatus.LOADING -> {
+                    State.Loading -> {
                         // Show loading UI
-                        //CircularProgressIndicator()
-                    }
-
-                    NfcReadStatus.IDLE -> {
-                        // Show idle UI
-                        readyToScan = "Ready to Scan"
+//                        readyToScan = "Ready to Scan"
+                        readyToScan = "Scanning"
                         supportingText = "Hold your device near the NFC Tag"
                         Text(
                             text = readyToScan,
@@ -168,6 +168,17 @@ fun ReadDialog(
                         }
                     }
                 }
+
+                LaunchedEffect(nfcReadState) {
+                    if (nfcReadState !is State.Success) return@LaunchedEffect
+                    delay(2000)
+                    val screen = if (viewModel.tagIsEmpty) {
+                        Screens.AddScreen
+                    } else Screens.ClientDetailsScreen(
+                        viewModel.clientUiState.client.clientId.toString()
+                    )
+                    navigate(screen)
+                }
             }
 
 
@@ -179,7 +190,5 @@ fun ReadDialog(
 @Preview(showBackground = true)
 @Composable
 fun ReadDialogPreview() {
-    ReadDialog(viewModel = viewModel()) {}
-
-
+    ReadDialog(viewModel = viewModel(), {}) {}
 }
