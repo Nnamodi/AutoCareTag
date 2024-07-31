@@ -1,10 +1,12 @@
 package dev.borisochieng.autocaretag.ui.screens
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.icu.util.Calendar
 import android.nfc.Tag
 import android.util.Log
 import android.widget.DatePicker
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +28,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,84 +63,85 @@ fun AddScreen(
     tag: Tag? = null,
     setupNfc: () -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var contact by remember { mutableStateOf("") }
-    var vehicleModel by remember { mutableStateOf("") }
-    var repair by remember { mutableStateOf("") }
-    var selectedAppointmentDate by remember { mutableStateOf("") }
-    var selectedNextAppointmentDate by remember { mutableStateOf("") }
     var isDialogForAppointmentDate by remember { mutableStateOf(false) }
     var isDialogForNextAppointmentDate by remember { mutableStateOf(false) }
-
-    var nameError by remember { mutableStateOf<String?>(null) }
-    var contactError by remember { mutableStateOf<String?>(null) }
-    var vehicleModelError by remember { mutableStateOf<String?>(null) }
-    var repairError by remember { mutableStateOf<String?>(null) }
-    var appointmentDateError by remember { mutableStateOf<String?>(null) }
-    var nextAppointmentDateError by remember { mutableStateOf<String?>(null) }
+    var isWriteDialogVisible by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
+    val isButtonEnabled by viewModel.buttonEnabled.collectAsState()
 
+    val nameError by remember {
+        derivedStateOf {
+            validateTextField(
+                "Name",
+                viewModel.customerName.value.customerName
+            )
+        }
+    }
+    val contactError by remember {
+        derivedStateOf {
+            validateTextField(
+                "Contact Details",
+                viewModel.customerPhoneNo.value.customerPhoneNo
+            )
+        }
+    }
+    val vehicleModelError by remember {
+        derivedStateOf {
+            validateTextField(
+                "Vehicle Model",
+                viewModel.vehicleModel.value.vehicleModel
+            )
+        }
+    }
+    val repairError by remember {
+        derivedStateOf {
+            validateTextField(
+                "Maintenance Done",
+                viewModel.workDone.value.workDone
+            )
+        }
+    }
+    val appointmentDateError by remember {
+        derivedStateOf {
+            checkIfDateIsToday(
+                viewModel.appointmentDate.value.appointmentDate ?: ""
+            )
+        }
+    }
+    val nextAppointmentDateError by remember {
+        derivedStateOf {
+            checkIfDateIsInFuture(
+                viewModel.nextAppointmentDate.value.nextAppointmentDate ?: ""
+            )
+        }
+    }
 
     if (isDialogForAppointmentDate) {
-        DatePickerDialog(
-            context,
-            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-                selectedAppointmentDate =
-                    formatDate(day = selectedDayOfMonth, month = selectedMonth, year = selectedYear)
-                viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(selectedAppointmentDate))
-                Log.d("Selected Date", selectedAppointmentDate)
-                appointmentDateError = checkIfDateIsToday(selectedAppointmentDate)
-                isDialogForAppointmentDate = false
-
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        ShowDatePickerDialog(context, calendar) { selectedDate ->
+            viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(selectedDate))
+            isDialogForAppointmentDate = false
+        }
     }
+
     if (isDialogForNextAppointmentDate) {
-        DatePickerDialog(
-            context,
-            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-                selectedNextAppointmentDate =
-                    formatDate(day = selectedDayOfMonth, month = selectedMonth, year = selectedYear)
-                viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(selectedNextAppointmentDate))
-                nextAppointmentDateError = checkIfDateIsInFuture(selectedNextAppointmentDate)
-                isDialogForNextAppointmentDate = false
-
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        ShowDatePickerDialog(context, calendar) { selectedDate ->
+            viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(selectedDate))
+            isDialogForNextAppointmentDate = false
+        }
     }
 
-    val isButtonEnabled = listOf(
-        viewModel.customerName.value.customerName,
-        contact,
-        vehicleModel,
-        repair,
-        selectedAppointmentDate,
-        selectedNextAppointmentDate
-    ).all { it.isNotEmpty() } && appointmentDateError == null && nextAppointmentDateError == null
-val value = viewModel.buttonEnabled.collectAsState()
-    if (value.value) {
+    if (isWriteDialogVisible) {
         WriteDialog(
             viewModel = viewModel,
-            onCancel = {
-                viewModel.writeButtonState(false)
-            },
-            onOk = {
-                viewModel.writeButtonState(false)
-
-            }
+            onCancel = { viewModel.writeButtonState(false) },
+            onOk = { viewModel.writeButtonState(false) }
         )
-
     }
 
     Scaffold(
+        modifier = Modifier.background(color = colorScheme.background),
         topBar = {
             TopAppBar(
                 title = {
@@ -149,163 +154,175 @@ val value = viewModel.buttonEnabled.collectAsState()
                     IconButton(onClick = onNavigateUp) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(
-                                R.string.navigate_up
-                            )
+                            contentDescription = stringResource(R.string.navigate_up)
                         )
                     }
                 },
             )
         },
-
-        ) { innerPadding ->
-        val scrollState = rememberScrollState()
-        Surface(
-            modifier = Modifier
-                .padding(innerPadding)
-                .imePadding(),
-            color = colorScheme.background
-        ) {
-            Column(
+        content = { innerPadding ->
+            val scrollState = rememberScrollState()
+            Surface(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .verticalScroll(scrollState)
-                    .windowInsetsPadding(WindowInsets.ime),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(innerPadding)
+                    .imePadding(),
+                color = colorScheme.background
             ) {
-
-
-                Text(
-                    text = stringResource(R.string.add_screen_title),
-                    style = typography.bodyLarge,
-                    maxLines = 2,
+                Column(
                     modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth()
-                )
+                        .padding(16.dp)
+                        .verticalScroll(scrollState)
+                        .windowInsetsPadding(WindowInsets.ime),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.add_screen_title),
+                        style = typography.title,
+                        maxLines = 2,
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth(),
+                        color = colorScheme.primary
+                    )
 
+                    CustomTextField(
+                        label = stringResource(R.string.name_label),
+                        placeHolder = stringResource(R.string.name_placeholder),
+                        inputType = String,
+                        isTrailingIcon = false,
+                        onTrailingIconClick = {},
+                        inputValue = viewModel.customerName.value.customerName,
+                        onInputValueChange = {
+                            viewModel.onEvent(
+                                InfoScreenEvents.EnteredCustomerName(
+                                    it
+                                )
+                            )
+                        },
+                        errorMessage = nameError
+                    )
 
+                    CustomTextField(
+                        label = stringResource(R.string.contact_label),
+                        placeHolder = stringResource(R.string.contact_placeholder),
+                        inputType = Int,
+                        isTrailingIcon = false,
+                        onTrailingIconClick = {},
+                        inputValue = viewModel.customerPhoneNo.value.customerPhoneNo,
+                        onInputValueChange = {
+                            viewModel.onEvent(
+                                InfoScreenEvents.EnteredCustomerPhoneNo(
+                                    it
+                                )
+                            )
+                        },
+                        errorMessage = contactError
+                    )
 
-                CustomTextField(
-                    label = stringResource(R.string.name_label),
-                    placeHolder = stringResource(R.string.name_placeholder),
-                    inputType = String,
-                    isTrailingIcon = false,
-                    onTrailingIconClick = {},
-                    inputValue = viewModel.customerName.value.customerName,
-                    onInputValueChange = {
-                        viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(it))
-                        name = it
-                        nameError = validateTextField("Name", it)
-                    },
-                    errorMessage = nameError
-                )
+                    Text(
+                        text = stringResource(R.string.vehicle_details),
+                        style = typography.title,
+                        maxLines = 2,
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth(),
+                        color = colorScheme.primary
+                    )
 
+                    CustomTextField(
+                        label = stringResource(R.string.vehicle_model_label),
+                        placeHolder = stringResource(R.string.vehicle_model_placeholder),
+                        inputType = String,
+                        isTrailingIcon = false,
+                        onTrailingIconClick = {},
+                        inputValue = viewModel.vehicleModel.value.vehicleModel,
+                        onInputValueChange = {
+                            viewModel.onEvent(
+                                InfoScreenEvents.EnteredVehicleModel(
+                                    it
+                                )
+                            )
+                        },
+                        errorMessage = vehicleModelError
+                    )
 
+                    CustomTextField(
+                        label = stringResource(R.string.repair_label),
+                        placeHolder = stringResource(R.string.repair_placeholder),
+                        inputType = String,
+                        isTrailingIcon = false,
+                        onTrailingIconClick = {},
+                        inputValue = viewModel.workDone.value.workDone,
+                        onInputValueChange = { viewModel.onEvent(InfoScreenEvents.EnteredWorkDone(it)) },
+                        errorMessage = repairError
+                    )
 
-                CustomTextField(
-                    label = stringResource(R.string.contact_label),
-                    placeHolder = stringResource(R.string.contact_placeholder),
-                    inputType = Int,
-                    isTrailingIcon = false,
-                    onTrailingIconClick = {},
-                    inputValue = viewModel.customerPhoneNo.value.customerPhoneNo,
-                    onInputValueChange = {it ->
-                        viewModel.onEvent(InfoScreenEvents.EnteredCustomerPhoneNo(it))
-                        contact = it
-                        contactError = validateTextField("Contact Details", it)
-                    },
-                    errorMessage = contactError
-                )
+                    CustomTextField(
+                        label = stringResource(R.string.appointment_date_label),
+                        placeHolder = stringResource(R.string.appointment_date_placeholder),
+                        inputType = String,
+                        isTrailingIcon = true,
+                        onTrailingIconClick = {
+                            isDialogForAppointmentDate = !isDialogForAppointmentDate
+                        },
+                        inputValue = viewModel.appointmentDate.value.appointmentDate
+                            ?: "DD-MM-YYYY",
+                        onInputValueChange = {},
+                        errorMessage = appointmentDateError,
+                        isReadable = true
+                    )
 
+                    CustomTextField(
+                        label = stringResource(R.string.next_appointment_date_label),
+                        placeHolder = stringResource(R.string.next_appointment_date_placeholder),
+                        inputType = String,
+                        isTrailingIcon = true,
+                        onTrailingIconClick = {
+                            isDialogForNextAppointmentDate = !isDialogForNextAppointmentDate
+                        },
+                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate
+                            ?: "DD-MM-YYYY",
+                        onInputValueChange = {},
+                        errorMessage = nextAppointmentDateError,
+                        isReadable = true
+                    )
 
+                    Spacer(modifier = Modifier.weight(1f))
 
-                CustomTextField(
-                    label = stringResource(R.string.vehicle_model_label),
-                    placeHolder = stringResource(R.string.vehicle_model_placeholder),
-                    inputType = String,
-                    isTrailingIcon = false,
-                    onTrailingIconClick = {},
-                    inputValue = viewModel.vehicleModel.value.vehicleModel,
-                    onInputValueChange = {
-                        viewModel.onEvent(InfoScreenEvents.EnteredVehicleModel(it))
-                        vehicleModel = it
-                        vehicleModelError = validateTextField("Vehicle Model", it)
-                    },
-                    errorMessage = vehicleModelError
-                )
-
-
-                CustomTextField(
-                    label = stringResource(R.string.repair_label),
-                    placeHolder = stringResource(R.string.repair_placeholder),
-                    inputType = String,
-                    isTrailingIcon = false,
-                    onTrailingIconClick = {},
-                    inputValue = viewModel.workDone.value.workDone,
-                    onInputValueChange = {
-                        viewModel.onEvent(InfoScreenEvents.EnteredWorkDone(it))
-                        repair = it
-                        repairError = validateTextField("Maintenance Done", it)
-                    },
-                    errorMessage = repairError
-                )
-
-
-
-                CustomTextField(
-                    label = stringResource(R.string.appointment_date_label),
-                    placeHolder = stringResource(R.string.appointment_date_placeholder),
-                    inputType = String,
-                    isTrailingIcon = true,
-                    onTrailingIconClick = {
-                        isDialogForAppointmentDate = !isDialogForAppointmentDate
-                    },
-                    inputValue = viewModel.appointmentDate.value.appointmentDate ?: "DD-MM-YYYY",
-                    onInputValueChange = {
-                      //viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(it))
-                        appointmentDateError = validateTextField("Appointment Date", it)
-                    },
-                    errorMessage = appointmentDateError,
-                    isReadable = true
-                )
-
-
-
-                CustomTextField(
-                    label = stringResource(R.string.next_appointment_date_label),
-                    placeHolder = stringResource(R.string.next_appointment_date_placeholder),
-                    inputType = String,
-                    isTrailingIcon = true,
-                    onTrailingIconClick = {
-                        isDialogForNextAppointmentDate = !isDialogForNextAppointmentDate
-                    },
-                    inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate?: " DD-MM-YYYY",
-                    onInputValueChange = {
-                        selectedNextAppointmentDate = it
-                        nextAppointmentDateError =
-                            validateTextField("Next Appointment Date", it)
-                    },
-                    errorMessage = nextAppointmentDateError,
-                    isReadable = true
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                PrimaryButton(
-                    onClick = {
-                     if(tag != null)   { viewModel.uploadInfo(tag = tag,setupNfc=setupNfc  ) }
-                        onNavigateToScanTag()
-                              viewModel.writeButtonState(true)
-                              },
-                    label = stringResource(R.string.bt_write_to_nfc),
-                    isEnabled = isButtonEnabled
-                )
-
+                    PrimaryButton(
+                        onClick = {
+                            if (tag != null) {
+                                viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
+                            }
+                            onNavigateToScanTag()
+                            //viewModel.writeButtonState(true)
+                            isWriteDialogVisible = true
+                        },
+                        label = stringResource(R.string.bt_write_to_nfc),
+                        isEnabled = isButtonEnabled
+                    )
+                }
             }
         }
+    )
+}
 
-    }
+@Composable
+fun ShowDatePickerDialog(
+    context: Context,
+    calendar: Calendar,
+    onDateSelected: (String) -> Unit
+) {
+    DatePickerDialog(
+        context,
+        { _, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+            val selectedDate = formatDate(selectedDayOfMonth, selectedMonth, selectedYear)
+            onDateSelected(selectedDate)
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    ).show()
 }
 
 fun formatDate(day: Int, month: Int, year: Int): String {
@@ -316,7 +333,10 @@ fun formatDate(day: Int, month: Int, year: Int): String {
     return format.format(calendar.time)
 }
 
-fun checkIfDateIsInFuture(dateString: String): String? {
+fun checkIfDateIsInFuture(dateString: String?): String? {
+    if (dateString.isNullOrEmpty()) {
+        return "Date cannot be empty"
+    }
     val dateFormat = SimpleDateFormat("dd MMMM yy", Locale.getDefault())
     val inputDate = dateFormat.parse(dateString)
     val currentDate = Calendar.getInstance().time
@@ -328,10 +348,12 @@ fun checkIfDateIsInFuture(dateString: String): String? {
     }
 }
 
-fun checkIfDateIsToday(dateString: String): String? {
+fun checkIfDateIsToday(dateString: String?): String? {
+    if (dateString.isNullOrEmpty()) {
+        return "Date cannot be empty"
+    }
     val dateFormat = SimpleDateFormat("dd MMMM yy", Locale.getDefault())
     val inputDate = dateFormat.parse(dateString)
-    // Get today's date and set the time to midnight
     val currentDate = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.MINUTE, 0)
@@ -339,7 +361,6 @@ fun checkIfDateIsToday(dateString: String): String? {
         set(Calendar.MILLISECOND, 0)
     }.time
 
-    // Get the input date and set the time to midnight
     val inputCalendar = Calendar.getInstance().apply {
         time = inputDate ?: return "Invalid date format"
         set(Calendar.HOUR_OF_DAY, 0)
@@ -353,6 +374,7 @@ fun checkIfDateIsToday(dateString: String): String? {
         null
     }
 }
+
 
 fun validateTextField(label: String, input: String): String? =
     if (input.isEmpty()) "$label cannot be empty" else null

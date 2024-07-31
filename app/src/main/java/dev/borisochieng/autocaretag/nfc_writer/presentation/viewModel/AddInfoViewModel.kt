@@ -16,7 +16,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class AddInfoViewModel() : ViewModel(), KoinComponent {
-    
+
 
     private val nfcWriter: NfcWriter by inject()
 
@@ -50,6 +50,20 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
     val workDone: State<InfoScreenState> = _workDone
     val appointmentDate: State<InfoScreenState> = _appointmentDate
     val nextAppointmentDate: State<InfoScreenState> = _nextAppointmentDate
+
+
+    private fun areAllFieldsValid(): Boolean {
+        return _customerName.value.customerName.isNotEmpty() &&
+               _customerPhoneNo.value.customerPhoneNo.isNotEmpty() &&
+               _vehicleModel.value.vehicleModel.isNotEmpty() &&
+               _workDone.value.workDone.isNotEmpty() //&&
+//               _appointmentDate.value.appointmentDate != null &&
+//               _nextAppointmentDate.value.nextAppointmentDate != null
+    }
+
+    private fun updateButtonEnabledState() {
+        _buttonEnabled.value = areAllFieldsValid()
+    }
 
 
     fun onEvent(event: InfoScreenEvents) {
@@ -88,6 +102,7 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
                 )
             }
         }
+        updateButtonEnabledState()
     }
 
 

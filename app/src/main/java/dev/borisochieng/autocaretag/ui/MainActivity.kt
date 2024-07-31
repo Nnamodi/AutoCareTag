@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -17,12 +18,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
+import dev.borisochieng.autocaretag.nfc_writer.data.NfcWriter
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.commons.NavBar
 import dev.borisochieng.autocaretag.ui.navigation.AppRoute
 import dev.borisochieng.autocaretag.ui.navigation.NavActions
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
+import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
@@ -30,6 +33,8 @@ class MainActivity : ComponentActivity() {
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
     private lateinit var navActions: NavActions
+
+    val nfcWriter = NfcWriter(this)
 
     private var tag: Tag? = null
     private lateinit var pendingIntent: PendingIntent
@@ -47,7 +52,9 @@ class MainActivity : ComponentActivity() {
 
             AutoCareTagTheme {
                 Scaffold(
-                    modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.systemBars)
+                        .background(colorScheme.background),
                     bottomBar = { NavBar(navController) }
                 ) { paddingValues ->
                     AppRoute(
