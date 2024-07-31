@@ -31,10 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.borisochieng.autocaretag.R
+import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.components.ClientCard
 import dev.borisochieng.autocaretag.ui.components.ScreenTitle
 import dev.borisochieng.autocaretag.ui.manage.components.ClientSearchBar
-import dev.borisochieng.autocaretag.ui.screens.Client
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 
@@ -118,7 +118,9 @@ fun ClientScreen(
                     }
                 } else {
                     items(clientsUIState.clients) { client ->
-                        ClientCard(client = client, onNavigateToClient = onNavigateToClient)
+                        ClientCard(client = client) {
+                            onNavigateToClient(client)
+                        }
                     }
                 }
             }

@@ -39,7 +39,7 @@ fun AppRoute(
         modifier = Modifier
             .padding(paddingValues)
     ) {
-        composable(AppRoute.HomeScreen.route) {
+        animatedComposable(AppRoute.HomeScreen.route) {
             HomeScreen(
                 onNavigateToAddClient = {
                     //scanNfc(true)
@@ -50,18 +50,20 @@ fun AppRoute(
                 },
                 clients = fakeClients,
                 viewModel = nfcReaderViewModel,
-                scanNFC = {}
+                scanNFC = {scanNfc(true)}
             )
         }
-        composable(AppRoute.AddScreen.route) {
+        animatedComposable(AppRoute.AddScreen.route) {
             AddScreen(
-                onNavigateToScanTag = { /*TODO(Navigate to Scanning Screen)*/ },
                 onNavigateUp = {
                     navController.navigateUp()
                 },
                 viewModel = viewModel,
                 tag = tag,
-                setupNfc = setupNfc
+                setupNfc = setupNfc,
+                onNavigateToClientDetails = { client ->
+                    navActions.navigate(Screens.ClientDetailsScreen(client.clientId))
+                }
             )
 
 
@@ -69,14 +71,14 @@ fun AppRoute(
         animatedComposable(AppRoute.AddRepairDetailsScreen.route) { backStackEntry ->
             val vehicleId = backStackEntry.arguments?.getString("vehicleId") ?: ""
         }
-        composable(AppRoute.ManageScreen.route) { backStackEntry ->
+        animatedComposable(AppRoute.ManageScreen.route) { backStackEntry ->
             val clientId = backStackEntry.arguments?.getString("clientId") ?: ""
             ClientScreen(
                 onNavigateUp = {
                     navController.navigateUp()
                 },
-                onNavigateToClient = {
-                    navActions.navigate(Screens.ClientDetailsScreen(clientId))
+                onNavigateToClient = { client ->
+                    navActions.navigate(Screens.ClientDetailsScreen(client.clientId))
                 },
                 viewModel = clientScreenViewModel
             )

@@ -53,8 +53,8 @@ fun ClientSearchBar(
         colors = TextFieldDefaults.colors(
             focusedContainerColor = colorScheme.container,
             unfocusedContainerColor = colorScheme.container,
-            focusedIndicatorColor = colorScheme.primary,
-            unfocusedIndicatorColor = colorScheme.onContainer,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
             cursorColor = colorScheme.primary
         ),
         placeholder = {

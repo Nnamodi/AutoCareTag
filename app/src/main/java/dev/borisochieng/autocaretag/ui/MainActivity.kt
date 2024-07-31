@@ -104,7 +104,7 @@ class MainActivity : ComponentActivity() {
         val screen = if (nfcReaderViewModel.tagIsEmpty) {
             Screens.AddScreen
         } else Screens.ClientDetailsScreen(
-            nfcReaderViewModel.clientUiState.client.clientId.toString()
+            nfcReaderViewModel.clientUiState.client.clientId
         )
         navActions.navigate(screen)
 
@@ -112,12 +112,6 @@ class MainActivity : ComponentActivity() {
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
     }
 
-<<<<<<< HEAD
-//    override fun onResume() {
-//        super.onResume()
-//        startNfcScanning(alertUser = false)
-//    }
-=======
     override fun onResume() {
         super.onResume()
         startNfcScanning(alertUser = false)
@@ -125,7 +119,6 @@ class MainActivity : ComponentActivity() {
             enabled = nfcAdapter != null && nfcAdapter?.isEnabled == true
         )
     }
->>>>>>> main
 
     override fun onPause() {
         super.onPause()

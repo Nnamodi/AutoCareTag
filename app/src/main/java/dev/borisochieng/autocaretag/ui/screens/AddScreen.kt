@@ -51,11 +51,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID.randomUUID
+import dev.borisochieng.autocaretag.room_db.Client
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddScreen(
-    onNavigateToScanTag: () -> Unit,
+    onNavigateToClientDetails: (Client) -> Unit,
     onNavigateUp: () -> Unit,
     viewModel: AddInfoViewModel,
     tag: Tag? = null,
@@ -151,7 +153,18 @@ fun AddScreen(
             onCancel = { isWriteDialogVisible = false },
             onOk = { viewModel.writeButtonState(false) },
             navigateToClientDetails = {
+                val client = Client(
+                    clientId = randomUUID().toString().toLong(),
+                    name = viewModel.customerName.value.customerName,
+                    contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
+                    model = viewModel.vehicleModel.value.vehicleModel,
+                    lastMaintained = viewModel.appointmentDate.value.appointmentDate,
+                    nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
+                    note = viewModel.note.value.note
+                )
+                onNavigateToClientDetails(client)
             }
+
         )
     }
     LaunchedEffect(key1 = true) {
@@ -163,15 +176,15 @@ fun AddScreen(
                     if (tag != null) {
                         viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                     }
-                    onNavigateToScanTag()
                     //viewModel.writeButtonState(true)
                     isWriteDialogVisible = true
-                    scope.launch  {
+                    scope.launch {
                         snackbarHostState.showSnackbar(
                             message = "Client Saved"
                         )
                     }
                 }
+
                 is UiEvent.ShowSnackbar -> {
                     scope.launch {
                         snackbarHostState.showSnackbar(
@@ -343,11 +356,17 @@ fun AddScreen(
                             if (tag != null) {
                                 viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                             }
-                            onNavigateToScanTag()
+                            //clear fields
+                            viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(""))
+                            viewModel.onEvent(InfoScreenEvents.EnteredCustomerPhoneNo(""))
+                            viewModel.onEvent(InfoScreenEvents.EnteredVehicleModel(""))
+                            viewModel.onEvent(InfoScreenEvents.EnteredNote(""))
+                            viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(""))
+                            viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(""))
                             //viewModel.writeButtonState(true)
                             isWriteDialogVisible = true
 
-                         viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
+                            viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled

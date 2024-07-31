@@ -44,7 +44,7 @@ fun ClientDetailsScreen(
     updateClientInfo: (Client) -> Unit,
     navigate: (Screens) -> Unit
 ) {
-    val (client, vehicles) = uiState
+    val client = uiState.client ?: return
     val note = rememberSaveable { mutableStateOf("") }
 
     Scaffold(
@@ -101,7 +101,7 @@ fun ClientDetailsScreen(
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
-                text = "Lamborghini Urus",
+                text = client.model,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -112,7 +112,7 @@ fun ClientDetailsScreen(
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
-                text = "28-07-2024",
+                text = client.lastMaintained,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -123,7 +123,7 @@ fun ClientDetailsScreen(
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
-                text = "28-08-2024",
+                text = client.nextAppointmentDate,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -136,7 +136,7 @@ fun ClientDetailsScreen(
             Text(
                 modifier = Modifier
                     .padding(vertical = 4.dp),
-                text = "Oil change",
+                text = client.note,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -170,7 +170,7 @@ fun ClientDetailsScreen(
                         nextAppointmentDate = client.nextAppointmentDate,
                     )
                     updateClientInfo(updatedInfo)
-                    navigate(Screens.ClientDetailsScreen(client.clientId.toString()))
+                    navigate(Screens.ClientDetailsScreen(client.clientId))
                 },
                 modifier = Modifier
                     .padding(16.dp)

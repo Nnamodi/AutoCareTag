@@ -135,10 +135,6 @@ fun ReadDialog(
                     NfcReadStatus.LOADING -> {
                         // Show loading UI
                         //CircularProgressIndicator()
-                    }
-
-                    NfcReadStatus.IDLE -> {
-                        // Show idle UI
                         readyToScan = "Ready to Scan"
                         supportingText = "Hold your device near the NFC Tag"
                         Text(
@@ -167,6 +163,38 @@ fun ReadDialog(
                                 contentScale = ContentScale.Fit
                             )
                         }
+                    }
+
+                    NfcReadStatus.IDLE -> {
+                        // Show idle UI
+//                        readyToScan = "Ready to Scan"
+//                        supportingText = "Hold your device near the NFC Tag"
+//                        Text(
+//                            text = readyToScan,
+//                            style = typography.title,
+//                            fontWeight = FontWeight.SemiBold,
+//                            modifier = Modifier.padding(4.dp)
+//                        )
+//                        Text(
+//                            text = supportingText,
+//                            style = typography.bodyLarge,
+//                            modifier = Modifier.padding(4.dp)
+//                        )
+//                        Box(
+//                            modifier = Modifier
+//                                .padding(16.dp)
+//                                .size(100.dp)
+//                                .clip(CircleShape)
+//                                .background(Color.Transparent, shape = CircleShape),
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            Image(
+//                                modifier = Modifier.clip(CircleShape),
+//                                painter = painterResource(id = R.drawable.scanning),
+//                                contentDescription = "Scanning",
+//                                contentScale = ContentScale.Fit
+//                            )
+//                        }
                     }
                 }
             }

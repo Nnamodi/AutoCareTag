@@ -118,7 +118,7 @@ fun WriteDialog(
                         LaunchedEffect(Unit) {
                             scope.launch {
                                 delay(2000L)
-                                navigateToClientDetails
+                                navigateToClientDetails()
                             }
 
 
@@ -141,14 +141,14 @@ fun WriteDialog(
                                 .padding(16.dp)
                                 .size(100.dp)
                                 .clip(CircleShape)
-                                .background(Color.Green, shape = CircleShape)
+                                .background(colorScheme.error, shape = CircleShape)
                         ) {
                             Icon(
                                 modifier = Modifier
                                     .padding(16.dp)
                                     .size(100.dp),
                                 imageVector = Icons.Rounded.Close,
-                                tint = colorScheme.error,
+                                tint = Color.White,
                                 contentDescription = "Error"
                             )
                         }
@@ -189,6 +189,35 @@ fun WriteDialog(
 
                     NfcWriteStatus.IDLE -> {
                         // Show idle UI
+                        readyToScan = "Ready to Scan"
+                        supportingText = "Hold your device near the NFC Tag"
+                        Text(
+                            text = readyToScan,
+                            style = typography.title,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                        Text(
+                            text = supportingText,
+                            style = typography.bodyLarge,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(100.dp)
+                                .clip(CircleShape)
+                                .background(shape = CircleShape, color = Color.Transparent),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .clip(CircleShape),
+                                painter = painterResource(id = R.drawable.scanning),
+                                contentDescription = "Scanning",
+                                contentScale = ContentScale.Fit
+                            )
+                        }
                     }
                 }
             }

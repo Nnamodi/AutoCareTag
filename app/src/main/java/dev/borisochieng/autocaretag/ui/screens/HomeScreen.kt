@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
+import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.components.ReadDialog
 import dev.borisochieng.autocaretag.ui.components.ClientCard
 import dev.borisochieng.autocaretag.ui.components.ScreenTitle
@@ -65,11 +66,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-onNavigateToAddClient: () -> Unit,
-onNavigateToManage: () -> Unit,
-clients: List<Client>,
-viewModel: NFCReaderViewModel,
-scanNFC: () -> Unit
+    onNavigateToAddClient: () -> Unit,
+    onNavigateToManage: () -> Unit,
+    clients: List<Client>,
+    viewModel: NFCReaderViewModel,
+    scanNFC: () -> Unit
 ) {
     var isReadDialogVisible by remember {
         mutableStateOf(false)
@@ -170,6 +171,7 @@ scanNFC: () -> Unit
                             )
                             .clickable {
                                 isReadDialogVisible = true
+                                scanNFC()
                             },
                         contentAlignment = Alignment.Center
                     ) {
