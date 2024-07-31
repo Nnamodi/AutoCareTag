@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -34,6 +35,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -45,11 +47,14 @@ import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents
+import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.UiEvent
 import dev.borisochieng.autocaretag.ui.components.CustomTextField
 import dev.borisochieng.autocaretag.ui.components.PrimaryButton
 import dev.borisochieng.autocaretag.ui.components.WriteDialog
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -70,6 +75,8 @@ fun AddScreen(
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val isButtonEnabled by viewModel.buttonEnabled.collectAsState()
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val nameError by remember {
         derivedStateOf {
@@ -99,7 +106,7 @@ fun AddScreen(
         derivedStateOf {
             validateTextField(
                 "Maintenance Done",
-                viewModel.workDone.value.workDone
+                viewModel.note.value.note
             )
         }
     }
@@ -138,6 +145,34 @@ fun AddScreen(
             onCancel = { viewModel.writeButtonState(false) },
             onOk = { viewModel.writeButtonState(false) }
         )
+    }
+    LaunchedEffect(key1 = true) {
+
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+
+                UiEvent.SaveClientInfo -> {
+                    if (tag != null) {
+                        viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
+                    }
+                    onNavigateToScanTag()
+                    //viewModel.writeButtonState(true)
+                    isWriteDialogVisible = true
+                    scope.launch  {
+                        snackbarHostState.showSnackbar(
+                            message = "Client Saved"
+                        )
+                    }
+                }
+                is UiEvent.ShowSnackbar -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = event.message
+                        )
+                    }
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -252,8 +287,8 @@ fun AddScreen(
                         inputType = String,
                         isTrailingIcon = false,
                         onTrailingIconClick = {},
-                        inputValue = viewModel.workDone.value.workDone,
-                        onInputValueChange = { viewModel.onEvent(InfoScreenEvents.EnteredWorkDone(it)) },
+                        inputValue = viewModel.note.value.note,
+                        onInputValueChange = { viewModel.onEvent(InfoScreenEvents.EnteredNote(it)) },
                         errorMessage = repairError
                     )
 
@@ -291,12 +326,7 @@ fun AddScreen(
 
                     PrimaryButton(
                         onClick = {
-                            if (tag != null) {
-                                viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
-                            }
-                            onNavigateToScanTag()
-                            //viewModel.writeButtonState(true)
-                            isWriteDialogVisible = true
+                         viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled

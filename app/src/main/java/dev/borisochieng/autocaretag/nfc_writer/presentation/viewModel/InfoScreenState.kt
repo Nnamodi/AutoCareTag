@@ -4,7 +4,7 @@ data class InfoScreenState(
     val customerName: String = "",
     val customerPhoneNo: String = "",
     val vehicleModel: String = "",
-    val workDone: String = "",
-    val appointmentDate: String = "",
-    val nextAppointmentDate: String = "",
+    var appointmentDate: String = " ",
+    var nextAppointmentDate: String = "",
+    val note: String = "",
 )
