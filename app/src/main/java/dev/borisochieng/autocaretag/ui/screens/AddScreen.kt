@@ -376,10 +376,10 @@ fun formatDate(day: Int, month: Int, year: Int): String {
 
 fun checkIfDateIsInFuture(
     dateIconClicked: Boolean,
-    dateString: String?
+    dateString: String
 ): String? {
     if (!dateIconClicked) return null
-    if (dateString.isNullOrEmpty()) {
+    if (dateString.isEmpty()) {
         return "Date cannot be empty"
     }
     val dateFormat = SimpleDateFormat("dd MMMM yy", Locale.getDefault())
@@ -395,10 +395,10 @@ fun checkIfDateIsInFuture(
 
 fun checkIfDateIsToday(
     dateIconClicked: Boolean,
-    dateString: String?
+    dateString: String
 ): String? {
     if (!dateIconClicked) return null
-    if (dateString.isNullOrEmpty()) {
+    if (dateString.isEmpty()) {
         return "Date cannot be empty"
     }
     val dateFormat = SimpleDateFormat("dd MMMM yy", Locale.getDefault())

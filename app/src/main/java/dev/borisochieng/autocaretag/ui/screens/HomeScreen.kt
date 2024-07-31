@@ -44,6 +44,7 @@ import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.ui.components.ReadDialog
 import dev.borisochieng.autocaretag.ui.components.ClientCard
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
@@ -52,10 +53,10 @@ import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToAddClient: () -> Unit,
-    onNavigateToManage: () -> Unit,
     clients: List<Client>,
-    viewModel: NFCReaderViewModel
+    viewModel: NFCReaderViewModel,
+    scanForNfcTag: () -> Unit,
+    navigate: (Screens) -> Unit
 ) {
     var isReadDialogVisible by remember {
         mutableStateOf(false)
@@ -77,7 +78,11 @@ fun HomeScreen(
         }
     }
     if (isReadDialogVisible) {
-        ReadDialog(viewModel = viewModel, onCancel = { isReadDialogVisible = false })
+        ReadDialog(
+            viewModel = viewModel,
+            navigate = navigate,
+            onCancel = { isReadDialogVisible = false }
+        )
     }
     Scaffold(
         modifier = Modifier.background(colorScheme.background),
@@ -111,6 +116,7 @@ fun HomeScreen(
                             shape = CircleShape
                         )
                         .clickable {
+                            scanForNfcTag()
                             isReadDialogVisible = true
                         },
                     contentAlignment = Alignment.Center
@@ -155,7 +161,7 @@ fun HomeScreen(
                         .padding(horizontal = 16.dp)
                         .fillMaxWidth()
                         .height(50.dp),
-                    onClick = onNavigateToAddClient,
+                    onClick = { navigate(Screens.AddScreen) },
                     shape = shape.button,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorScheme.primary,
@@ -204,10 +210,7 @@ fun HomeScreen(
                         style = typography.body,
                         color = colorScheme.primary,
                         modifier = Modifier
-                            .clickable(
-                                onClick =
-                                onNavigateToManage
-                            )
+                            .clickable { navigate(Screens.ManageScreen) }
                     )
                 }
             }
@@ -244,10 +247,5 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(
-        onNavigateToAddClient = {},
-        onNavigateToManage = {},
-        clients = fakeClients,
-        viewModel()
-    )
+    HomeScreen(fakeClients, viewModel(), {}) {}
 }
