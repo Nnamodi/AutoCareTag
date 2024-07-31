@@ -14,6 +14,7 @@ import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.room_db.InvalidClientException
 import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -44,20 +45,21 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
     private val _nextAppointmentDate = mutableStateOf(
         InfoScreenState()
     )
-    private val _note = mutableStateOf( InfoScreenState())
+    private val _note = mutableStateOf(InfoScreenState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
 
-    private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
+    private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> =
+        MutableStateFlow(NfcWriteState.idle())
     val nfcWriteState = nfcWriteStateFlow.asStateFlow()
     private val _buttonEnabled = MutableStateFlow(false)
-    val  buttonEnabled: MutableStateFlow<Boolean> = _buttonEnabled
+    val buttonEnabled: MutableStateFlow<Boolean> = _buttonEnabled
 
 
     val customerName: State<InfoScreenState> = _customerName
-    val customerPhoneNo: State<InfoScreenState> =_customerPhoneNo
+    val customerPhoneNo: State<InfoScreenState> = _customerPhoneNo
     val vehicleModel: State<InfoScreenState> = _vehicleModel
     val appointmentDate: State<InfoScreenState> = _appointmentDate
     val nextAppointmentDate: State<InfoScreenState> = _nextAppointmentDate
@@ -114,13 +116,20 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
 
     }
 
+    fun saveClientToDB(client: Client) {
+        viewModelScope.launch(Dispatchers.IO) {
+            clientRepository.insert(client)
+        }
+    }
+
     private fun areAllFieldsValid(): Boolean {
         return _customerName.value.customerName.isNotEmpty() &&
-               _customerPhoneNo.value.customerPhoneNo.isNotEmpty() &&
-               _vehicleModel.value.vehicleModel.isNotEmpty() &&
-               _note.value.note.isNotEmpty() &&
-               _appointmentDate.value.appointmentDate.isNotEmpty() &&
-               _nextAppointmentDate.value.nextAppointmentDate.isNotEmpty()
+                _customerPhoneNo.value.customerPhoneNo.isNotEmpty() &&
+                _customerPhoneNo.value.customerPhoneNo.length == 10 &&
+                _vehicleModel.value.vehicleModel.isNotEmpty() &&
+                _note.value.note.isNotEmpty() &&
+                _appointmentDate.value.appointmentDate.isNotEmpty() &&
+                _nextAppointmentDate.value.nextAppointmentDate.isNotEmpty()
     }
 
     private fun updateButtonEnabledState() {
@@ -151,18 +160,21 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
                 )
                 updateButtonEnabledState()
             }
+
             is InfoScreenEvents.EnteredNextAppointmentDate -> {
                 _nextAppointmentDate.value = _nextAppointmentDate.value.copy(
                     nextAppointmentDate = event.value
                 )
                 updateButtonEnabledState()
             }
+
             is InfoScreenEvents.EnteredVehicleModel -> {
                 _vehicleModel.value = _vehicleModel.value.copy(
                     vehicleModel = event.value
                 )
                 updateButtonEnabledState()
             }
+
             is InfoScreenEvents.EnteredNote -> {
                 _note.value = _note.value.copy(
                     note = event.value
@@ -204,32 +216,32 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
     fun uploadInfo(
         tag: Tag,
         setupNfc: () -> Unit
-    ){
-      viewModelScope.launch  {
-          setupNfc()
-          val tagInfo = TagInfo(
+    ) {
+        viewModelScope.launch {
+            setupNfc()
+            val tagInfo = TagInfo(
                 /* Tag id should go here */
                 customerName = customerName.value.customerName,
                 customerPhoneNo = customerPhoneNo.value.customerPhoneNo,
                 vehicleModel = vehicleModel.value.vehicleModel,
                 workDone = note.value.note,
-                nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate.toString(),
-                appointmentDate = appointmentDate.value.appointmentDate.toString()
+                nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate,
+                appointmentDate = appointmentDate.value.appointmentDate
             )
-          nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo).collect{ state ->
-              nfcWriteStateFlow.value = state
+            nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo).collect { state ->
+                nfcWriteStateFlow.value = state
 
-              if (state.status == NfcWriteStatus.ERROR) {
+                if (state.status == NfcWriteStatus.ERROR) {
 
-              }
+                }
 
-          }
+            }
 
         }
 
     }
 
-    fun writeButtonState(state:Boolean){
+    fun writeButtonState(state: Boolean) {
         nfcWriteStateFlow.value = NfcWriteState.loading()
         _buttonEnabled.value = state
     }

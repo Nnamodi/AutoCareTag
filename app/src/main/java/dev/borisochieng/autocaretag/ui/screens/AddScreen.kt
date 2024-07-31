@@ -53,6 +53,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID.randomUUID
 import dev.borisochieng.autocaretag.room_db.Client
+import dev.borisochieng.autocaretag.ui.components.Inputs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,7 +88,7 @@ fun AddScreen(
     val contactEntered = remember { mutableStateOf(false) }
     val contactError by remember {
         derivedStateOf {
-            validateTextField(
+            validateContactLength(
                 label = "Contact Details",
                 inputEntered = contactEntered.value,
                 input = viewModel.customerPhoneNo.value.customerPhoneNo
@@ -206,14 +207,6 @@ fun AddScreen(
                         style = typography.title
                     )
                 },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.navigate_up)
-                        )
-                    }
-                },
             )
         },
         content = { innerPadding ->
@@ -244,7 +237,7 @@ fun AddScreen(
                     CustomTextField(
                         label = stringResource(R.string.name_label),
                         placeHolder = stringResource(R.string.name_placeholder),
-                        inputType = String,
+                        inputType = Inputs.Text,
                         isTrailingIcon = false,
                         onTrailingIconClick = {},
                         inputValue = viewModel.customerName.value.customerName,
@@ -262,7 +255,7 @@ fun AddScreen(
                     CustomTextField(
                         label = stringResource(R.string.contact_label),
                         placeHolder = stringResource(R.string.contact_placeholder),
-                        inputType = Int,
+                        inputType = Inputs.PhoneNumber,
                         isTrailingIcon = false,
                         onTrailingIconClick = {},
                         inputValue = viewModel.customerPhoneNo.value.customerPhoneNo,
@@ -290,7 +283,7 @@ fun AddScreen(
                     CustomTextField(
                         label = stringResource(R.string.vehicle_model_label),
                         placeHolder = stringResource(R.string.vehicle_model_placeholder),
-                        inputType = String,
+                        inputType = Inputs.Text,
                         isTrailingIcon = false,
                         onTrailingIconClick = {},
                         inputValue = viewModel.vehicleModel.value.vehicleModel,
@@ -308,7 +301,7 @@ fun AddScreen(
                     CustomTextField(
                         label = stringResource(R.string.repair_label),
                         placeHolder = stringResource(R.string.repair_placeholder),
-                        inputType = String,
+                        inputType = Inputs.Text,
                         isTrailingIcon = false,
                         onTrailingIconClick = {},
                         inputValue = viewModel.note.value.note,
@@ -322,7 +315,7 @@ fun AddScreen(
                     CustomTextField(
                         label = stringResource(R.string.appointment_date_label),
                         placeHolder = stringResource(R.string.appointment_date_placeholder),
-                        inputType = String,
+                        inputType = Inputs.Text,
                         isTrailingIcon = true,
                         onTrailingIconClick = {
                             dateIconClicked.value = true
@@ -337,7 +330,7 @@ fun AddScreen(
                     CustomTextField(
                         label = stringResource(R.string.next_appointment_date_label),
                         placeHolder = stringResource(R.string.next_appointment_date_placeholder),
-                        inputType = String,
+                        inputType = Inputs.Text,
                         isTrailingIcon = true,
                         onTrailingIconClick = {
                             nextDateIconClicked.value = true
@@ -356,6 +349,24 @@ fun AddScreen(
                             if (tag != null) {
                                 viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                             }
+                            //viewModel.writeButtonState(true)
+                            isWriteDialogVisible = true
+
+                            viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
+                            val client = Client(
+                                clientId = Math.random().toLong(),
+                                name = viewModel.customerName.value.customerName,
+                                contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
+                                model = viewModel.vehicleModel.value.vehicleModel,
+                                lastMaintained = viewModel.appointmentDate.value.appointmentDate,
+                                nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
+                                note = viewModel.note.value.note
+                            )
+
+                            scope.launch {
+                                viewModel.saveClientToDB(client)
+                            }
+
                             //clear fields
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerPhoneNo(""))
@@ -363,10 +374,6 @@ fun AddScreen(
                             viewModel.onEvent(InfoScreenEvents.EnteredNote(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(""))
-                            //viewModel.writeButtonState(true)
-                            isWriteDialogVisible = true
-
-                            viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled
@@ -461,6 +468,14 @@ fun validateTextField(
 ): String? =
     if (input.isEmpty() && inputEntered) "$label cannot be empty" else null
 
+fun validateContactLength(input: String, inputEntered: Boolean, label: String) =
+    if(input.isEmpty() && inputEntered) {
+        "$label cannot be empty"
+    } else if (input.length != 10 && inputEntered) {
+        "$label cannot be less than 10 digits"
+    } else {
+        null
+    }
 /*
 @Preview(showBackground = true)
 @Composable

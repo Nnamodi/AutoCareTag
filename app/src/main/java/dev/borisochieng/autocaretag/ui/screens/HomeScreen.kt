@@ -277,7 +277,7 @@ fun HomeScreen(
                 }
                 if (clients.isNotEmpty()) {
                     items(items = clients) { client ->
-                        ClientCard(client = client, onNavigateToClient = {})
+                        ClientCard(client = client, navigate = {Screens.ClientDetailsScreen(client.clientId)})
                     }
                 } else {
                     item {

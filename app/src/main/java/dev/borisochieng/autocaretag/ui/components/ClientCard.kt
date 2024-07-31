@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.borisochieng.autocaretag.room_db.Client
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
@@ -32,7 +33,7 @@ import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 fun ClientCard(
     modifier: Modifier = Modifier,
     client: Client,
-    onNavigateToClient: (Client) -> Unit
+    navigate: (Screens) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -40,7 +41,7 @@ fun ClientCard(
             .fillMaxWidth()
             .clip(shape.card)
             .clickable(
-                onClick = { onNavigateToClient(client) }
+                onClick = { navigate(Screens.ClientDetailsScreen(client.clientId)) }
             ),
         shape = shape.card,
         colors = CardDefaults.cardColors(Color.Transparent)
@@ -104,7 +105,7 @@ fun ClientCard(
                         modifier = Modifier
                             .padding(vertical = 2.dp)
                             .align(Alignment.CenterVertically)
-                            .clickable { onNavigateToClient(client) },
+                            .clickable { navigate(Screens.ClientDetailsScreen(client.clientId)) },
                         text = client.lastMaintained,
                         style = typography.body,
                         color = Color.Gray
@@ -121,7 +122,7 @@ fun ClientCard(
 @Preview(showBackground = true)
 @Composable
 fun RecentActivityCardPreview() {
-    ClientCard(client = fakeClients[0], modifier = Modifier, onNavigateToClient = {})
+    ClientCard(client = fakeClients[0], modifier = Modifier, navigate = {})
 
 
 }

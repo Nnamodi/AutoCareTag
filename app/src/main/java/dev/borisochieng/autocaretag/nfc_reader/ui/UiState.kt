@@ -4,6 +4,7 @@ import dev.borisochieng.autocaretag.room_db.Client
 
 data class ClientUiState(
     val client: Client = Client(
+        clientId = Math.random().toLong(),
         name = "John Doe",
         contactInfo = "0712345678",
         model = "Toyota Corolla",

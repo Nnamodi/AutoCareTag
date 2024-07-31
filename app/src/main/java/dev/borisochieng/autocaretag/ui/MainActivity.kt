@@ -59,6 +59,7 @@ class MainActivity : ComponentActivity() {
         NfcAdapter.ACTION_TAG_DISCOVERED,
         NfcAdapter.ACTION_TECH_DISCOVERED
     )
+    private lateinit var navActions: NavActions
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +68,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            val navActions = NavActions(navController)
+            navActions = NavActions(navController)
 
             AutoCareTagTheme {
                 Scaffold(

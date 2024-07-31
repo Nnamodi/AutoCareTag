@@ -1,5 +1,6 @@
 package dev.borisochieng.autocaretag.ui.components
 
+import android.text.InputType
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -35,7 +36,7 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 fun CustomTextField(
     label: String,
     placeHolder: String,
-    inputType: Any,
+    inputType: Inputs,
     isTrailingIcon: Boolean,
     onTrailingIconClick: () -> Unit,
     onInputValueChange: (String) -> Unit,
@@ -103,11 +104,16 @@ fun CustomTextField(
     }
 }
 
-private fun checkInputType(input: Any): KeyboardType =
-    when (input) {
-        is Int -> KeyboardType.Phone
+private fun checkInputType(inputType: Inputs): KeyboardType =
+    when (inputType) {
+        is Inputs.PhoneNumber -> KeyboardType.Phone
         else -> KeyboardType.Text
     }
+
+sealed class Inputs {
+    data object PhoneNumber : Inputs()
+    data object Text : Inputs()
+}
 
 
 @Preview(showBackground = true)
@@ -116,7 +122,7 @@ fun CustomTextFieldPreview() {
     CustomTextField(
         label = "Owner Name",
         placeHolder = "Enter vehicle owner's name",
-        inputType = 500,
+        inputType = Inputs.PhoneNumber,
         isTrailingIcon = true,
         onTrailingIconClick = {},
         inputValue = "Rasta man",

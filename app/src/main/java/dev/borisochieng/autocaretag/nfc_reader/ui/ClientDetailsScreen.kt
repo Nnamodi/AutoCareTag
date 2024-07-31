@@ -32,6 +32,7 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import dev.borisochieng.autocaretag.ui.theme.onBackgroundVariant
+import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 
 @Composable
 fun ClientDetailsScreen(
@@ -213,6 +214,6 @@ private fun DetailItem(
 @Composable
 private fun ClientDetailsScreenPreview() {
     AutoCareTagTheme {
-        ClientDetailsScreen(uiState = ClientUiState(), {}) {}
+        ClientDetailsScreen(uiState = ClientUiState(fakeClients[0]), {}) {}
     }
 }
