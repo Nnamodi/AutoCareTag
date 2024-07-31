@@ -11,77 +11,74 @@ import dev.borisochieng.autocaretag.nfc_reader.repository.NFCReaderRepository
 import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class NFCReaderViewModel : ViewModel(), KoinComponent {
 
-	private val nfcReaderRepository: NFCReaderRepository by inject()
-	private val clientRepository: ClientRepository by inject()
+    private val nfcReaderRepository: NFCReaderRepository by inject()
+    private val clientRepository: ClientRepository by inject()
 
-	private val _tagInfo = MutableStateFlow<State<TagInfo>>(State.Loading)
-	private val _clientUiState = MutableStateFlow(ClientUiState())
-	var clientUiState by mutableStateOf(_clientUiState.value); private set
-	var nfcIsEnabled by mutableStateOf(false); private set
-	var tagIsEmpty by mutableStateOf(true); private set
+    private val _tagInfo = MutableStateFlow<State<TagInfo>>(State.Loading)
+    private val _clientUiState = MutableStateFlow(ClientUiState())
+    val clientUiState: StateFlow<ClientUiState> get() = _clientUiState
 
-	val nfcReadState = _tagInfo.asStateFlow()
+    private var nfcIsEnabled by mutableStateOf(false); private set
+    var tagIsEmpty by mutableStateOf(true); private set
 
-	init {
-		viewModelScope.launch {
-			_tagInfo.collect {
-				if (it !is State.Success) return@collect
-				tagIsEmpty = it.data.vehicleModel.isEmpty()
-				fetchClientDetails(it.data.id)
-			}
-		}
-		viewModelScope.launch {
-			_clientUiState.collect {
-				clientUiState = it
-			}
-		}
-	}
+    val nfcReadState = _tagInfo.asStateFlow()
 
-	fun readNFCTag(intent: Intent) {
-		tagIsEmpty = true
-		_tagInfo.value = nfcReaderRepository.readNFCTag(intent)
-	}
+    init {
+        viewModelScope.launch {
+            _tagInfo.collect { state ->
+                if (state !is State.Success) return@collect
+                tagIsEmpty = state.data.vehicleModel.isEmpty()
+                fetchClientDetails(state.data.id)
+            }
+        }
+        viewModelScope.launch {
+            _clientUiState.collect { state ->
+                // Update the clientUiState value
+            }
+        }
+        getClients()
+    }
 
-	private fun fetchClientDetails(clientId: Long) {
-		viewModelScope.launch {
-			clientRepository.getClientById(clientId).collect { client ->
-				if (client == null) return@collect
-				_clientUiState.update { it.copy(client = client) }
-			}
-		}
-	}
+    fun readNFCTag(intent: Intent) {
+        tagIsEmpty = true
+        _tagInfo.value = nfcReaderRepository.readNFCTag(intent)
+    }
 
-	fun updateClientDetails(client: Client) {
-		viewModelScope.launch {
-			clientRepository.update(client)
-		}
-	}
+    private fun fetchClientDetails(clientId: Long) {
+        viewModelScope.launch {
+            clientRepository.getClientById(clientId).collect { client ->
+                if (client != null) {
+                    _clientUiState.update { it.copy(client = client) }
+                }
+            }
+        }
+    }
 
-	fun toggleNfcEnabledStatus(enabled: Boolean) {
-		nfcIsEnabled = enabled
-	}
+    fun updateClientDetails(client: Client) {
+        viewModelScope.launch {
+            clientRepository.update(client)
+        }
+    }
 
-	fun getClients(clientId: Long) =
-		viewModelScope.launch {
-			clientRepository.getClientById(clientId).collect{ clientFromDB ->
-				_clientUiState.update {
-					it.copy(
-						client = clientFromDB!!
-					)
-				}
+    fun toggleNfcEnabledStatus(enabled: Boolean) {
+        nfcIsEnabled = enabled
+    }
 
-			}
-
-
-		}
-
+    private fun getClients() = viewModelScope.launch {
+        clientRepository.getAllClients().collect { clientsFromDB ->
+            _clientUiState.update { it.copy(clients = clientsFromDB) }
+        }
+    }
 }

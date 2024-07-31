@@ -21,7 +21,7 @@ class ClientScreenViewModel() : ViewModel(), KoinComponent {
     private var clientListCache = emptyList<Client>()
 
     init {
-        getVehicleList()
+        getClients()
     }
 
     private fun getVehicleList() =

@@ -49,22 +49,33 @@ import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteStatus
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
+import dev.borisochieng.autocaretag.room_db.Client
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.UUID.randomUUID
 
 @Composable
 fun WriteDialog(
     viewModel: AddInfoViewModel,
     onCancel: () -> Unit,
-    onOk: () -> Unit,
-    navigateToClientDetails: () -> Unit
+    navigate: (Screens) -> Unit
 ) {
     var readyToScan by remember { mutableStateOf("") }
     var supportingText by remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
+    val client = Client(
+        clientId = Math.random().toLong(),
+        name = viewModel.customerName.value.customerName,
+        contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
+        model = viewModel.vehicleModel.value.vehicleModel,
+        lastMaintained = viewModel.appointmentDate.value.appointmentDate,
+        nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
+        note = viewModel.note.value.note
+    )
 
     // A dialog with a custom content
     Dialog(onDismissRequest = onCancel) {
@@ -118,7 +129,7 @@ fun WriteDialog(
                         LaunchedEffect(Unit) {
                             scope.launch {
                                 delay(2000L)
-                                navigateToClientDetails()
+                                navigate(Screens.ClientDetailsScreen(client.clientId))
                             }
 
 
@@ -231,7 +242,7 @@ fun WriteDialog(
 @Preview(showBackground = true)
 @Composable
 fun WriteDialogPreview() {
-    WriteDialog(viewModel = viewModel(), onCancel = {}, onOk = {}, {})
+    WriteDialog(viewModel = viewModel(), onCancel = {}, {})
 
 
 }

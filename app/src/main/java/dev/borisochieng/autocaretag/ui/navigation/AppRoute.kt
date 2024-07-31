@@ -40,7 +40,6 @@ fun AppRoute(
     ) {
         animatedComposable(AppRoute.HomeScreen.route) {
             HomeScreen(
-                clients = fakeClients,
                 viewModel = nfcReaderViewModel,
                 scanForNFCTag = { scanNfc(true) },
                 navigate = navActions::navigate
@@ -48,21 +47,13 @@ fun AppRoute(
         }
         animatedComposable(AppRoute.AddScreen.route) {
             AddScreen(
-                onNavigateUp = {
-                    navController.navigateUp()
-                },
                 viewModel = viewModel,
                 tag = tag,
                 setupNfc = setupNfc,
-                onNavigateToClientDetails = { client ->
-                    navActions.navigate(Screens.ClientDetailsScreen(client.clientId))
-                }
+                navigate = navActions::navigate
             )
 
 
-        }
-        animatedComposable(AppRoute.AddRepairDetailsScreen.route) { backStackEntry ->
-            val vehicleId = backStackEntry.arguments?.getString("vehicleId") ?: ""
         }
         animatedComposable(AppRoute.ManageScreen.route) {
             ClientScreen(
@@ -72,16 +63,10 @@ fun AppRoute(
         }
         animatedComposable(AppRoute.ClientDetailsScreen.route) {
             ClientDetailsScreen(
-                uiState = nfcReaderViewModel.clientUiState,
+                viewModel = nfcReaderViewModel,
                 updateClientInfo = nfcReaderViewModel::updateClientDetails,
                 navigate = navActions::navigate
             )
-        }
-        animatedComposable(AppRoute.VehicleDetailsScreen.route) { backStackEntry ->
-            val clientId = backStackEntry.arguments?.getString("clientId") ?: ""
-        }
-        animatedComposable(AppRoute.RepairHistoryScreen.route) { backStackEntry ->
-            val vehicleId = backStackEntry.arguments?.getString("vehicleId") ?: ""
         }
     }
 }
