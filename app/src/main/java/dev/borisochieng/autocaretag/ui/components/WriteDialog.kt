@@ -74,7 +74,7 @@ fun WriteDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val nfcWriteState by viewModel.nfcWriteState.collectAsState()
+                val nfcWriteState by viewModel.nfcWriter.nfcWriteState.collectAsState(NfcWriteState.idle())
                 when (nfcWriteState.status) {
                     NfcWriteStatus.SUCCESS -> {
                         // Show success UI
@@ -139,8 +139,36 @@ fun WriteDialog(
                     }
 
                     NfcWriteStatus.LOADING -> {
-                        // Show loading UI
-                        //CircularProgressIndicator()
+                        readyToScan = "Ready to Scan"
+                        supportingText = "Hold your device near the NFC Tag"
+                        Text(
+                            text = readyToScan,
+                            style = typography.title,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                        Text(
+                            text = supportingText,
+                            style = typography.bodyLarge,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(100.dp)
+                                .clip(CircleShape)
+                                .background(shape = CircleShape, color = Color.Transparent),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .clip(CircleShape),
+                                painter = painterResource(id = R.drawable.scanning),
+                                contentDescription = "Scanning",
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                        CircularProgressIndicator()
                     }
 
                     NfcWriteStatus.IDLE -> {

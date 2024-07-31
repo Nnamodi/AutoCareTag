@@ -143,8 +143,8 @@ fun AddScreen(
             isDialogForNextAppointmentDate = false
         }
     }
-
-    if (isWriteDialogVisible) {
+val isWriteDialog by viewModel.buttonEnabled.collectAsState()
+    if (isWriteDialog) {
         WriteDialog(
             viewModel = viewModel,
             onCancel = { viewModel.writeButtonState(false) },
@@ -161,8 +161,8 @@ fun AddScreen(
                         viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                     }
                     onNavigateToScanTag()
-                    //viewModel.writeButtonState(true)
-                    isWriteDialogVisible = true
+                    viewModel.writeButtonState(true)
+                  //  isWriteDialogVisible = true
                     scope.launch  {
                         snackbarHostState.showSnackbar(
                             message = "Client Saved"
@@ -339,7 +339,7 @@ fun AddScreen(
                          viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
-                        isEnabled = isButtonEnabled
+                        isEnabled = true//isButtonEnabled
                     )
                 }
             }

@@ -24,7 +24,7 @@ import org.koin.core.component.inject
 class AddInfoViewModel() : ViewModel(), KoinComponent {
 
 
-    private val nfcWriter: NfcWriter by inject()
+    val nfcWriter: NfcWriter by inject()
     private val savedStateHandle: SavedStateHandle by inject()
     private val clientRepository: ClientRepository by inject()
 
@@ -50,7 +50,7 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
 
 
     private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
-    val nfcWriteState = nfcWriteStateFlow.asStateFlow()
+    val nfcWriteState = nfcWriteStateFlow
     private val _buttonEnabled = MutableStateFlow(false)
     val  buttonEnabled: MutableStateFlow<Boolean> = _buttonEnabled
 
@@ -201,13 +201,13 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
                 customerPhoneNo = customerPhoneNo.value.customerPhoneNo,
                 vehicleModel = vehicleModel.value.vehicleModel,
                 workDone = note.value.note,
-                nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate.toString(),
-                appointmentDate = appointmentDate.value.appointmentDate.toString()
+                nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate,
+                appointmentDate = appointmentDate.value.appointmentDate
             )
-          nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo).collect{
-              nfcWriteStateFlow.value = it
+          nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo)
 
-          }
+
+
 
         }
 
