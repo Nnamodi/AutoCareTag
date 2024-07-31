@@ -45,15 +45,14 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
     private val _nextAppointmentDate = mutableStateOf(
         InfoScreenState()
     )
-    private val _note = mutableStateOf(InfoScreenState())
+    private val _note = mutableStateOf( InfoScreenState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
 
-    private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> =
-        MutableStateFlow(NfcWriteState.idle())
-    val nfcWriteState = nfcWriteStateFlow.asStateFlow()
+    private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
+    val nfcWriteState = nfcWriteStateFlow
     private val _buttonEnabled = MutableStateFlow(false)
     val buttonEnabled: MutableStateFlow<Boolean> = _buttonEnabled
 
@@ -228,14 +227,10 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
                 nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate,
                 appointmentDate = appointmentDate.value.appointmentDate
             )
-            nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo).collect { state ->
-                nfcWriteStateFlow.value = state
+          nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo)
 
-                if (state.status == NfcWriteStatus.ERROR) {
 
-                }
 
-            }
 
         }
 
