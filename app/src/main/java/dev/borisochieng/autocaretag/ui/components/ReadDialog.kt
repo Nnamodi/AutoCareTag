@@ -47,7 +47,6 @@ import kotlinx.coroutines.delay
 @Composable
 fun ReadDialog(
     viewModel: NFCReaderViewModel,
-    scanNFC: () -> Unit,
     navigate: (Screens) -> Unit,
     onCancel: () -> Unit
 ) {
@@ -137,10 +136,10 @@ fun ReadDialog(
                         }
                     }
 
-                    State.Loading -> {
+                    is State.Loading -> {
                         // Show loading UI
                         //CircularProgressIndicator()
-                        readyToScan = "Ready to Scan"
+                        readyToScan = "Scanning"
                         supportingText = "Hold your device near the NFC Tag"
                         Text(
                             text = readyToScan,
@@ -224,5 +223,5 @@ fun ReadDialog(
 @Preview(showBackground = true)
 @Composable
 fun ReadDialogPreview() {
-    ReadDialog(viewModel = viewModel(), {}, {}) {}
+    ReadDialog(viewModel = viewModel(), {}, {})
 }

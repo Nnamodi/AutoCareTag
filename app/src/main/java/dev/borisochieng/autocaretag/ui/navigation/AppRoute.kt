@@ -42,7 +42,7 @@ fun AppRoute(
             HomeScreen(
                 clients = fakeClients,
                 viewModel = nfcReaderViewModel,
-                scanForNfcTag = { scanNfc(true) },
+                scanForNFCTag = { scanNfc(true) },
                 navigate = navActions::navigate
             )
         }
