@@ -65,11 +65,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToAddClient: () -> Unit,
-    onNavigateToManage: () -> Unit,
-    clients: List<Client>,
-    viewModel: NFCReaderViewModel,
-    scanNFC: () -> Unit
+onNavigateToAddClient: () -> Unit,
+onNavigateToManage: () -> Unit,
+clients: List<Client>,
+viewModel: NFCReaderViewModel,
+scanNFC: () -> Unit
 ) {
     var isReadDialogVisible by remember {
         mutableStateOf(false)

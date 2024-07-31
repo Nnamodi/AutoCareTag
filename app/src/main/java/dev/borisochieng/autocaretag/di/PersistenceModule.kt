@@ -4,14 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import dev.borisochieng.autocaretag.room_db.AutoCareTagDatabase
 import dev.borisochieng.autocaretag.room_db.ClientDao
-import dev.borisochieng.autocaretag.room_db.RepairDao
-import dev.borisochieng.autocaretag.room_db.VehicleDao
 import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
 import dev.borisochieng.autocaretag.room_db.repository.ClientRepositoryImpl
-import dev.borisochieng.autocaretag.room_db.repository.RepairRepository
-import dev.borisochieng.autocaretag.room_db.repository.RepairRepositoryImpl
-import dev.borisochieng.autocaretag.room_db.repository.VehicleRepository
-import dev.borisochieng.autocaretag.room_db.repository.VehicleRepositoryImpl
 import org.koin.dsl.module
 
 object PersistenceModule {
@@ -30,22 +24,12 @@ object PersistenceModule {
 		return autoCareTagDatabase.clientDao()
 	}
 
-	private fun provideRepairDao(autoCareTagDatabase: AutoCareTagDatabase): RepairDao {
-		return autoCareTagDatabase.repairDao()
-	}
-
-	private fun provideVehicleDao(autoCareTagDatabase: AutoCareTagDatabase): VehicleDao {
-		return autoCareTagDatabase.vehicleDao()
-	}
 
 	val persistenceModule = module {
 		single { provideAppDatabase(get<Context>().applicationContext) }
 		single { provideClientDao(get()) }
-		single { provideRepairDao(get()) }
-		single { provideVehicleDao(get()) }
 		factory<ClientRepository> { ClientRepositoryImpl() }
-		factory<RepairRepository> { RepairRepositoryImpl() }
-		factory<VehicleRepository> { VehicleRepositoryImpl() }
+
 	}
 
 }
