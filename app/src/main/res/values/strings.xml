@@ -6,7 +6,7 @@
     <string name="notifications">Notifications</string>
     <string name="scan_nfc">Scan NFC</string>
     <string name="client_avatar">Client Avatar</string>
-    <string name="view_details">View Details</string>
+    <string name="view_details">Scan Tag</string>
     <string name="auto">Auto</string>
     <string name="care">Care</string>
     <string name="recent_activity">Recent Activity</string>
@@ -20,9 +20,9 @@
     <string name="last_appointment">Last appointment</string>
     <string name="update">Update</string>
     <string name="back">Back</string>
-    <string name="write_to_nfc">Write to NFC</string>
+    <string name="write_to_nfc">Add Client</string>
     <string name="navigate_up">Back</string>
-    <string name="add_screen_title">Please enter your details, ensure it is accurate and double-check for any errors to avoid issues</string>
+    <string name="add_screen_title">Client Details</string>
     <string name="name_label">Name</string>
     <string name="name_placeholder">Enter name of vehicle owner</string>
     <string name="contact_label">Contact Details</string>
@@ -37,4 +37,11 @@
     <string name="next_appointment_date_label">Next Appointment Date</string>
     <string name="next_appointment_date_placeholder">DD MMMM YYYY</string>
     <string name="bt_write_to_nfc">Upload</string>
+    <string name="view_all">View all</string>
+    <string name="add_client">Add client</string>
+    <string name="no_recent_activity">No recent Activity</string>
+    <string name="no_activity">No activity</string>
+    <string name="tap_to_scan_nfc_tag">Tap to Scan</string>
+    <string name="nfc_status">NFC Status</string>
+    <string name="vehicle_details">Vehicle Details</string>
 </resources>

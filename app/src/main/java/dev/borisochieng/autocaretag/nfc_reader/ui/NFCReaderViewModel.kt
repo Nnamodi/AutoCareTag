@@ -12,6 +12,7 @@ import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -26,6 +27,9 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
 	private val _clientUiState = MutableStateFlow(ClientUiState())
 	var clientUiState by mutableStateOf(_clientUiState.value); private set
 	var tagIsEmpty by mutableStateOf(false); private set
+
+	private val nfcReadStateFlow: MutableStateFlow<NfcReadState<TagInfo>> = MutableStateFlow(NfcReadState.idle())
+	val nfcReadState = nfcReadStateFlow.asStateFlow()
 
 	init {
 		viewModelScope.launch {
