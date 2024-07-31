@@ -29,21 +29,20 @@ import org.koin.android.ext.android.inject
 class MainActivity : ComponentActivity() {
 
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
-    private val addInfoViewModel: AddInfoViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
     private lateinit var navActions: NavActions
+
     val nfcWriter = NfcWriter(this)
 
+    private var tag: Tag? = null
     private lateinit var pendingIntent: PendingIntent
     private lateinit var intentFilters: Array<IntentFilter>
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        if (addInfoViewModel.buttonEnabled.value) {
-            setupNfc()
-        }
+
+
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
@@ -52,7 +51,8 @@ class MainActivity : ComponentActivity() {
             AutoCareTagTheme {
                 Scaffold(
                     modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
-                    bottomBar = { NavBar(navController) }) { paddingValues ->
+                    bottomBar = { NavBar(navController) }
+                ) { paddingValues ->
                     AppRoute(
                         navActions = navActions,
                         navController = navController,
@@ -60,20 +60,11 @@ class MainActivity : ComponentActivity() {
                         scanNfc = { shouldScan ->
                             if (shouldScan) startNfcScanning() else stopNfcScanning()
                         },
-                        viewModel = addInfoViewModel
+                        tag = tag,
+                        setupNfc = { setupNfc() }
                     )
                 }
-
             }
-            pendingIntent = PendingIntent.getActivity(
-                this, 0,
-                Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-                PendingIntent.FLAG_MUTABLE
-            )
-
-            intentFilters = arrayOf(
-                IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
-            )
         }
     }
 
@@ -83,24 +74,24 @@ class MainActivity : ComponentActivity() {
         nfcReaderViewModel.readNFCTag(intent)
         Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
 
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action && addInfoViewModel.buttonEnabled.value) {
-            // NFC tag discovered
-            val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
-            if (tag != null) {
-                addInfoViewModel.uploadInfo(tag = tag)
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        startNfcScanning(alertUser = false)
         val screen = if (nfcReaderViewModel.tagIsEmpty) {
             Screens.AddScreen
         } else Screens.ClientDetailsScreen(
             nfcReaderViewModel.clientUiState.client.clientId.toString()
         )
         navActions.navigate(screen)
+        Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
+
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
+            // NFC tag discovered
+            tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startNfcScanning(alertUser = false)
     }
 
     override fun onPause() {

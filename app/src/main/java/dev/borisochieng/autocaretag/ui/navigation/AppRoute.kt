@@ -1,5 +1,6 @@
 package dev.borisochieng.autocaretag.ui.navigation
 
+import android.nfc.Tag
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -15,13 +17,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import dev.borisochieng.autocaretag.nfc_reader.ui.ClientDetailsScreen
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
+import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.manage.ManageScreen
 import dev.borisochieng.autocaretag.ui.screens.AddScreen
 import dev.borisochieng.autocaretag.ui.screens.HomeScreen
 import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 import dev.borisochieng.autocaretag.utils.animatedComposable
-import org.koin.androidx.
 
 typealias ShouldScan = Boolean
 
@@ -31,7 +33,10 @@ fun AppRoute(
     navController: NavHostController,
     paddingValues: PaddingValues,
     scanNfc: (ShouldScan) -> Unit,
-    viewModel: AddInfoViewModel,
+    viewModel: AddInfoViewModel = koinViewModel(),
+    nfcReaderViewModel: NFCReaderViewModel = koinViewModel(),
+    tag: Tag? = null,
+    setupNfc: () -> Unit,
 ) {
     NavHost(
         navController = navController,
@@ -56,6 +61,8 @@ fun AppRoute(
                     navController.navigateUp()
                 },
                 viewModel = viewModel,
+                tag = tag,
+                setupNfc = setupNfc
             )
 
 
@@ -69,9 +76,9 @@ fun AppRoute(
             })
         }
         animatedComposable(AppRoute.ClientDetailsScreen.route) {
-			val viewModel: NFCReaderViewModel = koinViewModel()
 			ClientDetailsScreen(
-                uiState = viewModel.clientUiState,
+                uiState = nfcReaderViewModel.clientUiState,
+                updateClientInfo = nfcReaderViewModel::updateClientDetails,
                 navigate = navActions::navigate
             )
         }

@@ -12,14 +12,13 @@ import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class AddInfoViewModel (
+class AddInfoViewModel() : ViewModel(), KoinComponent {
+    
 
-    private val context: Context
-
-) : ViewModel() {
-
-val nfcWriter:NfcWriter = NfcWriter(context = context )
+    private val nfcWriter: NfcWriter by inject()
 
     private val _customerName = mutableStateOf(
         InfoScreenState()
@@ -39,10 +38,10 @@ val nfcWriter:NfcWriter = NfcWriter(context = context )
     private val _nextAppointmentDate = mutableStateOf(
         InfoScreenState()
     )
-private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
+    private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
     val nfcWriteState = nfcWriteStateFlow.asStateFlow()
-    private val _buttonEnabled = mutableStateOf(false)
-    val  buttonEnabled: State<Boolean> = _buttonEnabled
+    private val _buttonEnabled = MutableStateFlow(false)
+    val  buttonEnabled: MutableStateFlow<Boolean> = _buttonEnabled
 
 
     val customerName: State<InfoScreenState> = _customerName
@@ -92,9 +91,11 @@ private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = Mutabl
     }
 
 
-    fun uploadInfo(tag:Tag){
+    fun uploadInfo(tag: Tag,setupNfc:()->Unit){
       viewModelScope.launch  {
-            val tagInfo = TagInfo(
+          setupNfc()
+          val tagInfo = TagInfo(
+                /* Tag id should go here */
                 customerName = customerName.value.customerName,
                 customerPhoneNo = customerPhoneNo.value.customerPhoneNo,
                 vehicleModel = vehicleModel.value.vehicleModel,
@@ -102,7 +103,10 @@ private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = Mutabl
                 nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate,
                 appointmentDate = appointmentDate.value.appointmentDate
             )
-            nfcWriteStateFlow.value = nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo)
+          nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo).collect{
+              nfcWriteStateFlow.value = it
+
+          }
 
         }
 
