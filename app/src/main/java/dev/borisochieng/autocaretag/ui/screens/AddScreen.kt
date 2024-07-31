@@ -279,7 +279,6 @@ fun AddScreen(
                         onTrailingIconClick = {},
                         inputValue = viewModel.vehicleModel.value.vehicleModel,
                         onInputValueChange = {
-                            vehicleModelEntered.value = true
                             viewModel.onEvent(
                                 InfoScreenEvents.EnteredVehicleModel(
                                     it
@@ -309,10 +308,10 @@ fun AddScreen(
                         inputType = String,
                         isTrailingIcon = true,
                         onTrailingIconClick = {
-                            dateIconClicked.value = true
                             isDialogForAppointmentDate = !isDialogForAppointmentDate
                         },
-                        inputValue = viewModel.appointmentDate.value.appointmentDate,
+                        inputValue = viewModel.appointmentDate.value.appointmentDate
+                            ?: "DD-MM-YYYY",
                         onInputValueChange = {},
                         errorMessage = appointmentDateError,
                         isReadable = true
@@ -324,10 +323,10 @@ fun AddScreen(
                         inputType = String,
                         isTrailingIcon = true,
                         onTrailingIconClick = {
-                            nextDateIconClicked.value = true
                             isDialogForNextAppointmentDate = !isDialogForNextAppointmentDate
                         },
-                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate,
+                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate
+                            ?: "DD-MM-YYYY",
                         onInputValueChange = {},
                         errorMessage = nextAppointmentDateError,
                         isReadable = true
