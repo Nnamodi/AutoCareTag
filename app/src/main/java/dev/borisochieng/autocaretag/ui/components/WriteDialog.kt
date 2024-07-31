@@ -92,7 +92,7 @@ fun WriteDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val nfcWriteState by viewModel.nfcWriteState.collectAsState()
+                val nfcWriteState by viewModel.nfcWriter.nfcWriteState.collectAsState(NfcWriteState.idle())
                 when (nfcWriteState.status) {
                     NfcWriteStatus.SUCCESS -> {
                         // Show success UI

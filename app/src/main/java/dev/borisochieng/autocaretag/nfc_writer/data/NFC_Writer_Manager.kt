@@ -10,40 +10,39 @@ import com.google.gson.Gson
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
 import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import java.nio.charset.Charset
 
 class NfcWriter(private val context: Context) {
 //    private lateinit var nfcAdapter: NfcAdapter
 //    private lateinit var pendingIntent: PendingIntent
-
+private val nfcWriteStateFlow:MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
+    val nfcWriteState: Flow<NfcWriteState<TagInfo>> = nfcWriteStateFlow
 
     fun writeLaundryInfoToNfcTag(
         tag: Tag,
         info: TagInfo
-    ): Flow<NfcWriteState<TagInfo>> = flow {
+    ) {
         // Initialize NFC adapter and check if NFC is available
         val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
         if (nfcAdapter == null) {
             // NFC not available on this device
-            emit(NfcWriteState.error("NFC not available on this device"))
-            return@flow
+       nfcWriteStateFlow.value =  NfcWriteState.error("NFC not available on this device")
+
         }
 
         val json = Gson().toJson(info)
-        val ndefRecord = NdefRecord.createMime("application/json", json.toByteArray())
+        val ndefRecord = NdefRecord.createMime("application/json", json.toByteArray(Charset.forName("UTF-8")))
         val ndefMessage = NdefMessage(arrayOf(ndefRecord))
 
-        try {
+
             val ndef = Ndef.get(tag)
             ndef.connect()
             ndef.writeNdefMessage(ndefMessage)
             ndef.close()
+      nfcWriteStateFlow.value =   NfcWriteState.success(info)
             // Writing success
-            emit(NfcWriteState.success(info))
-        } catch (e: Exception) {
-            // Writing error
-            emit(NfcWriteState.error("Error writing LaundryInfo to NFC tag: ${e.message}"))
-        }
     }
 
 
