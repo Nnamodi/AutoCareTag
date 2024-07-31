@@ -27,10 +27,9 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
 	private val _clientUiState = MutableStateFlow(ClientUiState())
 	var clientUiState by mutableStateOf(_clientUiState.value); private set
 	var nfcIsEnabled by mutableStateOf(false); private set
-	var tagIsEmpty by mutableStateOf(false); private set
+	var tagIsEmpty by mutableStateOf(true); private set
 
-	private val nfcReadStateFlow: MutableStateFlow<NfcReadState<TagInfo>> = MutableStateFlow(NfcReadState.idle())
-	val nfcReadState = nfcReadStateFlow.asStateFlow()
+	val nfcReadState = _tagInfo.asStateFlow()
 
 	init {
 		viewModelScope.launch {
@@ -48,6 +47,7 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
 	}
 
 	fun readNFCTag(intent: Intent) {
+		tagIsEmpty = true
 		_tagInfo.value = nfcReaderRepository.readNFCTag(intent)
 	}
 

@@ -1,7 +1,6 @@
 package dev.borisochieng.autocaretag.nfc_reader.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
@@ -25,11 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.room_db.Client
-import dev.borisochieng.autocaretag.ui.commons.Avatar
-import dev.borisochieng.autocaretag.ui.commons.CustomTextField
 import dev.borisochieng.autocaretag.ui.commons.TopBar
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
@@ -44,7 +39,7 @@ fun ClientDetailsScreen(
     updateClientInfo: (Client) -> Unit,
     navigate: (Screens) -> Unit
 ) {
-    val client = uiState.client ?: return
+    val client = uiState.client
     val note = rememberSaveable { mutableStateOf("") }
 
     Scaffold(

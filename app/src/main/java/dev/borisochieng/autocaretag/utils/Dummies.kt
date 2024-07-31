@@ -1,8 +1,37 @@
 package dev.borisochieng.autocaretag.utils
 
+
 import dev.borisochieng.autocaretag.room_db.Client
+import dev.borisochieng.autocaretag.room_db.Client as Room_dbClient
 
 object Dummies {
+
+	val dummyClients = listOf(
+		Room_dbClient(
+			name = "John Doe",
+			contactInfo = "+234246496232936",
+			model = "Benz E200",
+			lastMaintained = "28-08-2024",
+			nextAppointmentDate = "28-08-2024",
+			note = ""
+		),
+		Room_dbClient(
+			name = "John Doe",
+			contactInfo = "+234246496232936",
+			model = "Benz E200",
+			lastMaintained = "28-08-2024",
+			nextAppointmentDate = "28-08-2024",
+			note = ""
+		),
+		Room_dbClient(
+			name = "John Doe",
+			contactInfo = "+234246496232936",
+			model = "Benz E200",
+			lastMaintained = "28-08-2024",
+			nextAppointmentDate = "28-08-2024",
+			note = ""
+		)
+	)
 
 	val fakeClients = listOf(
     Client(

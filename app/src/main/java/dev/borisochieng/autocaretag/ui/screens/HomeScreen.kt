@@ -57,6 +57,7 @@ import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.components.ReadDialog
 import dev.borisochieng.autocaretag.ui.components.ClientCard
 import dev.borisochieng.autocaretag.ui.components.ScreenTitle
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
@@ -66,17 +67,16 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToAddClient: () -> Unit,
-    onNavigateToManage: () -> Unit,
     clients: List<Client>,
     viewModel: NFCReaderViewModel,
-    scanNFC: () -> Unit
+    scanForNFCTag: () -> Unit,
+    navigate: (Screens) -> Unit
 ) {
     var isReadDialogVisible by remember {
         mutableStateOf(false)
     }
     if (isReadDialogVisible) {
-        ReadDialog(viewModel = viewModel, onCancel = { isReadDialogVisible = false }, scanNFC )
+        ReadDialog(viewModel = viewModel, onCancel = { isReadDialogVisible = false }, navigate = navigate  )
     }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -171,7 +171,7 @@ fun HomeScreen(
                             )
                             .clickable {
                                 isReadDialogVisible = true
-                                scanNFC()
+                                scanForNFCTag()
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -216,7 +216,9 @@ fun HomeScreen(
                             .padding(horizontal = 16.dp)
                             .fillMaxWidth()
                             .height(50.dp),
-                        onClick = onNavigateToAddClient,
+                        onClick = {
+                            navigate(Screens.AddScreen)
+                        } ,
                         shape = shape.button,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorScheme.primary,
@@ -266,8 +268,9 @@ fun HomeScreen(
                             color = colorScheme.primary,
                             modifier = Modifier
                                 .clickable(
-                                    onClick =
-                                    onNavigateToManage
+                                    onClick = {
+                                        navigate(Screens.ManageScreen)
+                                    }
                                 )
                         )
                     }
@@ -307,10 +310,8 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     HomeScreen(
-        onNavigateToAddClient = {},
-        onNavigateToManage = {},
         clients = fakeClients,
         viewModel(),
         {}
-    )
+    ) {}
 }
