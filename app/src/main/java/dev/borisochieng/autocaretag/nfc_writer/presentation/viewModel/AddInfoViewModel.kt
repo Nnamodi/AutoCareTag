@@ -124,7 +124,7 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
     private fun areAllFieldsValid(): Boolean {
         return _customerName.value.customerName.isNotEmpty() &&
                 _customerPhoneNo.value.customerPhoneNo.isNotEmpty() &&
-                _customerPhoneNo.value.customerPhoneNo.length == 10 &&
+                _customerPhoneNo.value.customerPhoneNo.length == 13 &&
                 _vehicleModel.value.vehicleModel.isNotEmpty() &&
                 _note.value.note.isNotEmpty() &&
                 _appointmentDate.value.appointmentDate.isNotEmpty() &&

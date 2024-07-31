@@ -54,12 +54,12 @@ import java.util.Locale
 import java.util.UUID.randomUUID
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.components.Inputs
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddScreen(
-    onNavigateToClientDetails: (Client) -> Unit,
-    onNavigateUp: () -> Unit,
+    navigate: (Screens) -> Unit,
     viewModel: AddInfoViewModel,
     tag: Tag? = null,
     setupNfc: () -> Unit
@@ -88,7 +88,7 @@ fun AddScreen(
     val contactEntered = remember { mutableStateOf(false) }
     val contactError by remember {
         derivedStateOf {
-            validateContactLength(
+            validateTextField(
                 label = "Contact Details",
                 inputEntered = contactEntered.value,
                 input = viewModel.customerPhoneNo.value.customerPhoneNo
@@ -133,6 +133,15 @@ fun AddScreen(
             )
         }
     }
+    val client = Client(
+        clientId = Math.random().toLong(),
+        name = viewModel.customerName.value.customerName,
+        contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
+        model = viewModel.vehicleModel.value.vehicleModel,
+        lastMaintained = viewModel.appointmentDate.value.appointmentDate,
+        nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
+        note = viewModel.note.value.note
+    )
 
     if (isDialogForAppointmentDate) {
         ShowDatePickerDialog(context, calendar) { selectedDate ->
@@ -152,18 +161,8 @@ fun AddScreen(
         WriteDialog(
             viewModel = viewModel,
             onCancel = { isWriteDialogVisible = false },
-            onOk = { viewModel.writeButtonState(false) },
-            navigateToClientDetails = {
-                val client = Client(
-                    clientId = randomUUID().toString().toLong(),
-                    name = viewModel.customerName.value.customerName,
-                    contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
-                    model = viewModel.vehicleModel.value.vehicleModel,
-                    lastMaintained = viewModel.appointmentDate.value.appointmentDate,
-                    nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
-                    note = viewModel.note.value.note
-                )
-                onNavigateToClientDetails(client)
+            navigate = {
+               navigate(Screens.ClientDetailsScreen(client.clientId))
             }
 
         )
@@ -354,20 +353,15 @@ fun AddScreen(
                             isWriteDialogVisible = true
 
                             viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
-                            val client = Client(
-                                clientId = Math.random().toLong(),
-                                name = viewModel.customerName.value.customerName,
-                                contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
-                                model = viewModel.vehicleModel.value.vehicleModel,
-                                lastMaintained = viewModel.appointmentDate.value.appointmentDate,
-                                nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
-                                note = viewModel.note.value.note
-                            )
-
-                            scope.launch {
-                                viewModel.saveClientToDB(client)
-                            }
-
+//                            val client = Client(
+//                                clientId = Math.random().toLong(),
+//                                name = viewModel.customerName.value.customerName,
+//                                contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
+//                                model = viewModel.vehicleModel.value.vehicleModel,
+//                                lastMaintained = viewModel.appointmentDate.value.appointmentDate,
+//                                nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
+//                                note = viewModel.note.value.note
+//                            )
                             //clear fields
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerPhoneNo(""))
@@ -375,6 +369,10 @@ fun AddScreen(
                             viewModel.onEvent(InfoScreenEvents.EnteredNote(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(""))
+
+                            scope.launch {
+                                viewModel.saveClientToDB(client)
+                            }
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled
@@ -469,14 +467,6 @@ fun validateTextField(
 ): String? =
     if (input.isEmpty() && inputEntered) "$label cannot be empty" else null
 
-fun validateContactLength(input: String, inputEntered: Boolean, label: String) =
-    if(input.isEmpty() && inputEntered) {
-        "$label cannot be empty"
-    } else if (input.length != 10 && inputEntered) {
-        "$label cannot be less than 10 digits"
-    } else {
-        null
-    }
 /*
 @Preview(showBackground = true)
 @Composable

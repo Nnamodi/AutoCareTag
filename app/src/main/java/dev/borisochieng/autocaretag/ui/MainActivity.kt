@@ -101,10 +101,14 @@ class MainActivity : ComponentActivity() {
 
         val screen = if (nfcReaderViewModel.tagIsEmpty) {
             Screens.AddScreen
-        } else Screens.ClientDetailsScreen(
-            nfcReaderViewModel.clientUiState.client.clientId
-        )
-        navActions.navigate(screen)
+        } else nfcReaderViewModel.clientUiState.value.client?.clientId?.let {
+            Screens.ClientDetailsScreen(
+                it
+            )
+        }
+        if (screen != null) {
+            navActions.navigate(screen)
+        }
         // NFC tag discovered
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
     }

@@ -4,82 +4,59 @@ import androidx.navigation.NavHostController
 
 class NavActions(private val navController: NavHostController) {
 
-	fun navigate(screen: Screens) {
-		when (screen) {
-			Screens.HomeScreen -> navigateToHomeScreen()
-			Screens.AddScreen -> navigateToAddScreen()
-			is Screens.AddRepairDetailsScreen -> navigateToAddRepairDetailsScreen(screen.vehicleId)
-			Screens.ManageScreen -> navigateToManageScreen()
-			is Screens.ClientDetailsScreen -> navigateToClientDetailsScreen(screen.clientId)
-			is Screens.VehicleDetailsScreen -> navigateToVehicleDetailsScreen(screen.clientId)
-			is Screens.RepairHistoryScreen -> navigateToRepairHistoryScreen(screen.vehicleId)
-			Screens.Back -> navController.navigateUp()
-		}
-	}
+    fun navigate(screen: Screens) {
+        when (screen) {
+            Screens.HomeScreen -> navigateToHomeScreen()
+            Screens.AddScreen -> navigateToAddScreen()
+            Screens.ManageScreen -> navigateToManageScreen()
+            is Screens.ClientDetailsScreen -> navigateToClientDetailsScreen(screen.clientId)
+            Screens.Back -> navController.navigateUp()
+        }
+    }
 
-	private fun navigateToHomeScreen() {
-		navController.navigate(AppRoute.HomeScreen.route)
-	}
+    private fun navigateToHomeScreen() {
+        navController.navigate(AppRoute.HomeScreen.route)
+    }
 
-	private fun navigateToAddScreen() {
-		navController.navigate(AppRoute.AddScreen.route)
-	}
+    private fun navigateToAddScreen() {
+        navController.navigate(AppRoute.AddScreen.route) {
+            popUpTo(AppRoute.HomeScreen.route) {
+                inclusive
+            }
+            launchSingleTop = true
+        }
+    }
 
-	private fun navigateToAddRepairDetailsScreen(vehicleId: String) {
-		navController.navigate(
-			AppRoute.AddRepairDetailsScreen.routeWithId(vehicleId)
-		)
-	}
+    private fun navigateToManageScreen() {
+        navController.navigate(AppRoute.ManageScreen.route)
+    }
 
-	private fun navigateToManageScreen() {
-		navController.navigate(AppRoute.ManageScreen.route)
-	}
-
-	private fun navigateToClientDetailsScreen(clientId: Long) {
-		navController.navigate(
-			AppRoute.ClientDetailsScreen.routeWithId(clientId)
-		)
-	}
-
-	private fun navigateToVehicleDetailsScreen(clientId: String) {
-		navController.navigate(
-			AppRoute.VehicleDetailsScreen.routeWithId(clientId)
-		)
-	}
-
-	private fun navigateToRepairHistoryScreen(vehicleId: String) {
-		navController.navigate(
-			AppRoute.RepairHistoryScreen.routeWithId(vehicleId)
-		)
-	}
+    private fun navigateToClientDetailsScreen(clientId: Long) {
+        navController.navigate(
+            AppRoute.ClientDetailsScreen.routeWithId(clientId)
+        ) {
+            popUpTo(AppRoute.ManageScreen.route) {
+                inclusive
+            }
+            launchSingleTop = true
+        }
+    }
 
 }
 
 sealed class AppRoute(val route: String) {
-	data object HomeScreen: AppRoute("home_screen")
-	data object AddScreen: AppRoute("add_screen")
-	data object AddRepairDetailsScreen: AppRoute("add_repair_details_screen/{vehicleId}") {
-		fun routeWithId(vehicleId: String) = String.format("add_repair_details_screen/%s", vehicleId)
-	}
-	data object ManageScreen: AppRoute("manage_screen")
-	data object ClientDetailsScreen: AppRoute("client_details_screen/{clientId}") {
-		fun routeWithId(clientId: Long) = String.format("vehicle_details_screen/%s", clientId)
-	}
-	data object VehicleDetailsScreen: AppRoute("vehicle_details_screen/{clientId}") {
-		fun routeWithId(clientId: String) = String.format("vehicle_details_screen/%s", clientId)
-	}
-	data object RepairHistoryScreen: AppRoute("repair_history_screen/{vehicleId}") {
-		fun routeWithId(vehicleId: String) = String.format("repair_details_screen/%s", vehicleId)
-	}
+    data object HomeScreen : AppRoute("home_screen")
+    data object AddScreen : AppRoute("add_screen")
+    data object ManageScreen : AppRoute("manage_screen")
+    data object ClientDetailsScreen : AppRoute("client_details_screen/{clientId}") {
+        fun routeWithId(clientId: Long) = String.format("client_details_screen/%s", clientId)
+    }
 }
 
 sealed class Screens {
-	data object HomeScreen : Screens()
-	data object AddScreen : Screens() // This is the `add client` screen
-	data class AddRepairDetailsScreen(val vehicleId: String) : Screens()
-	data object ManageScreen : Screens()
-	data class ClientDetailsScreen(val clientId: Long) : Screens()
-	data class VehicleDetailsScreen(val clientId: String) : Screens()
-	data class RepairHistoryScreen(val vehicleId: String) : Screens()
-	data object Back : Screens()
+    data object HomeScreen : Screens()
+    data object AddScreen : Screens() // This is the `add client` screen
+    data object ManageScreen : Screens()
+    data class ClientDetailsScreen(val clientId: Long) : Screens()
+    data object Back : Screens()
 }

@@ -53,6 +53,8 @@ fun ReadDialog(
     var readyToScan by remember { mutableStateOf("") }
     var supportingText by remember { mutableStateOf("") }
 
+    val uiState by viewModel.clientUiState.collectAsState()
+
     // A dialog with a custom content
     Dialog(onDismissRequest = onCancel) {
         // Use a card as the content of the dialog
@@ -168,38 +170,6 @@ fun ReadDialog(
                             )
                         }
                     }
-
-//                    NfcReadStatus.IDLE -> {
-//                        // Show idle UI
-////                        readyToScan = "Ready to Scan"
-////                        supportingText = "Hold your device near the NFC Tag"
-////                        Text(
-////                            text = readyToScan,
-////                            style = typography.title,
-////                            fontWeight = FontWeight.SemiBold,
-////                            modifier = Modifier.padding(4.dp)
-////                        )
-////                        Text(
-////                            text = supportingText,
-////                            style = typography.bodyLarge,
-////                            modifier = Modifier.padding(4.dp)
-////                        )
-////                        Box(
-////                            modifier = Modifier
-////                                .padding(16.dp)
-////                                .size(100.dp)
-////                                .clip(CircleShape)
-////                                .background(Color.Transparent, shape = CircleShape),
-////                            contentAlignment = Alignment.Center
-////                        ) {
-////                            Image(
-////                                modifier = Modifier.clip(CircleShape),
-////                                painter = painterResource(id = R.drawable.scanning),
-////                                contentDescription = "Scanning",
-////                                contentScale = ContentScale.Fit
-////                            )
-////                        }
-//                    }
                 }
 
                 LaunchedEffect(nfcReadState) {
@@ -207,10 +177,14 @@ fun ReadDialog(
                     delay(2000)
                     val screen = if (viewModel.tagIsEmpty) {
                         Screens.AddScreen
-                    } else Screens.ClientDetailsScreen(
-                        viewModel.clientUiState.client.clientId
-                    )
-                    navigate(screen)
+                    } else uiState.client?.clientId?.let {
+                        Screens.ClientDetailsScreen(
+                            it
+                        )
+                    }
+                    if (screen != null) {
+                        navigate(screen)
+                    }
                 }
             }
 

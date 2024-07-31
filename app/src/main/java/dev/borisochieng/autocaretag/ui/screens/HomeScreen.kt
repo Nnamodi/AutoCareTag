@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +68,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    clients: List<Client>,
     viewModel: NFCReaderViewModel,
     scanForNFCTag: () -> Unit,
     navigate: (Screens) -> Unit
@@ -76,10 +76,16 @@ fun HomeScreen(
         mutableStateOf(false)
     }
     if (isReadDialogVisible) {
-        ReadDialog(viewModel = viewModel, onCancel = { isReadDialogVisible = false }, navigate = navigate  )
+        ReadDialog(
+            viewModel = viewModel,
+            onCancel = { isReadDialogVisible = false },
+            navigate = navigate
+        )
     }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
+
+    val uiState by viewModel.clientUiState.collectAsState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -142,7 +148,10 @@ fun HomeScreen(
 
                         }) {
 
-                            Icon(icon, contentDescription = if (drawerState.isOpen) "Close" else "Menu" )
+                            Icon(
+                                icon,
+                                contentDescription = if (drawerState.isOpen) "Close" else "Menu"
+                            )
 
 
                         }
@@ -218,7 +227,7 @@ fun HomeScreen(
                             .height(50.dp),
                         onClick = {
                             navigate(Screens.AddScreen)
-                        } ,
+                        },
                         shape = shape.button,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorScheme.primary,
@@ -275,9 +284,13 @@ fun HomeScreen(
                         )
                     }
                 }
-                if (clients.isNotEmpty()) {
-                    items(items = clients) { client ->
-                        ClientCard(client = client, navigate = {Screens.ClientDetailsScreen(client.clientId)})
+                if (uiState.clients.isNotEmpty()) {
+                    items(
+                        items = uiState.clients.take(6),
+                        key = { it.clientId }) { client ->
+                        ClientCard(
+                            client = client,
+                            navigate = { Screens.ClientDetailsScreen(client.clientId) })
                     }
                 } else {
                     item {
@@ -310,7 +323,6 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     HomeScreen(
-        clients = fakeClients,
         viewModel(),
         {}
     ) {}

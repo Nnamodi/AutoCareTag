@@ -15,6 +15,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -23,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.commons.TopBar
@@ -36,149 +39,88 @@ import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 
 @Composable
 fun ClientDetailsScreen(
-    uiState: ClientUiState,
+    viewModel: NFCReaderViewModel,
     updateClientInfo: (Client) -> Unit,
     navigate: (Screens) -> Unit
 ) {
-    val client = uiState.client
-    val note = rememberSaveable { mutableStateOf("") }
+    // Collect the latest state from the ViewModel
+    val uiState = viewModel.clientUiState.collectAsState()
 
+    val client by rememberSaveable {
+        mutableStateOf(uiState.value.client)
+
+    }
+
+    // Scaffold layout for the screen
     Scaffold(
         modifier = Modifier.background(colorScheme.background),
         topBar = { TopBar(stringResource(R.string.view_details), navigate) }
     ) { paddingValues ->
+        // Column layout for the content
         Column(
             Modifier
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-
+            // Header text for client details
             Text(
                 text = "Client details",
                 style = typography.title,
                 color = colorScheme.primary
             )
-            //client details
-            Text(
-                modifier = Modifier.padding(vertical = 8.dp),
-                text = "Name",
-                style = typography.bodyLarge,
-            )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = client.name,
-                style = typography.body,
-                color = Color.Gray
-            )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = "Contact",
-                style = typography.bodyLarge,
-            )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = client.contactInfo,
-                style = typography.body,
-                color = Color.Gray
-            )
 
-            //vehicle details
-            Text(
-                modifier = Modifier.padding(vertical = 8.dp),
-                text = "Vehicle Details",
-                style = typography.title,
-                color = colorScheme.primary
-            )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = "Name/Model",
-                style = typography.bodyLarge,
-            )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = client.model,
-                style = typography.body,
-                color = Color.Gray
-            )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = "Last Maintained",
-                style = typography.bodyLarge,
-            )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = client.lastMaintained,
-                style = typography.body,
-                color = Color.Gray
-            )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = "Next date of maintenance",
-                style = typography.bodyLarge,
-            )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = client.nextAppointmentDate,
-                style = typography.body,
-                color = Color.Gray
-            )
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = "Repair",
-                style = typography.bodyLarge
-            )
+            // Display client details if available, otherwise show a loading indicator
+            client.let { client ->
+                client?.name?.let { ClientDetailSection("Name", it) }
+                if (client != null) {
+                    ClientDetailSection("Contact", client.contactInfo)
+                }
+                Text(
+                    text = "Vehicle Details",
+                    style = typography.title,
+                    color = colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                if (client != null) {
+                    ClientDetailSection("Name/Model", client.model)
+                }
+                if (client != null) {
+                    ClientDetailSection("Last Maintained", client.lastMaintained)
+                }
+                if (client != null) {
+                    ClientDetailSection("Next date of maintenance", client.nextAppointmentDate)
+                }
+                if (client != null) {
+                    ClientDetailSection("Repair", client.note)
+                }
+            }
 
-            Text(
-                modifier = Modifier
-                    .padding(vertical = 4.dp),
-                text = client.note,
-                style = typography.body,
-                color = Color.Gray
-            )
+            // Spacer to push the button to the bottom
             Spacer(modifier = Modifier.weight(1f))
 
-
-
-
-//			DetailItem(title = stringResource(R.string.name), detail = uiState.client.name)
-//			DetailItem(title = stringResource(R.string.contact), detail = uiState.client.contactInfo)
-//			DetailItem(title = stringResource(R.string.vehicle), detail = "Mercedes")
-//			DetailItem(title = stringResource(R.string.car_model), detail = "2024")
-//			DetailItem(title = stringResource(R.string.last_issue_resolved), detail = "Suspended check")
-//			DetailItem(title = stringResource(R.string.last_appointment), detail = "05/15/2024")
-//			CustomTextField(
-//				header = stringResource(R.string.note),
-//				value = note.value,
-//				placeholder = stringResource(R.string.note_placeholder),
-//				onValueChange = { note.value = it }
-//			)
-
+            // OutlinedButton to update client info
             OutlinedButton(
                 onClick = {
-                    val updatedInfo = Client(
-                        clientId = client.clientId,
-                        name = client.name,
-                        contactInfo = client.contactInfo,
-                        note = note.value.takeIf { it.isNotEmpty() } ?: client.note,
-                        model = client.model,
-                        lastMaintained = client.lastMaintained,
-                        nextAppointmentDate = client.nextAppointmentDate,
-                    )
-                    updateClientInfo(updatedInfo)
-                    navigate(Screens.ClientDetailsScreen(client.clientId))
+                    client.let { client: Client? ->
+                        val updatedInfo = client
+                        if (updatedInfo != null) {
+                            updateClientInfo(updatedInfo)
+                        }
+                        navigate(Screens.AddScreen)
+                    }
                 },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(),
                 shape = shape.button,
-                colors = ButtonDefaults.buttonColors(
+                colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = colorScheme.background
                 )
             ) {
                 Text(
                     text = stringResource(R.string.update),
-                    style = typography.body,
+                    style = typography.bodyLarge,
                     color = colorScheme.primary
                 )
             }
@@ -186,34 +128,27 @@ fun ClientDetailsScreen(
     }
 }
 
+// Helper composable to display client details
 @Composable
-private fun DetailItem(
-    title: String,
-    detail: String,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = title,
-                color = onBackgroundVariant
-            )
-            Text(text = detail)
-        }
-        HorizontalDivider(
-            Modifier.padding(top = 8.dp, bottom = 18.dp)
-        )
-    }
+fun ClientDetailSection(label: String, detail: String) {
+    Text(
+        modifier = Modifier.padding(vertical = 4.dp),
+        text = label,
+        style = typography.bodyLarge
+    )
+    Text(
+        modifier = Modifier.padding(vertical = 4.dp),
+        text = detail,
+        style = typography.body,
+        color = Color.Gray
+    )
 }
 
+// Preview function for ClientDetailsScreen
 @Preview
 @Composable
 private fun ClientDetailsScreenPreview() {
     AutoCareTagTheme {
-        ClientDetailsScreen(uiState = ClientUiState(fakeClients[0]), {}) {}
+        ClientDetailsScreen(viewModel = viewModel(), {}) {}
     }
 }
