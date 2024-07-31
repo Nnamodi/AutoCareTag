@@ -8,13 +8,13 @@ import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreen
 @Entity
 data class Client(
     @PrimaryKey(autoGenerate = true) val clientId: Long = 0,
-    @ColumnInfo(defaultValue = "") val name: String,
-    @ColumnInfo(defaultValue = "")  val contactInfo: String,
-    @ColumnInfo(defaultValue = "") val model: String,
-    @ColumnInfo(defaultValue = "") val lastMaintained: String,
-    @ColumnInfo(defaultValue = "")  val nextAppointmentDate: String,
-    @ColumnInfo(defaultValue = "")  val note: String,
+    val name: String,
+    val contactInfo: String,
+    val model: String,
+    val lastMaintained: String,
+    val nextAppointmentDate: String,
+    val note: String,
 )
 
-class InvalidClientException(message: String): Exception(message)
+class InvalidClientException(message: String) : Exception(message)
 

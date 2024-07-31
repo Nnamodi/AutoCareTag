@@ -164,7 +164,10 @@ fun ClientDetailsScreen(
                         clientId = client.clientId,
                         name = client.name,
                         contactInfo = client.contactInfo,
-                        note = note.value.takeIf { it.isNotEmpty() } ?: client.note
+                        note = note.value.takeIf { it.isNotEmpty() } ?: client.note,
+                        model = client.model,
+                        lastMaintained = client.lastMaintained,
+                        nextAppointmentDate = client.nextAppointmentDate,
                     )
                     updateClientInfo(updatedInfo)
                     navigate(Screens.ClientDetailsScreen(client.clientId.toString()))

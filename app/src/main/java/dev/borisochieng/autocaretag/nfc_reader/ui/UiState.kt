@@ -1,10 +1,15 @@
 package dev.borisochieng.autocaretag.nfc_reader.ui
 
 import dev.borisochieng.autocaretag.room_db.Client
-import dev.borisochieng.autocaretag.room_db.Vehicle
 
 data class ClientUiState(
-	val client: Client = Client(name = "Jay Abbah", contactInfo = "+23472537353", note = "test note"),
-	val clientVehicles: List<Vehicle> = emptyList(),
+	val client: Client = Client(
+    name = "John Doe",
+    contactInfo = "0712345678",
+    model = "Toyota Corolla",
+    lastMaintained = "2024-07-01",
+    nextAppointmentDate = "2024-08-01",
+    note = "Regular maintenance needed."
+),
 	val isLoading: Boolean = false
 )
