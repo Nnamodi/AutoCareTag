@@ -26,7 +26,7 @@ import org.koin.core.component.inject
 class AddInfoViewModel() : ViewModel(), KoinComponent {
 
 
-    private val nfcWriter: NfcWriter by inject()
+    val nfcWriter: NfcWriter by inject()
     private val savedStateHandle: SavedStateHandle by inject()
     private val clientRepository: ClientRepository by inject()
 
@@ -124,7 +124,6 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
     private fun areAllFieldsValid(): Boolean {
         return _customerName.value.customerName.isNotEmpty() &&
                 _customerPhoneNo.value.customerPhoneNo.isNotEmpty() &&
-                _customerPhoneNo.value.customerPhoneNo.length == 13 &&
                 _vehicleModel.value.vehicleModel.isNotEmpty() &&
                 _note.value.note.isNotEmpty() &&
                 _appointmentDate.value.appointmentDate.isNotEmpty() &&
