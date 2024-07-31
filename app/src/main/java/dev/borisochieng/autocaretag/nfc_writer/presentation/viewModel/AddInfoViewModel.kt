@@ -10,8 +10,12 @@ import androidx.lifecycle.viewModelScope
 import dev.borisochieng.autocaretag.nfc_writer.data.NfcWriter
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
 import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
+import dev.borisochieng.autocaretag.room_db.Client
+import dev.borisochieng.autocaretag.room_db.InvalidClientException
 import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -33,15 +37,18 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
     private val _vehicleModel = mutableStateOf(
         InfoScreenState()
     )
-    private val _workDone = mutableStateOf(
-        InfoScreenState()
-    )
     private val _appointmentDate = mutableStateOf(
         InfoScreenState()
     )
     private val _nextAppointmentDate = mutableStateOf(
         InfoScreenState()
     )
+    private val _note = mutableStateOf( InfoScreenState())
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
+
     private val nfcWriteStateFlow: MutableStateFlow<NfcWriteState<TagInfo>> = MutableStateFlow(NfcWriteState.idle())
     val nfcWriteState = nfcWriteStateFlow.asStateFlow()
     private val _buttonEnabled = MutableStateFlow(false)
@@ -51,68 +58,49 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
     val customerName: State<InfoScreenState> = _customerName
     val customerPhoneNo: State<InfoScreenState> =_customerPhoneNo
     val vehicleModel: State<InfoScreenState> = _vehicleModel
-    val workDone: State<InfoScreenState> = _workDone
     val appointmentDate: State<InfoScreenState> = _appointmentDate
     val nextAppointmentDate: State<InfoScreenState> = _nextAppointmentDate
+    val note: State<InfoScreenState> = _note
 
     init {
-        savedStateHandle.get<Int>("noteId")?.let { noteId ->
-            if (noteId != -1) {
+        savedStateHandle.get<Long>("clientId")?.let { clientId ->
+            if (clientId != 0L) {
                 //_playNoteState.value = true
                 viewModelScope.launch {
-                    Log.d("NoteId", noteId.toString())
-                    voiceJournalRepository.getNote(noteId).collect { note ->
-                        _noteState.value = noteState.value.copy(voiceJournal = note)
-                        if (note != null) {
-                            currentNoteId = note.id
-                        }
-                        if (note != null) {
-                            _noteTitle.value = _noteTitle.value.copy(text =note.title, isHintVisible = false )
-                            Log.d("NoteTitleNew", note.title)
-                        }
-                        if (note != null) {
-                            _noteContent.value = _noteContent.value.copy(
-                                text = note.content,
-                                isHintVisible = false)
-                        }
+                    Log.d("NoteId", clientId.toString())
+                    clientRepository.getClientById(clientId).collect { client ->
 
-                        if (note != null) {
-                            _created.value = _created.value.copy(
-                                created = note.created,
-                                isHintVisible = false
+                        if (client != null) {
+                            _customerName.value = _customerName.value.copy(
+                                customerName = client.name,
+                            )
+                        }
+                        if (client != null) {
+                            _customerPhoneNo.value = _customerPhoneNo.value.copy(
+                                customerPhoneNo = client.contactInfo
                             )
                         }
 
-                        if (note != null) {
-                            _noteColor.value = note.color
+                        if (client != null) {
+                            _vehicleModel.value = _vehicleModel.value.copy(
+                                vehicleModel = client.model
+                            )
+
                         }
-                        if (note != null) {
-                            tempFileName = note.fileName
-                            _noteFileName.value = _noteFileName.value.copy(
-                                text = tempFileName
+                        if (client != null) {
+                            _appointmentDate.value = _appointmentDate.value.copy(
+                                appointmentDate = client.lastMaintained
                             )
                         }
-                        if (note != null) {
-                            if (note.imageUris?.isNotEmpty()== true) {
-                                tempUris = note.imageUris!!
-                                _tempImageUris.value = _tempImageUris.value.copy(
-                                    imageFileUris = note.imageUris
-                                )
-                                Log.d("Image from file", "${note.imageUris}")
-                            }
+                        if (client != null) {
+                            _nextAppointmentDate.value = _nextAppointmentDate.value.copy(
+                                nextAppointmentDate = client.nextAppointmentDate
+                            )
                         }
-                        if (note != null) {
-                            if (note.tags != null) {
-                                _tags.value = note.tags!!
-                            }
-                        }
-                        if (note != null) {
-                            if(note.favourite!=null) {
-                                _favourite.value = _favourite.value.copy(
-                                    favourite = note.favourite!!
-                                )
-                            }
-
+                        if (client != null) {
+                            _note.value = _note.value.copy(
+                                note = client.note
+                            )
                         }
 
                     }
@@ -120,8 +108,6 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
                 }
             }
         }
-        Log.d("_NoteTitle",_noteTitle.value.text)
-        getSelectedImageUris()
 
     }
 
@@ -129,7 +115,7 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
         return _customerName.value.customerName.isNotEmpty() &&
                _customerPhoneNo.value.customerPhoneNo.isNotEmpty() &&
                _vehicleModel.value.vehicleModel.isNotEmpty() &&
-               _workDone.value.workDone.isNotEmpty() //&&
+               _note.value.note.isNotEmpty() //&&
 //               _appointmentDate.value.appointmentDate != null &&
 //               _nextAppointmentDate.value.nextAppointmentDate != null
     }
@@ -150,7 +136,7 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
 
             is InfoScreenEvents.EnteredCustomerPhoneNo -> {
                 _customerPhoneNo.value = _customerPhoneNo.value.copy(
-                   customerPhoneNo = event.value
+                    customerPhoneNo = event.value
                 )
             }
 
@@ -169,13 +155,40 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
                     vehicleModel = event.value
                 )
             }
-            is InfoScreenEvents.EnteredWorkDone -> {
-                _workDone.value = _workDone.value.copy(
-                    workDone = event.value
+            is InfoScreenEvents.EnteredNote -> {
+                _note.value = _note.value.copy(
+                    note = event.value
                 )
             }
+
+            InfoScreenEvents.SaveClientInfo -> {
+                viewModelScope.launch {
+                    try {
+
+                        val client = Client(
+                            name = customerName.value.customerName,
+                            contactInfo = customerPhoneNo.value.customerPhoneNo,
+                            model = vehicleModel.value.vehicleModel,
+                            lastMaintained = appointmentDate.value.appointmentDate,
+                            nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate,
+                            note = note.value.note
+                        )
+                        clientRepository.insert(client)
+                        _eventFlow.emit(UiEvent.SaveClientInfo)
+                        _eventFlow.emit(UiEvent.ShowSnackbar("Client saved!"))
+                    } catch (e: InvalidClientException) {
+
+                        Log.d("Client", "could not save")
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(
+                                message = e.message ?: "Couldn't save client"
+                            )
+                        )
+
+                    }
+                }
+            }
         }
-        updateButtonEnabledState()
     }
 
 
@@ -187,9 +200,9 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
                 customerName = customerName.value.customerName,
                 customerPhoneNo = customerPhoneNo.value.customerPhoneNo,
                 vehicleModel = vehicleModel.value.vehicleModel,
-                workDone = workDone.value.workDone,
-                nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate,
-                appointmentDate = appointmentDate.value.appointmentDate
+                workDone = note.value.note,
+                nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate.toString(),
+                appointmentDate = appointmentDate.value.appointmentDate.toString()
             )
           nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo).collect{
               nfcWriteStateFlow.value = it
@@ -199,6 +212,7 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
         }
 
     }
+
     fun writeButtonState(state:Boolean){
         nfcWriteStateFlow.value = NfcWriteState.loading()
         _buttonEnabled.value = state
