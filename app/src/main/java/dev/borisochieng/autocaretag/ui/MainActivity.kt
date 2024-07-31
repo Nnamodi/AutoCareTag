@@ -46,7 +46,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
-
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
@@ -94,6 +93,9 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         startNfcScanning(alertUser = false)
+        nfcReaderViewModel.toggleNfcEnabledStatus(
+            enabled = nfcAdapter != null && nfcAdapter?.isEnabled == true
+        )
     }
 
     override fun onPause() {

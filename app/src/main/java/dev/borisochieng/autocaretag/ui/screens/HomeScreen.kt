@@ -84,17 +84,11 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                       contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = screenTitle,
-                            style = typography.title,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
-                    }
+                    Text(
+                        text = screenTitle,
+                        style = typography.title,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 },
             )
         }
@@ -135,9 +129,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
-                )
-                {
-
+                ) {
                     Text(
                         text = stringResource(R.string.nfc_status),
                         modifier = Modifier
@@ -147,11 +139,12 @@ fun HomeScreen(
                         fontWeight = FontWeight.SemiBold
                     )
 
+                    val statusColor = if (viewModel.nfcIsEnabled) Color.Green else colorScheme.onBackgroundVariant
                     Spacer(
                         modifier = Modifier
                             .padding(horizontal = 4.dp, vertical = 2.dp)
                             .size(6.dp)
-                            .background(colorScheme.onBackgroundVariant, shape = CircleShape)
+                            .background(statusColor, shape = CircleShape)
                     )
                 }
             }
