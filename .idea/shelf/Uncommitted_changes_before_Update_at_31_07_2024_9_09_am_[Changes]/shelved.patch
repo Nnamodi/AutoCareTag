@@ -1,0 +1,181 @@
+Index: app/src/main/java/dev/borisochieng/autocaretag/room_db/model.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.room_db\r\n\r\nimport androidx.room.Entity\r\nimport androidx.room.PrimaryKey\r\n\r\n@Entity\r\ndata class Client(\r\n    @PrimaryKey(autoGenerate = true) val clientId: Long = 0,\r\n    val name: String,\r\n    val contactInfo: String,\r\n    val note: String\r\n)\r\n\r\n@Entity\r\ndata class Vehicle(\r\n    @PrimaryKey(autoGenerate = true) val vehicleId: Long = 0,\r\n    val make: String,\r\n    val model: String,\r\n    val year: Int,\r\n    val licensePlate: String,\r\n    val vin: String,\r\n    val clientId: Long // Foreign key linking to Client\r\n)\r\n\r\n@Entity\r\ndata class Repair(\r\n    @PrimaryKey(autoGenerate = true) val repairId: Long = 0,\r\n    val date: Long, // Timestamp\r\n    val description: String,\r\n    val partsReplaced: String,\r\n    val laborCost: Double,\r\n    val partsCost: Double,\r\n    val totalCost: Double,\r\n    val mechanicNotes: String,\r\n    val vehicleId: Long // Foreign key linking to Vehicle\r\n)\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/room_db/model.kt b/app/src/main/java/dev/borisochieng/autocaretag/room_db/model.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/room_db/model.kt	(revision 7febc56cf321759232ea1dcf21d59af034e07d70)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/room_db/model.kt	(date 1722365333380)
+@@ -1,5 +1,6 @@
+ package dev.borisochieng.autocaretag.room_db
+ 
++import androidx.room.ColumnInfo
+ import androidx.room.Entity
+ import androidx.room.PrimaryKey
+ 
+@@ -8,7 +9,7 @@
+     @PrimaryKey(autoGenerate = true) val clientId: Long = 0,
+     val name: String,
+     val contactInfo: String,
+-    val note: String
++    @ColumnInfo(defaultValue = "") val note: String
+ )
+ 
+ @Entity
+Index: app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/UiState.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.nfc_reader.ui\r\n\r\nimport dev.borisochieng.autocaretag.room_db.Client\r\nimport dev.borisochieng.autocaretag.room_db.Vehicle\r\n\r\ndata class ClientUiState(\r\n\tval client: Client = Client(name = \"Jay Abbah\", contactInfo = \"+23472537353\"),\r\n\tval clientVehicles: List<Vehicle> = emptyList()\r\n)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/UiState.kt b/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/UiState.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/UiState.kt	(revision 7febc56cf321759232ea1dcf21d59af034e07d70)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/UiState.kt	(date 1722366248251)
+@@ -4,6 +4,6 @@
+ import dev.borisochieng.autocaretag.room_db.Vehicle
+ 
+ data class ClientUiState(
+-	val client: Client = Client(name = "Jay Abbah", contactInfo = "+23472537353"),
++	val client: Client = Client(name = "Jay Abbah", contactInfo = "+23472537353", note = ""),
+ 	val clientVehicles: List<Vehicle> = emptyList()
+ )
+\ No newline at end of file
+Index: .kotlin/errors/errors-1722366267073.log
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.kotlin/errors/errors-1722366267073.log b/.kotlin/errors/errors-1722366267073.log
+new file mode 100644
+--- /dev/null	(date 1722367078549)
++++ b/.kotlin/errors/errors-1722366267073.log	(date 1722367078549)
+@@ -0,0 +1,44 @@
++kotlin version: 2.0.0
++error message: java.io.FileNotFoundException: C:\Users\Martins\AndroidStudioProjects\TagTidy!\app\build\intermediates\compile_app_classes_jar\debug\bundleDebugClassesToCompileJar\classes.jar!/app/build/intermediates/compile_app_classes_jar/debug/bundleDebugClassesToCompileJar/classes.jar!/META-INF/app_debug.kotlin_module
++	at org.jetbrains.kotlin.com.intellij.openapi.vfs.impl.ZipHandlerBase.contentsToByteArray(ZipHandlerBase.java:117)
++	at org.jetbrains.kotlin.com.intellij.openapi.vfs.impl.jar.CoreJarVirtualFile.contentsToByteArray(CoreJarVirtualFile.java:111)
++	at org.jetbrains.kotlin.cli.jvm.compiler.JvmPackagePartProvider.addRoots$lambda$0(JvmPackagePartProvider.kt:56)
++	at org.jetbrains.kotlin.cli.jvm.compiler.JvmPackagePartProviderKt.tryLoadModuleMapping(JvmPackagePartProvider.kt:73)
++	at org.jetbrains.kotlin.cli.jvm.compiler.JvmPackagePartProvider.addRoots(JvmPackagePartProvider.kt:55)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment.createPackagePartProvider(KotlinCoreEnvironment.kt:324)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler$analyze$1$1.invoke(KotlinToJVMBytecodeCompiler.kt:378)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler$analyze$1$1.invoke(KotlinToJVMBytecodeCompiler.kt:378)
++	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.createContainer(TopDownAnalyzerFacadeForJVM.kt:187)
++	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.createContainer$default(TopDownAnalyzerFacadeForJVM.kt:126)
++	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration(TopDownAnalyzerFacadeForJVM.kt:90)
++	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration$default(TopDownAnalyzerFacadeForJVM.kt:75)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.analyze$lambda$12(KotlinToJVMBytecodeCompiler.kt:373)
++	at org.jetbrains.kotlin.cli.common.messages.AnalyzerWithCompilerReport.analyzeAndReport(AnalyzerWithCompilerReport.kt:115)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.analyze(KotlinToJVMBytecodeCompiler.kt:364)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.runFrontendAndGenerateIrUsingClassicFrontend(KotlinToJVMBytecodeCompiler.kt:195)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.compileModules$cli(KotlinToJVMBytecodeCompiler.kt:106)
++	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:176)
++	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:50)
++	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:104)
++	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:48)
++	at org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:101)
++	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1556)
++	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
++	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
++	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
++	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
++	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
++	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
++	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
++	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
++	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
++	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
++	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
++	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
++	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
++	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
++	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
++	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
++	at java.base/java.lang.Thread.run(Thread.java:840)
++
++
+Index: .kotlin/errors/errors-1722366267132.log
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.kotlin/errors/errors-1722366267132.log b/.kotlin/errors/errors-1722366267132.log
+new file mode 100644
+--- /dev/null	(date 1722367079638)
++++ b/.kotlin/errors/errors-1722366267132.log	(date 1722367079638)
+@@ -0,0 +1,44 @@
++kotlin version: 2.0.0
++error message: java.io.FileNotFoundException: C:\Users\Martins\AndroidStudioProjects\TagTidy!\app\build\intermediates\compile_app_classes_jar\debug\bundleDebugClassesToCompileJar\classes.jar!/app/build/intermediates/compile_app_classes_jar/debug/bundleDebugClassesToCompileJar/classes.jar!/META-INF/app_debug.kotlin_module
++	at org.jetbrains.kotlin.com.intellij.openapi.vfs.impl.ZipHandlerBase.contentsToByteArray(ZipHandlerBase.java:117)
++	at org.jetbrains.kotlin.com.intellij.openapi.vfs.impl.jar.CoreJarVirtualFile.contentsToByteArray(CoreJarVirtualFile.java:111)
++	at org.jetbrains.kotlin.cli.jvm.compiler.JvmPackagePartProvider.addRoots$lambda$0(JvmPackagePartProvider.kt:56)
++	at org.jetbrains.kotlin.cli.jvm.compiler.JvmPackagePartProviderKt.tryLoadModuleMapping(JvmPackagePartProvider.kt:73)
++	at org.jetbrains.kotlin.cli.jvm.compiler.JvmPackagePartProvider.addRoots(JvmPackagePartProvider.kt:55)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment.createPackagePartProvider(KotlinCoreEnvironment.kt:324)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler$analyze$1$1.invoke(KotlinToJVMBytecodeCompiler.kt:378)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler$analyze$1$1.invoke(KotlinToJVMBytecodeCompiler.kt:378)
++	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.createContainer(TopDownAnalyzerFacadeForJVM.kt:187)
++	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.createContainer$default(TopDownAnalyzerFacadeForJVM.kt:126)
++	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration(TopDownAnalyzerFacadeForJVM.kt:90)
++	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration$default(TopDownAnalyzerFacadeForJVM.kt:75)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.analyze$lambda$12(KotlinToJVMBytecodeCompiler.kt:373)
++	at org.jetbrains.kotlin.cli.common.messages.AnalyzerWithCompilerReport.analyzeAndReport(AnalyzerWithCompilerReport.kt:115)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.analyze(KotlinToJVMBytecodeCompiler.kt:364)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.runFrontendAndGenerateIrUsingClassicFrontend(KotlinToJVMBytecodeCompiler.kt:195)
++	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.compileModules$cli(KotlinToJVMBytecodeCompiler.kt:106)
++	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:176)
++	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:50)
++	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:104)
++	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:48)
++	at org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:101)
++	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1556)
++	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
++	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
++	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
++	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
++	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
++	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
++	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
++	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
++	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
++	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
++	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
++	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
++	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
++	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
++	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
++	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
++	at java.base/java.lang.Thread.run(Thread.java:840)
++
++
+Index: .idea/other.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"direct_access_persist.xml\">\r\n    <option name=\"deviceSelectionList\">\r\n      <list>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"27\" />\r\n          <option name=\"brand\" value=\"DOCOMO\" />\r\n          <option name=\"codename\" value=\"F01L\" />\r\n          <option name=\"id\" value=\"F01L\" />\r\n          <option name=\"manufacturer\" value=\"FUJITSU\" />\r\n          <option name=\"name\" value=\"F-01L\" />\r\n          <option name=\"screenDensity\" value=\"360\" />\r\n          <option name=\"screenX\" value=\"720\" />\r\n          <option name=\"screenY\" value=\"1280\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"28\" />\r\n          <option name=\"brand\" value=\"DOCOMO\" />\r\n          <option name=\"codename\" value=\"SH-01L\" />\r\n          <option name=\"id\" value=\"SH-01L\" />\r\n          <option name=\"manufacturer\" value=\"SHARP\" />\r\n          <option name=\"name\" value=\"AQUOS sense2 SH-01L\" />\r\n          <option name=\"screenDensity\" value=\"480\" />\r\n          <option name=\"screenX\" value=\"1080\" />\r\n          <option name=\"screenY\" value=\"2160\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"31\" />\r\n          <option name=\"brand\" value=\"samsung\" />\r\n          <option name=\"codename\" value=\"a51\" />\r\n          <option name=\"id\" value=\"a51\" />\r\n          <option name=\"manufacturer\" value=\"Samsung\" />\r\n          <option name=\"name\" value=\"Galaxy A51\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"1080\" />\r\n          <option name=\"screenY\" value=\"2400\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"34\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"akita\" />\r\n          <option name=\"id\" value=\"akita\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel 8a\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"1080\" />\r\n          <option name=\"screenY\" value=\"2400\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"33\" />\r\n          <option name=\"brand\" value=\"samsung\" />\r\n          <option name=\"codename\" value=\"b0q\" />\r\n          <option name=\"id\" value=\"b0q\" />\r\n          <option name=\"manufacturer\" value=\"Samsung\" />\r\n          <option name=\"name\" value=\"Galaxy S22 Ultra\" />\r\n          <option name=\"screenDensity\" value=\"600\" />\r\n          <option name=\"screenX\" value=\"1440\" />\r\n          <option name=\"screenY\" value=\"3088\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"32\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"bluejay\" />\r\n          <option name=\"id\" value=\"bluejay\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel 6a\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"1080\" />\r\n          <option name=\"screenY\" value=\"2400\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"29\" />\r\n          <option name=\"brand\" value=\"samsung\" />\r\n          <option name=\"codename\" value=\"crownqlteue\" />\r\n          <option name=\"id\" value=\"crownqlteue\" />\r\n          <option name=\"manufacturer\" value=\"Samsung\" />\r\n          <option name=\"name\" value=\"Galaxy Note9\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"2220\" />\r\n          <option name=\"screenY\" value=\"1080\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"34\" />\r\n          <option name=\"brand\" value=\"samsung\" />\r\n          <option name=\"codename\" value=\"dm3q\" />\r\n          <option name=\"id\" value=\"dm3q\" />\r\n          <option name=\"manufacturer\" value=\"Samsung\" />\r\n          <option name=\"name\" value=\"Galaxy S23 Ultra\" />\r\n          <option name=\"screenDensity\" value=\"600\" />\r\n          <option name=\"screenX\" value=\"1440\" />\r\n          <option name=\"screenY\" value=\"3088\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"33\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"felix\" />\r\n          <option name=\"id\" value=\"felix\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel Fold\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"2208\" />\r\n          <option name=\"screenY\" value=\"1840\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"33\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"felix_camera\" />\r\n          <option name=\"id\" value=\"felix_camera\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel Fold (Camera-enabled)\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"2208\" />\r\n          <option name=\"screenY\" value=\"1840\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"33\" />\r\n          <option name=\"brand\" value=\"samsung\" />\r\n          <option name=\"codename\" value=\"gts8uwifi\" />\r\n          <option name=\"id\" value=\"gts8uwifi\" />\r\n          <option name=\"manufacturer\" value=\"Samsung\" />\r\n          <option name=\"name\" value=\"Galaxy Tab S8 Ultra\" />\r\n          <option name=\"screenDensity\" value=\"320\" />\r\n          <option name=\"screenX\" value=\"1848\" />\r\n          <option name=\"screenY\" value=\"2960\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"34\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"husky\" />\r\n          <option name=\"id\" value=\"husky\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel 8 Pro\" />\r\n          <option name=\"screenDensity\" value=\"390\" />\r\n          <option name=\"screenX\" value=\"1008\" />\r\n          <option name=\"screenY\" value=\"2244\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"30\" />\r\n          <option name=\"brand\" value=\"motorola\" />\r\n          <option name=\"codename\" value=\"java\" />\r\n          <option name=\"id\" value=\"java\" />\r\n          <option name=\"manufacturer\" value=\"Motorola\" />\r\n          <option name=\"name\" value=\"G20\" />\r\n          <option name=\"screenDensity\" value=\"280\" />\r\n          <option name=\"screenX\" value=\"720\" />\r\n          <option name=\"screenY\" value=\"1600\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"33\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"lynx\" />\r\n          <option name=\"id\" value=\"lynx\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel 7a\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"1080\" />\r\n          <option name=\"screenY\" value=\"2400\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"31\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"oriole\" />\r\n          <option name=\"id\" value=\"oriole\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel 6\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"1080\" />\r\n          <option name=\"screenY\" value=\"2400\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"33\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"panther\" />\r\n          <option name=\"id\" value=\"panther\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel 7\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"1080\" />\r\n          <option name=\"screenY\" value=\"2400\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"31\" />\r\n          <option name=\"brand\" value=\"samsung\" />\r\n          <option name=\"codename\" value=\"q2q\" />\r\n          <option name=\"id\" value=\"q2q\" />\r\n          <option name=\"manufacturer\" value=\"Samsung\" />\r\n          <option name=\"name\" value=\"Galaxy Z Fold3\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"1768\" />\r\n          <option name=\"screenY\" value=\"2208\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"34\" />\r\n          <option name=\"brand\" value=\"samsung\" />\r\n          <option name=\"codename\" value=\"q5q\" />\r\n          <option name=\"id\" value=\"q5q\" />\r\n          <option name=\"manufacturer\" value=\"Samsung\" />\r\n          <option name=\"name\" value=\"Galaxy Z Fold5\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"1812\" />\r\n          <option name=\"screenY\" value=\"2176\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"30\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"r11\" />\r\n          <option name=\"id\" value=\"r11\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel Watch\" />\r\n          <option name=\"screenDensity\" value=\"320\" />\r\n          <option name=\"screenX\" value=\"384\" />\r\n          <option name=\"screenY\" value=\"384\" />\r\n          <option name=\"type\" value=\"WEAR_OS\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"30\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"redfin\" />\r\n          <option name=\"id\" value=\"redfin\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel 5\" />\r\n          <option name=\"screenDensity\" value=\"440\" />\r\n          <option name=\"screenX\" value=\"1080\" />\r\n          <option name=\"screenY\" value=\"2340\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"34\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"shiba\" />\r\n          <option name=\"id\" value=\"shiba\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel 8\" />\r\n          <option name=\"screenDensity\" value=\"420\" />\r\n          <option name=\"screenX\" value=\"1080\" />\r\n          <option name=\"screenY\" value=\"2400\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"33\" />\r\n          <option name=\"brand\" value=\"google\" />\r\n          <option name=\"codename\" value=\"tangorpro\" />\r\n          <option name=\"id\" value=\"tangorpro\" />\r\n          <option name=\"manufacturer\" value=\"Google\" />\r\n          <option name=\"name\" value=\"Pixel Tablet\" />\r\n          <option name=\"screenDensity\" value=\"320\" />\r\n          <option name=\"screenX\" value=\"1600\" />\r\n          <option name=\"screenY\" value=\"2560\" />\r\n        </PersistentDeviceSelectionData>\r\n        <PersistentDeviceSelectionData>\r\n          <option name=\"api\" value=\"29\" />\r\n          <option name=\"brand\" value=\"samsung\" />\r\n          <option name=\"codename\" value=\"x1q\" />\r\n          <option name=\"id\" value=\"x1q\" />\r\n          <option name=\"manufacturer\" value=\"Samsung\" />\r\n          <option name=\"name\" value=\"Galaxy S20\" />\r\n          <option name=\"screenDensity\" value=\"480\" />\r\n          <option name=\"screenX\" value=\"1440\" />\r\n          <option name=\"screenY\" value=\"3200\" />\r\n        </PersistentDeviceSelectionData>\r\n      </list>\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/other.xml b/.idea/other.xml
+--- a/.idea/other.xml	(revision 7febc56cf321759232ea1dcf21d59af034e07d70)
++++ b/.idea/other.xml	(date 1722376866678)
+@@ -180,17 +180,6 @@
+           <option name="screenY" value="2400" />
+         </PersistentDeviceSelectionData>
+         <PersistentDeviceSelectionData>
+-          <option name="api" value="31" />
+-          <option name="brand" value="samsung" />
+-          <option name="codename" value="q2q" />
+-          <option name="id" value="q2q" />
+-          <option name="manufacturer" value="Samsung" />
+-          <option name="name" value="Galaxy Z Fold3" />
+-          <option name="screenDensity" value="420" />
+-          <option name="screenX" value="1768" />
+-          <option name="screenY" value="2208" />
+-        </PersistentDeviceSelectionData>
+-        <PersistentDeviceSelectionData>
+           <option name="api" value="34" />
+           <option name="brand" value="samsung" />
+           <option name="codename" value="q5q" />

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn::oasis:manes:tc:xliff:document:1.2">
+
+    <techlist>
+        <tech>android.nfc.tech.Ndef</tech>
+        <tech>android.nfc.tech.NdefFormatable</tech>
+    </techlist>
+
+</resources>

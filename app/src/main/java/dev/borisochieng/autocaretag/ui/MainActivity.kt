@@ -55,11 +55,13 @@ class MainActivity : ComponentActivity() {
     private var nfcAdapter: NfcAdapter? = null
     private lateinit var navActions: NavActions
 
-    val nfcWriter = NfcWriter(this)
-
     private var tag: Tag? = null
     private lateinit var pendingIntent: PendingIntent
-    private lateinit var intentFilters: Array<IntentFilter>
+    private val actions = arrayOf(
+        NfcAdapter.ACTION_NDEF_DISCOVERED,
+        NfcAdapter.ACTION_TAG_DISCOVERED,
+        NfcAdapter.ACTION_TECH_DISCOVERED
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,7 +98,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (intent.action != NfcAdapter.ACTION_NDEF_DISCOVERED) return
+        if (intent.action !in actions) return
         nfcReaderViewModel.readNFCTag(intent)
         Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
 
@@ -106,13 +108,9 @@ class MainActivity : ComponentActivity() {
             nfcReaderViewModel.clientUiState.client.clientId.toString()
         )
         navActions.navigate(screen)
-        Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
 
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
-            // NFC tag discovered
-            tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
-        }
-
+        // NFC tag discovered
+        tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
     }
 
     override fun onResume() {
@@ -131,9 +129,7 @@ class MainActivity : ComponentActivity() {
             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val pendingIntent = PendingIntent
             .getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE)
-        val intentFilters = arrayOf(
-            IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
-        )
+        val intentFilters = actions.map { IntentFilter(it) }.toTypedArray()
         nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
         if (!alertUser) return
         Toast.makeText(this, "NFC scanning started", Toast.LENGTH_SHORT).show()
