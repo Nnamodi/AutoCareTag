@@ -36,20 +36,14 @@ fun AppRoute(
     NavHost(
         navController = navController,
         startDestination = AppRoute.HomeScreen.route,
-        modifier = Modifier
-            .padding(paddingValues)
+        modifier = Modifier.padding(paddingValues)
     ) {
         composable(AppRoute.HomeScreen.route) {
             HomeScreen(
-                onNavigateToAddClient = {
-                    //scanNfc(true)
-                    navActions.navigate(Screens.AddScreen)
-                },
-                onNavigateToManage = {
-                    navActions.navigate(Screens.ManageScreen)
-                },
                 clients = fakeClients,
-                viewModel = nfcReaderViewModel
+                viewModel = nfcReaderViewModel,
+                scanForNfcTag = { scanNfc(true) },
+                navigate = navActions::navigate
             )
         }
         composable(AppRoute.AddScreen.route) {
@@ -68,16 +62,10 @@ fun AppRoute(
         animatedComposable(AppRoute.AddRepairDetailsScreen.route) { backStackEntry ->
             val vehicleId = backStackEntry.arguments?.getString("vehicleId") ?: ""
         }
-        composable(AppRoute.ManageScreen.route) { backStackEntry ->
-            val clientId = backStackEntry.arguments?.getString("clientId") ?: ""
+        composable(AppRoute.ManageScreen.route) {
             ClientScreen(
-                onNavigateUp = {
-                    navController.navigateUp()
-                },
-                onNavigateToClient = {
-                    navActions.navigate(Screens.ClientDetailsScreen(clientId))
-                },
-                viewModel = clientScreenViewModel
+                viewModel = clientScreenViewModel,
+                navigate = navActions::navigate
             )
         }
         animatedComposable(AppRoute.ClientDetailsScreen.route) {
