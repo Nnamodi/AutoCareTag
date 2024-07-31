@@ -21,7 +21,7 @@ import dev.borisochieng.autocaretag.ui.screens.AddScreen
 import dev.borisochieng.autocaretag.ui.screens.HomeScreen
 import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 import dev.borisochieng.autocaretag.utils.animatedComposable
-import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.
 
 typealias ShouldScan = Boolean
 

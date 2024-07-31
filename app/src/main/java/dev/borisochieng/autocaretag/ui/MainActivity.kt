@@ -38,10 +38,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var intentFilters: Array<IntentFilter>
 
 
-
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var intentFilters: Array<IntentFilter>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
