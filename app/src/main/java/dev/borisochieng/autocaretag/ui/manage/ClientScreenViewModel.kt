@@ -25,7 +25,7 @@ class ClientScreenViewModel () : ViewModel(){
        viewModelScope.launch {
            _clientUiState.update {
                it.copy(
-                   clients = fakeClients,
+                   clients = fakeClients, // list from database
                    errorMessage = ""
                )
            }

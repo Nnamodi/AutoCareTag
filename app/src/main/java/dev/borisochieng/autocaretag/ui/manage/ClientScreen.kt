@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.ui.components.ClientCard
+import dev.borisochieng.autocaretag.ui.components.ScreenTitle
 import dev.borisochieng.autocaretag.ui.manage.components.ClientSearchBar
 import dev.borisochieng.autocaretag.ui.screens.Client
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
@@ -64,14 +65,7 @@ fun ClientScreen(
                     }
                 },
                 title = {
-                    Text(
-                        text = "Manage",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight(500),
-                            color = Color(0xFF393938),
-                        )
-                    )
+                    ScreenTitle()
                 },
             )
         }
@@ -100,7 +94,9 @@ fun ClientScreen(
 
                 item {
                     Text(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                         text = " Clients",
                         style = typography.bodyLarge
                     )
