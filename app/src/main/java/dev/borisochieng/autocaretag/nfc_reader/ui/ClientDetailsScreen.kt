@@ -40,6 +40,7 @@ import dev.borisochieng.autocaretag.ui.theme.onBackgroundVariant
 
 @Composable
 fun ClientDetailsScreen(
+
     uiState: ClientUiState,
     updateClientInfo: (Client) -> Unit,
     navigate: (Screens) -> Unit
@@ -160,14 +161,14 @@ fun ClientDetailsScreen(
 
             OutlinedButton(
                 onClick = {
-                    val updatedInfo = Client(
+                  /*  val updatedInfo = Client(
                         clientId = client.clientId,
                         name = client.name,
                         contactInfo = client.contactInfo,
                         note = note.value.takeIf { it.isNotEmpty() } ?: client.note
                     )
                     updateClientInfo(updatedInfo)
-                    navigate(Screens.ClientDetailsScreen(client.clientId.toString()))
+                    navigate(Screens.ClientDetailsScreen(client.clientId.toString()))*/
                 },
                 modifier = Modifier
                     .padding(16.dp)

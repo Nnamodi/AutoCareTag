@@ -113,14 +113,14 @@ fun AddScreen(
     val appointmentDateError by remember {
         derivedStateOf {
             checkIfDateIsToday(
-                viewModel.appointmentDate.value.appointmentDate ?: ""
+                viewModel.appointmentDate.value.appointmentDate ?: " "
             )
         }
     }
     val nextAppointmentDateError by remember {
         derivedStateOf {
             checkIfDateIsInFuture(
-                viewModel.nextAppointmentDate.value.nextAppointmentDate ?: ""
+                viewModel.nextAppointmentDate.value.nextAppointmentDate ?: " "
             )
         }
     }
