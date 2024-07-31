@@ -24,10 +24,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,15 +51,20 @@ import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteStatus
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun WriteDialog(
     viewModel: AddInfoViewModel,
     onCancel: () -> Unit,
-    onOk: () -> Unit
+    onOk: () -> Unit,
+    navigateToClientDetails: () -> Unit
 ) {
     var readyToScan by remember { mutableStateOf("") }
     var supportingText by remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
 
     // A dialog with a custom content
     Dialog(onDismissRequest = onCancel) {
@@ -107,6 +114,15 @@ fun WriteDialog(
                                 contentDescription = "Successful"
                             )
                         }
+
+                        LaunchedEffect(Unit) {
+                            scope.launch {
+                                delay(2000L)
+                                navigateToClientDetails
+                            }
+
+
+                        }
                     }
 
                     NfcWriteStatus.ERROR -> {
@@ -140,11 +156,6 @@ fun WriteDialog(
 
                     NfcWriteStatus.LOADING -> {
                         // Show loading UI
-                        //CircularProgressIndicator()
-                    }
-
-                    NfcWriteStatus.IDLE -> {
-                        // Show idle UI
                         readyToScan = "Ready to Scan"
                         supportingText = "Hold your device near the NFC Tag"
                         Text(
@@ -175,6 +186,10 @@ fun WriteDialog(
                             )
                         }
                     }
+
+                    NfcWriteStatus.IDLE -> {
+                        // Show idle UI
+                    }
                 }
             }
 
@@ -187,7 +202,7 @@ fun WriteDialog(
 @Preview(showBackground = true)
 @Composable
 fun WriteDialogPreview() {
-    WriteDialog(viewModel = viewModel(), onCancel = {}, onOk = {})
+    WriteDialog(viewModel = viewModel(), onCancel = {}, onOk = {}, {})
 
 
 }

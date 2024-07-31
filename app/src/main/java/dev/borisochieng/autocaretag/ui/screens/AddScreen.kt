@@ -67,6 +67,7 @@ fun AddScreen(
     var isDialogForNextAppointmentDate by remember { mutableStateOf(false) }
     var isWriteDialogVisible by remember { mutableStateOf(false) }
 
+
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val isButtonEnabled by viewModel.buttonEnabled.collectAsState()
@@ -135,8 +136,10 @@ fun AddScreen(
     if (isWriteDialogVisible) {
         WriteDialog(
             viewModel = viewModel,
-            onCancel = { viewModel.writeButtonState(false) },
-            onOk = { viewModel.writeButtonState(false) }
+            onCancel = { isWriteDialogVisible = false },
+            onOk = { viewModel.writeButtonState(false) },
+            navigateToClientDetails = {
+            }
         )
     }
 
@@ -291,9 +294,9 @@ fun AddScreen(
 
                     PrimaryButton(
                         onClick = {
-                            if (tag != null) {
-                                viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
-                            }
+//                            if (tag != null) {
+//                                viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
+//                            }
                             onNavigateToScanTag()
                             //viewModel.writeButtonState(true)
                             isWriteDialogVisible = true

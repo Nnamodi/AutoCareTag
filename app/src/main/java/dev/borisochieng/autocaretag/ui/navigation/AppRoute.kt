@@ -49,7 +49,8 @@ fun AppRoute(
                     navActions.navigate(Screens.ManageScreen)
                 },
                 clients = fakeClients,
-                viewModel = nfcReaderViewModel
+                viewModel = nfcReaderViewModel,
+                scanNFC = {}
             )
         }
         composable(AppRoute.AddScreen.route) {

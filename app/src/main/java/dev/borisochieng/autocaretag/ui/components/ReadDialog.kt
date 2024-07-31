@@ -43,7 +43,8 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 @Composable
 fun ReadDialog(
     viewModel: NFCReaderViewModel,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    scanNFC: () -> Unit
 ) {
     var readyToScan by remember { mutableStateOf("") }
     var supportingText by remember { mutableStateOf("") }
@@ -179,7 +180,7 @@ fun ReadDialog(
 @Preview(showBackground = true)
 @Composable
 fun ReadDialogPreview() {
-    ReadDialog(viewModel = viewModel()) {}
+    ReadDialog(viewModel = viewModel(), {}) {}
 
 
 }

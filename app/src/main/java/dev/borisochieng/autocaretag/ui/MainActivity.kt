@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                             if (shouldScan) startNfcScanning() else stopNfcScanning()
                         },
                         tag = tag,
-                        setupNfc = { setupNfc() }
+                        setupNfc = { setupNfc() },
                     )
                 }
 
@@ -113,10 +113,10 @@ class MainActivity : ComponentActivity() {
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
     }
 
-    override fun onResume() {
-        super.onResume()
-        startNfcScanning(alertUser = false)
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        startNfcScanning(alertUser = false)
+//    }
 
     override fun onPause() {
         super.onPause()

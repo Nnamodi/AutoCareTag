@@ -106,7 +106,10 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
     }
 
 
-    fun uploadInfo(tag: Tag,setupNfc:()->Unit){
+    fun uploadInfo(
+        tag: Tag,
+        setupNfc: () -> Unit
+    ){
       viewModelScope.launch  {
           setupNfc()
           val tagInfo = TagInfo(

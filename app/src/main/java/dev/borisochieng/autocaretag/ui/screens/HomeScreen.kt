@@ -68,13 +68,14 @@ fun HomeScreen(
     onNavigateToAddClient: () -> Unit,
     onNavigateToManage: () -> Unit,
     clients: List<Client>,
-    viewModel: NFCReaderViewModel
+    viewModel: NFCReaderViewModel,
+    scanNFC: () -> Unit
 ) {
     var isReadDialogVisible by remember {
         mutableStateOf(false)
     }
     if (isReadDialogVisible) {
-        ReadDialog(viewModel = viewModel, onCancel = { isReadDialogVisible = false })
+        ReadDialog(viewModel = viewModel, onCancel = { isReadDialogVisible = false }, scanNFC )
     }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -307,6 +308,7 @@ fun HomeScreenPreview() {
         onNavigateToAddClient = {},
         onNavigateToManage = {},
         clients = fakeClients,
-        viewModel()
+        viewModel(),
+        {}
     )
 }
