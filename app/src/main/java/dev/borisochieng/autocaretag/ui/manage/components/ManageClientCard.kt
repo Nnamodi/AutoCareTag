@@ -25,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.ui.manage.Vehicle
-import dev.borisochieng.autocaretag.ui.screens.Client
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 

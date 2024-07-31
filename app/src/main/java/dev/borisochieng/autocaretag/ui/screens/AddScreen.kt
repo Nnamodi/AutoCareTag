@@ -51,11 +51,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID.randomUUID
+import dev.borisochieng.autocaretag.room_db.Client
+import dev.borisochieng.autocaretag.ui.components.Inputs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddScreen(
-    onNavigateToScanTag: () -> Unit,
+    onNavigateToClientDetails: (Client) -> Unit,
     onNavigateUp: () -> Unit,
     viewModel: AddInfoViewModel,
     tag: Tag? = null,
@@ -64,6 +67,7 @@ fun AddScreen(
     var isDialogForAppointmentDate by remember { mutableStateOf(false) }
     var isDialogForNextAppointmentDate by remember { mutableStateOf(false) }
     var isWriteDialogVisible by remember { mutableStateOf(false) }
+
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -84,7 +88,7 @@ fun AddScreen(
     val contactEntered = remember { mutableStateOf(false) }
     val contactError by remember {
         derivedStateOf {
-            validateTextField(
+            validateContactLength(
                 label = "Contact Details",
                 inputEntered = contactEntered.value,
                 input = viewModel.customerPhoneNo.value.customerPhoneNo
@@ -143,12 +147,25 @@ fun AddScreen(
             isDialogForNextAppointmentDate = false
         }
     }
-val isWriteDialog by viewModel.buttonEnabled.collectAsState()
-    if (isWriteDialog) {
+
+    if (isWriteDialogVisible) {
         WriteDialog(
             viewModel = viewModel,
-            onCancel = { viewModel.writeButtonState(false) },
-            onOk = { viewModel.writeButtonState(false) }
+            onCancel = { isWriteDialogVisible = false },
+            onOk = { viewModel.writeButtonState(false) },
+            navigateToClientDetails = {
+                val client = Client(
+                    clientId = randomUUID().toString().toLong(),
+                    name = viewModel.customerName.value.customerName,
+                    contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
+                    model = viewModel.vehicleModel.value.vehicleModel,
+                    lastMaintained = viewModel.appointmentDate.value.appointmentDate,
+                    nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
+                    note = viewModel.note.value.note
+                )
+                onNavigateToClientDetails(client)
+            }
+
         )
     }
     LaunchedEffect(key1 = true) {
@@ -160,15 +177,15 @@ val isWriteDialog by viewModel.buttonEnabled.collectAsState()
                     if (tag != null) {
                         viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                     }
-                    onNavigateToScanTag()
-                    viewModel.writeButtonState(true)
-                  //  isWriteDialogVisible = true
-                    scope.launch  {
+                    //viewModel.writeButtonState(true)
+                    isWriteDialogVisible = true
+                    scope.launch {
                         snackbarHostState.showSnackbar(
                             message = "Client Saved"
                         )
                     }
                 }
+
                 is UiEvent.ShowSnackbar -> {
                     scope.launch {
                         snackbarHostState.showSnackbar(
@@ -189,14 +206,6 @@ val isWriteDialog by viewModel.buttonEnabled.collectAsState()
                         text = stringResource(R.string.write_to_nfc),
                         style = typography.title
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.navigate_up)
-                        )
-                    }
                 },
             )
         },
@@ -228,7 +237,7 @@ val isWriteDialog by viewModel.buttonEnabled.collectAsState()
                     CustomTextField(
                         label = stringResource(R.string.name_label),
                         placeHolder = stringResource(R.string.name_placeholder),
-                        inputType = String,
+                        inputType = Inputs.Text,
                         isTrailingIcon = false,
                         onTrailingIconClick = {},
                         inputValue = viewModel.customerName.value.customerName,
@@ -246,7 +255,7 @@ val isWriteDialog by viewModel.buttonEnabled.collectAsState()
                     CustomTextField(
                         label = stringResource(R.string.contact_label),
                         placeHolder = stringResource(R.string.contact_placeholder),
-                        inputType = Int,
+                        inputType = Inputs.PhoneNumber,
                         isTrailingIcon = false,
                         onTrailingIconClick = {},
                         inputValue = viewModel.customerPhoneNo.value.customerPhoneNo,
@@ -274,7 +283,7 @@ val isWriteDialog by viewModel.buttonEnabled.collectAsState()
                     CustomTextField(
                         label = stringResource(R.string.vehicle_model_label),
                         placeHolder = stringResource(R.string.vehicle_model_placeholder),
-                        inputType = String,
+                        inputType = Inputs.Text,
                         isTrailingIcon = false,
                         onTrailingIconClick = {},
                         inputValue = viewModel.vehicleModel.value.vehicleModel,
@@ -291,7 +300,7 @@ val isWriteDialog by viewModel.buttonEnabled.collectAsState()
                     CustomTextField(
                         label = stringResource(R.string.repair_label),
                         placeHolder = stringResource(R.string.repair_placeholder),
-                        inputType = String,
+                        inputType = Inputs.Text,
                         isTrailingIcon = false,
                         onTrailingIconClick = {},
                         inputValue = viewModel.note.value.note,
@@ -305,9 +314,10 @@ val isWriteDialog by viewModel.buttonEnabled.collectAsState()
                     CustomTextField(
                         label = stringResource(R.string.appointment_date_label),
                         placeHolder = stringResource(R.string.appointment_date_placeholder),
-                        inputType = String,
+                        inputType = Inputs.Text,
                         isTrailingIcon = true,
                         onTrailingIconClick = {
+                            dateIconClicked.value = true
                             isDialogForAppointmentDate = !isDialogForAppointmentDate
                         },
                         inputValue = viewModel.appointmentDate.value.appointmentDate
@@ -320,9 +330,10 @@ val isWriteDialog by viewModel.buttonEnabled.collectAsState()
                     CustomTextField(
                         label = stringResource(R.string.next_appointment_date_label),
                         placeHolder = stringResource(R.string.next_appointment_date_placeholder),
-                        inputType = String,
+                        inputType = Inputs.Text,
                         isTrailingIcon = true,
                         onTrailingIconClick = {
+                            nextDateIconClicked.value = true
                             isDialogForNextAppointmentDate = !isDialogForNextAppointmentDate
                         },
                         inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate
@@ -336,10 +347,37 @@ val isWriteDialog by viewModel.buttonEnabled.collectAsState()
 
                     PrimaryButton(
                         onClick = {
-                         viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
+                            if (tag != null) {
+                                viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
+                            }
+                            //viewModel.writeButtonState(true)
+                            isWriteDialogVisible = true
+
+                            viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
+                            val client = Client(
+                                clientId = Math.random().toLong(),
+                                name = viewModel.customerName.value.customerName,
+                                contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
+                                model = viewModel.vehicleModel.value.vehicleModel,
+                                lastMaintained = viewModel.appointmentDate.value.appointmentDate,
+                                nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
+                                note = viewModel.note.value.note
+                            )
+
+                            scope.launch {
+                                viewModel.saveClientToDB(client)
+                            }
+
+                            //clear fields
+                            viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(""))
+                            viewModel.onEvent(InfoScreenEvents.EnteredCustomerPhoneNo(""))
+                            viewModel.onEvent(InfoScreenEvents.EnteredVehicleModel(""))
+                            viewModel.onEvent(InfoScreenEvents.EnteredNote(""))
+                            viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(""))
+                            viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(""))
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
-                        isEnabled = true//isButtonEnabled
+                        isEnabled = isButtonEnabled
                     )
                 }
             }
@@ -375,10 +413,10 @@ fun formatDate(day: Int, month: Int, year: Int): String {
 
 fun checkIfDateIsInFuture(
     dateIconClicked: Boolean,
-    dateString: String?
+    dateString: String
 ): String? {
     if (!dateIconClicked) return null
-    if (dateString.isNullOrEmpty()) {
+    if (dateString.isEmpty()) {
         return "Date cannot be empty"
     }
     val dateFormat = SimpleDateFormat("dd MMMM yy", Locale.getDefault())
@@ -394,10 +432,10 @@ fun checkIfDateIsInFuture(
 
 fun checkIfDateIsToday(
     dateIconClicked: Boolean,
-    dateString: String?
+    dateString: String
 ): String? {
     if (!dateIconClicked) return null
-    if (dateString.isNullOrEmpty()) {
+    if (dateString.isEmpty()) {
         return "Date cannot be empty"
     }
     val dateFormat = SimpleDateFormat("dd MMMM yy", Locale.getDefault())
@@ -431,6 +469,14 @@ fun validateTextField(
 ): String? =
     if (input.isEmpty() && inputEntered) "$label cannot be empty" else null
 
+fun validateContactLength(input: String, inputEntered: Boolean, label: String) =
+    if(input.isEmpty() && inputEntered) {
+        "$label cannot be empty"
+    } else if (input.length != 10 && inputEntered) {
+        "$label cannot be less than 10 digits"
+    } else {
+        null
+    }
 /*
 @Preview(showBackground = true)
 @Composable

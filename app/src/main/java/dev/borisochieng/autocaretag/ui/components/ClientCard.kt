@@ -22,16 +22,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.borisochieng.autocaretag.ui.screens.Client
+import dev.borisochieng.autocaretag.room_db.Client
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
+import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 
 @Composable
 fun ClientCard(
     modifier: Modifier = Modifier,
     client: Client,
-    onNavigateToClient: (Client) -> Unit
+    navigate: (Screens) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -39,7 +41,7 @@ fun ClientCard(
             .fillMaxWidth()
             .clip(shape.card)
             .clickable(
-                onClick = { onNavigateToClient(client) }
+                onClick = { navigate(Screens.ClientDetailsScreen(client.clientId)) }
             ),
         shape = shape.card,
         colors = CardDefaults.cardColors(Color.Transparent)
@@ -88,7 +90,7 @@ fun ClientCard(
                 {
                     Text(
                         modifier = Modifier.padding(vertical = 2.dp),
-                        text = client.vehicleName,
+                        text = client.model,
                         style = typography.bodyLight,
                         color = colorScheme.primary
                     )
@@ -103,8 +105,8 @@ fun ClientCard(
                         modifier = Modifier
                             .padding(vertical = 2.dp)
                             .align(Alignment.CenterVertically)
-                            .clickable { onNavigateToClient(client) },
-                        text = client.date,
+                            .clickable { navigate(Screens.ClientDetailsScreen(client.clientId)) },
+                        text = client.lastMaintained,
                         style = typography.body,
                         color = Color.Gray
                     )
@@ -120,13 +122,7 @@ fun ClientCard(
 @Preview(showBackground = true)
 @Composable
 fun RecentActivityCardPreview() {
-    val fakeClient = Client(
-        id = "1",
-        name = "John Doe",
-        vehicleName = "Benz E200",
-        date = "28-28-2024"
-    )
-    ClientCard(client = fakeClient, modifier = Modifier, onNavigateToClient = {})
+    ClientCard(client = fakeClients[0], modifier = Modifier, navigate = {})
 
 
 }

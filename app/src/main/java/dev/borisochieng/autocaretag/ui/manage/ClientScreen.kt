@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,18 +33,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.borisochieng.autocaretag.R
+import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.components.ClientCard
+import dev.borisochieng.autocaretag.ui.components.ScreenTitle
 import dev.borisochieng.autocaretag.ui.manage.components.ClientSearchBar
-import dev.borisochieng.autocaretag.ui.screens.Client
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClientScreen(
-    onNavigateUp: () -> Unit,
-    onNavigateToClient: (Client) -> Unit,
-    viewModel: ClientScreenViewModel
+    viewModel: ClientScreenViewModel,
+    navigate: (Screens) -> Unit
 ) {
 
     var searchQuery by remember {
@@ -50,80 +53,74 @@ fun ClientScreen(
     }
     val clientsUIState by viewModel.clientUiState.collectAsState()
 
+    val lazyListState = rememberLazyListState()
+
 
     Scaffold(
         modifier = Modifier.background(colorScheme.background),
         topBar = {
             TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back_ios),
-                            contentDescription = "Back Arrow"
-                        )
-                    }
-                },
                 title = {
-                    Text(
-                        text = "Manage",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight(500),
-                            color = Color(0xFF393938),
-                        )
-                    )
+                    ScreenTitle()
                 },
             )
         }
 
     ) {
-
-        Column(
-            modifier = Modifier.padding(it), horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        LazyColumn(
+            modifier = Modifier.padding(it),
+            state = lazyListState
         ) {
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ClientSearchBar(
+                        query = searchQuery,
+                        onQueryChange = { newQuery ->
+                            searchQuery = newQuery
+                            viewModel.searchClient(newQuery)
+                        }
+                    )
+                }
+            }
 
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                ClientSearchBar(
-                    query = searchQuery,
-                    onQueryChange = { newQuery ->
-                        searchQuery = newQuery
-                        viewModel.searchClient(newQuery)
-                    }
+            item {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    text = " Clients",
+                    style = typography.bodyLarge
                 )
             }
 
-            LazyColumn(contentPadding = PaddingValues(top = 16.dp, start = 8.dp, end = 8.dp)) {
-
+            if (clientsUIState.clients.isEmpty()) {
                 item {
-                    Text(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                        text = " Clients",
-                        style = typography.bodyLarge
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = "No clients found",
+                            style = typography.bodyLarge
+                        )
+
+                    }
                 }
-
-                if (clientsUIState.clients.isEmpty()) {
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                modifier = Modifier.align(Alignment.Center),
-                                text = "No clients found",
-                                style = typography.bodyLarge
-                            )
-
+            } else {
+                items(clientsUIState.clients, key = { it.clientId }) { client ->
+//                        ClientCard(client = client) {
+//                            onNavigateToClient(client)
+//                        }
+                    ClientCard(
+                        client = client,
+                        navigate = {
+                            navigate(Screens.ClientDetailsScreen(client.clientId))
                         }
-                    }
-                } else {
-                    items(clientsUIState.clients) { client ->
-                        ClientCard(client = client, onNavigateToClient = onNavigateToClient)
-                    }
+                    )
                 }
             }
         }

@@ -1,7 +1,7 @@
 package dev.borisochieng.autocaretag.ui.manage
 
 import androidx.compose.runtime.Immutable
-import dev.borisochieng.autocaretag.ui.screens.Client
+import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 
 @Immutable

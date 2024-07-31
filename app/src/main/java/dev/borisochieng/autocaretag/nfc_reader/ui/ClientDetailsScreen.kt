@@ -1,7 +1,6 @@
 package dev.borisochieng.autocaretag.nfc_reader.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
@@ -25,11 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.room_db.Client
-import dev.borisochieng.autocaretag.ui.commons.Avatar
-import dev.borisochieng.autocaretag.ui.commons.CustomTextField
 import dev.borisochieng.autocaretag.ui.commons.TopBar
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
@@ -37,15 +32,15 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import dev.borisochieng.autocaretag.ui.theme.onBackgroundVariant
+import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 
 @Composable
 fun ClientDetailsScreen(
-
     uiState: ClientUiState,
     updateClientInfo: (Client) -> Unit,
     navigate: (Screens) -> Unit
 ) {
-    val (client, vehicles) = uiState
+    val client = uiState.client
     val note = rememberSaveable { mutableStateOf("") }
 
     Scaffold(
@@ -102,7 +97,7 @@ fun ClientDetailsScreen(
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
-                text = "Lamborghini Urus",
+                text = client.model,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -113,7 +108,7 @@ fun ClientDetailsScreen(
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
-                text = "28-07-2024",
+                text = client.lastMaintained,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -124,7 +119,7 @@ fun ClientDetailsScreen(
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
-                text = "28-08-2024",
+                text = client.nextAppointmentDate,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -137,7 +132,7 @@ fun ClientDetailsScreen(
             Text(
                 modifier = Modifier
                     .padding(vertical = 4.dp),
-                text = "Oil change",
+                text = client.note,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -161,14 +156,17 @@ fun ClientDetailsScreen(
 
             OutlinedButton(
                 onClick = {
-                  /*  val updatedInfo = Client(
+                    val updatedInfo = Client(
                         clientId = client.clientId,
                         name = client.name,
                         contactInfo = client.contactInfo,
-                        note = note.value.takeIf { it.isNotEmpty() } ?: client.note
+                        note = note.value.takeIf { it.isNotEmpty() } ?: client.note,
+                        model = client.model,
+                        lastMaintained = client.lastMaintained,
+                        nextAppointmentDate = client.nextAppointmentDate,
                     )
                     updateClientInfo(updatedInfo)
-                    navigate(Screens.ClientDetailsScreen(client.clientId.toString()))*/
+                    navigate(Screens.ClientDetailsScreen(client.clientId))
                 },
                 modifier = Modifier
                     .padding(16.dp)
@@ -216,6 +214,6 @@ private fun DetailItem(
 @Composable
 private fun ClientDetailsScreenPreview() {
     AutoCareTagTheme {
-        ClientDetailsScreen(uiState = ClientUiState(), {}) {}
+        ClientDetailsScreen(uiState = ClientUiState(fakeClients[0]), {}) {}
     }
 }

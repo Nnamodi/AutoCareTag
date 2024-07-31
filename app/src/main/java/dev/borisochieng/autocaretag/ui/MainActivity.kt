@@ -12,27 +12,45 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
-import dev.borisochieng.autocaretag.nfc_writer.data.NfcWriter
-import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.commons.NavBar
+import dev.borisochieng.autocaretag.ui.components.ScreenTitle
 import dev.borisochieng.autocaretag.ui.navigation.AppRoute
 import dev.borisochieng.autocaretag.ui.navigation.NavActions
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
+import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
 
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
-    private lateinit var navActions: NavActions
 
     private var tag: Tag? = null
     private lateinit var pendingIntent: PendingIntent
@@ -41,6 +59,7 @@ class MainActivity : ComponentActivity() {
         NfcAdapter.ACTION_TAG_DISCOVERED,
         NfcAdapter.ACTION_TECH_DISCOVERED
     )
+    private lateinit var navActions: NavActions
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +75,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .windowInsetsPadding(WindowInsets.systemBars)
                         .background(colorScheme.background),
-                    bottomBar = { NavBar(navController) }
+                    bottomBar = { NavBar(navController) },
                 ) { paddingValues ->
                     AppRoute(
                         navActions = navActions,
@@ -66,9 +85,10 @@ class MainActivity : ComponentActivity() {
                             if (shouldScan) startNfcScanning() else stopNfcScanning()
                         },
                         tag = tag,
-                        setupNfc = { setupNfc() }
+                        setupNfc = ::setupNfc
                     )
                 }
+
             }
         }
     }
@@ -82,17 +102,15 @@ class MainActivity : ComponentActivity() {
         val screen = if (nfcReaderViewModel.tagIsEmpty) {
             Screens.AddScreen
         } else Screens.ClientDetailsScreen(
-            nfcReaderViewModel.clientUiState.client.clientId.toString()
+            nfcReaderViewModel.clientUiState.client.clientId
         )
         navActions.navigate(screen)
-
         // NFC tag discovered
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
     }
 
     override fun onResume() {
         super.onResume()
-        startNfcScanning(alertUser = false)
         nfcReaderViewModel.toggleNfcEnabledStatus(
             enabled = nfcAdapter != null && nfcAdapter?.isEnabled == true
         )
@@ -103,15 +121,15 @@ class MainActivity : ComponentActivity() {
         nfcAdapter?.disableForegroundDispatch(this)
     }
 
-    private fun startNfcScanning(alertUser: Boolean = true) {
+    private fun startNfcScanning() {
         // Enable foreground dispatch to handle NFC intents
         val intent = Intent(this, javaClass)
             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val pendingIntent = PendingIntent
             .getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE)
         val intentFilters = actions.map { IntentFilter(it) }.toTypedArray()
+
         nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
-        if (!alertUser) return
         Toast.makeText(this, "NFC scanning started", Toast.LENGTH_SHORT).show()
     }
 
@@ -123,7 +141,8 @@ class MainActivity : ComponentActivity() {
 
     private fun setupNfc() {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        val intent = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val intent =
+            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 }

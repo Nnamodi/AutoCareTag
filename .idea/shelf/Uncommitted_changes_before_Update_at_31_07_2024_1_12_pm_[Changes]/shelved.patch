@@ -1,0 +1,370 @@
+Index: app/src/main/java/dev/borisochieng/autocaretag/ui/screens/AddScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.ui.screens\r\n\r\nimport android.app.DatePickerDialog\r\nimport android.content.Context\r\nimport android.icu.util.Calendar\r\nimport android.nfc.Tag\r\nimport android.util.Log\r\nimport android.widget.DatePicker\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.WindowInsets\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.ime\r\nimport androidx.compose.foundation.layout.imePadding\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.windowInsetsPadding\r\nimport androidx.compose.foundation.lazy.LazyColumn\r\nimport androidx.compose.foundation.lazy.rememberLazyListState\r\nimport androidx.compose.foundation.rememberScrollState\r\nimport androidx.compose.foundation.verticalScroll\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.IconButton\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TopAppBar\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.LaunchedEffect\r\nimport androidx.compose.runtime.collectAsState\r\nimport androidx.compose.runtime.derivedStateOf\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.res.stringResource\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport dev.borisochieng.autocaretag.R\r\nimport dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo\r\nimport dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel\r\nimport dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents\r\nimport dev.borisochieng.autocaretag.ui.components.CustomTextField\r\nimport dev.borisochieng.autocaretag.ui.components.PrimaryButton\r\nimport dev.borisochieng.autocaretag.ui.components.WriteDialog\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography\r\nimport org.koin.androidx.compose.koinViewModel\r\nimport java.text.SimpleDateFormat\r\nimport java.util.Locale\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun AddScreen(\r\n    onNavigateToScanTag: () -> Unit,\r\n    onNavigateUp: () -> Unit,\r\n    viewModel: AddInfoViewModel,\r\n    tag: Tag? = null,\r\n    setupNfc: () -> Unit\r\n) {\r\n    var isDialogForAppointmentDate by remember { mutableStateOf(false) }\r\n    var isDialogForNextAppointmentDate by remember { mutableStateOf(false) }\r\n    var isWriteDialogVisible by remember { mutableStateOf(false) }\r\n\r\n    val context = LocalContext.current\r\n    val calendar = Calendar.getInstance()\r\n    val isButtonEnabled by viewModel.buttonEnabled.collectAsState()\r\n\r\n    val nameError by remember {\r\n        derivedStateOf {\r\n            validateTextField(\r\n                \"Name\",\r\n                viewModel.customerName.value.customerName\r\n            )\r\n        }\r\n    }\r\n    val contactError by remember {\r\n        derivedStateOf {\r\n            validateTextField(\r\n                \"Contact Details\",\r\n                viewModel.customerPhoneNo.value.customerPhoneNo\r\n            )\r\n        }\r\n    }\r\n    val vehicleModelError by remember {\r\n        derivedStateOf {\r\n            validateTextField(\r\n                \"Vehicle Model\",\r\n                viewModel.vehicleModel.value.vehicleModel\r\n            )\r\n        }\r\n    }\r\n    val repairError by remember {\r\n        derivedStateOf {\r\n            validateTextField(\r\n                \"Maintenance Done\",\r\n                viewModel.workDone.value.workDone\r\n            )\r\n        }\r\n    }\r\n    val appointmentDateError by remember {\r\n        derivedStateOf {\r\n            checkIfDateIsToday(\r\n                viewModel.appointmentDate.value.appointmentDate ?: \"\"\r\n            )\r\n        }\r\n    }\r\n    val nextAppointmentDateError by remember {\r\n        derivedStateOf {\r\n            checkIfDateIsInFuture(\r\n                viewModel.nextAppointmentDate.value.nextAppointmentDate ?: \"\"\r\n            )\r\n        }\r\n    }\r\n\r\n    if (isDialogForAppointmentDate) {\r\n        ShowDatePickerDialog(context, calendar) { selectedDate ->\r\n            viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(selectedDate))\r\n            isDialogForAppointmentDate = false\r\n        }\r\n    }\r\n\r\n    if (isDialogForNextAppointmentDate) {\r\n        ShowDatePickerDialog(context, calendar) { selectedDate ->\r\n            viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(selectedDate))\r\n            isDialogForNextAppointmentDate = false\r\n        }\r\n    }\r\n\r\n    if (isWriteDialogVisible) {\r\n        WriteDialog(\r\n            viewModel = viewModel,\r\n            onCancel = { viewModel.writeButtonState(false) },\r\n            onOk = { viewModel.writeButtonState(false) }\r\n        )\r\n    }\r\n\r\n    Scaffold(\r\n        modifier = Modifier.background(color = colorScheme.background),\r\n        topBar = {\r\n            TopAppBar(\r\n                title = {\r\n                    Text(\r\n                        text = stringResource(R.string.write_to_nfc),\r\n                        style = typography.title\r\n                    )\r\n                },\r\n                navigationIcon = {\r\n                    IconButton(onClick = onNavigateUp) {\r\n                        Icon(\r\n                            painter = painterResource(id = R.drawable.ic_arrow_back),\r\n                            contentDescription = stringResource(R.string.navigate_up)\r\n                        )\r\n                    }\r\n                },\r\n            )\r\n        },\r\n        content = { innerPadding ->\r\n            val scrollState = rememberScrollState()\r\n            Surface(\r\n                modifier = Modifier\r\n                    .padding(innerPadding)\r\n                    .imePadding(),\r\n                color = colorScheme.background\r\n            ) {\r\n                Column(\r\n                    modifier = Modifier\r\n                        .padding(16.dp)\r\n                        .verticalScroll(scrollState)\r\n                        .windowInsetsPadding(WindowInsets.ime),\r\n                    verticalArrangement = Arrangement.spacedBy(8.dp)\r\n                ) {\r\n                    Text(\r\n                        text = stringResource(R.string.add_screen_title),\r\n                        style = typography.title,\r\n                        maxLines = 2,\r\n                        modifier = Modifier\r\n                            .padding(vertical = 8.dp)\r\n                            .fillMaxWidth(),\r\n                        color = colorScheme.primary\r\n                    )\r\n\r\n                    CustomTextField(\r\n                        label = stringResource(R.string.name_label),\r\n                        placeHolder = stringResource(R.string.name_placeholder),\r\n                        inputType = String,\r\n                        isTrailingIcon = false,\r\n                        onTrailingIconClick = {},\r\n                        inputValue = viewModel.customerName.value.customerName,\r\n                        onInputValueChange = {\r\n                            viewModel.onEvent(\r\n                                InfoScreenEvents.EnteredCustomerName(\r\n                                    it\r\n                                )\r\n                            )\r\n                        },\r\n                        errorMessage = nameError\r\n                    )\r\n\r\n                    CustomTextField(\r\n                        label = stringResource(R.string.contact_label),\r\n                        placeHolder = stringResource(R.string.contact_placeholder),\r\n                        inputType = Int,\r\n                        isTrailingIcon = false,\r\n                        onTrailingIconClick = {},\r\n                        inputValue = viewModel.customerPhoneNo.value.customerPhoneNo,\r\n                        onInputValueChange = {\r\n                            viewModel.onEvent(\r\n                                InfoScreenEvents.EnteredCustomerPhoneNo(\r\n                                    it\r\n                                )\r\n                            )\r\n                        },\r\n                        errorMessage = contactError\r\n                    )\r\n\r\n                    Text(\r\n                        text = stringResource(R.string.vehicle_details),\r\n                        style = typography.title,\r\n                        maxLines = 2,\r\n                        modifier = Modifier\r\n                            .padding(vertical = 8.dp)\r\n                            .fillMaxWidth(),\r\n                        color = colorScheme.primary\r\n                    )\r\n\r\n                    CustomTextField(\r\n                        label = stringResource(R.string.vehicle_model_label),\r\n                        placeHolder = stringResource(R.string.vehicle_model_placeholder),\r\n                        inputType = String,\r\n                        isTrailingIcon = false,\r\n                        onTrailingIconClick = {},\r\n                        inputValue = viewModel.vehicleModel.value.vehicleModel,\r\n                        onInputValueChange = {\r\n                            viewModel.onEvent(\r\n                                InfoScreenEvents.EnteredVehicleModel(\r\n                                    it\r\n                                )\r\n                            )\r\n                        },\r\n                        errorMessage = vehicleModelError\r\n                    )\r\n\r\n                    CustomTextField(\r\n                        label = stringResource(R.string.repair_label),\r\n                        placeHolder = stringResource(R.string.repair_placeholder),\r\n                        inputType = String,\r\n                        isTrailingIcon = false,\r\n                        onTrailingIconClick = {},\r\n                        inputValue = viewModel.workDone.value.workDone,\r\n                        onInputValueChange = { viewModel.onEvent(InfoScreenEvents.EnteredWorkDone(it)) },\r\n                        errorMessage = repairError\r\n                    )\r\n\r\n                    CustomTextField(\r\n                        label = stringResource(R.string.appointment_date_label),\r\n                        placeHolder = stringResource(R.string.appointment_date_placeholder),\r\n                        inputType = String,\r\n                        isTrailingIcon = true,\r\n                        onTrailingIconClick = {\r\n                            isDialogForAppointmentDate = !isDialogForAppointmentDate\r\n                        },\r\n                        inputValue = viewModel.appointmentDate.value.appointmentDate\r\n                            ?: \"DD-MM-YYYY\",\r\n                        onInputValueChange = {},\r\n                        errorMessage = appointmentDateError,\r\n                        isReadable = true\r\n                    )\r\n\r\n                    CustomTextField(\r\n                        label = stringResource(R.string.next_appointment_date_label),\r\n                        placeHolder = stringResource(R.string.next_appointment_date_placeholder),\r\n                        inputType = String,\r\n                        isTrailingIcon = true,\r\n                        onTrailingIconClick = {\r\n                            isDialogForNextAppointmentDate = !isDialogForNextAppointmentDate\r\n                        },\r\n                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate\r\n                            ?: \"DD-MM-YYYY\",\r\n                        onInputValueChange = {},\r\n                        errorMessage = nextAppointmentDateError,\r\n                        isReadable = true\r\n                    )\r\n\r\n                    Spacer(modifier = Modifier.weight(1f))\r\n\r\n                    PrimaryButton(\r\n                        onClick = {\r\n                            if (tag != null) {\r\n                                viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)\r\n                            }\r\n                            onNavigateToScanTag()\r\n                            //viewModel.writeButtonState(true)\r\n                            isWriteDialogVisible = true\r\n                        },\r\n                        label = stringResource(R.string.bt_write_to_nfc),\r\n                        isEnabled = isButtonEnabled\r\n                    )\r\n                }\r\n            }\r\n        }\r\n    )\r\n}\r\n\r\n@Composable\r\nfun ShowDatePickerDialog(\r\n    context: Context,\r\n    calendar: Calendar,\r\n    onDateSelected: (String) -> Unit\r\n) {\r\n    DatePickerDialog(\r\n        context,\r\n        { _, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->\r\n            val selectedDate = formatDate(selectedDayOfMonth, selectedMonth, selectedYear)\r\n            onDateSelected(selectedDate)\r\n        },\r\n        calendar.get(Calendar.YEAR),\r\n        calendar.get(Calendar.MONTH),\r\n        calendar.get(Calendar.DAY_OF_MONTH)\r\n    ).show()\r\n}\r\n\r\nfun formatDate(day: Int, month: Int, year: Int): String {\r\n    val calendar = Calendar.getInstance().apply {\r\n        set(year, month, day)\r\n    }\r\n    val format = SimpleDateFormat(\"dd MMMM yy\", Locale.getDefault())\r\n    return format.format(calendar.time)\r\n}\r\n\r\nfun checkIfDateIsInFuture(dateString: String?): String? {\r\n    if (dateString.isNullOrEmpty()) {\r\n        return \"Date cannot be empty\"\r\n    }\r\n    val dateFormat = SimpleDateFormat(\"dd MMMM yy\", Locale.getDefault())\r\n    val inputDate = dateFormat.parse(dateString)\r\n    val currentDate = Calendar.getInstance().time\r\n\r\n    return if (inputDate != null && inputDate.before(currentDate)) {\r\n        \"The date must be in the future\"\r\n    } else {\r\n        null\r\n    }\r\n}\r\n\r\nfun checkIfDateIsToday(dateString: String?): String? {\r\n    if (dateString.isNullOrEmpty()) {\r\n        return \"Date cannot be empty\"\r\n    }\r\n    val dateFormat = SimpleDateFormat(\"dd MMMM yy\", Locale.getDefault())\r\n    val inputDate = dateFormat.parse(dateString)\r\n    val currentDate = Calendar.getInstance().apply {\r\n        set(Calendar.HOUR_OF_DAY, 0)\r\n        set(Calendar.MINUTE, 0)\r\n        set(Calendar.SECOND, 0)\r\n        set(Calendar.MILLISECOND, 0)\r\n    }.time\r\n\r\n    val inputCalendar = Calendar.getInstance().apply {\r\n        time = inputDate ?: return \"Invalid date format\"\r\n        set(Calendar.HOUR_OF_DAY, 0)\r\n        set(Calendar.MINUTE, 0)\r\n        set(Calendar.SECOND, 0)\r\n        set(Calendar.MILLISECOND, 0)\r\n    }.time\r\n    return if (inputCalendar != currentDate) {\r\n        \"The date must be today\"\r\n    } else {\r\n        null\r\n    }\r\n}\r\n\r\n\r\nfun validateTextField(label: String, input: String): String? =\r\n    if (input.isEmpty()) \"$label cannot be empty\" else null\r\n\r\n/*\r\n@Preview(showBackground = true)\r\n@Composable\r\nfun AddScreenPreview() {\r\n    AddScreen(onNavigateToScanTag = {}, onNavigateUp = {}, viewModel = AddInfoViewModel())\r\n}*/\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/ui/screens/AddScreen.kt b/app/src/main/java/dev/borisochieng/autocaretag/ui/screens/AddScreen.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/ui/screens/AddScreen.kt	(revision 52be947555909f7496dee13ee4b4c20a5934dc8f)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/ui/screens/AddScreen.kt	(date 1722424666146)
+@@ -4,8 +4,6 @@
+ import android.content.Context
+ import android.icu.util.Calendar
+ import android.nfc.Tag
+-import android.util.Log
+-import android.widget.DatePicker
+ import androidx.compose.foundation.background
+ import androidx.compose.foundation.layout.Arrangement
+ import androidx.compose.foundation.layout.Column
+@@ -16,8 +14,6 @@
+ import androidx.compose.foundation.layout.imePadding
+ import androidx.compose.foundation.layout.padding
+ import androidx.compose.foundation.layout.windowInsetsPadding
+-import androidx.compose.foundation.lazy.LazyColumn
+-import androidx.compose.foundation.lazy.rememberLazyListState
+ import androidx.compose.foundation.rememberScrollState
+ import androidx.compose.foundation.verticalScroll
+ import androidx.compose.material3.ExperimentalMaterial3Api
+@@ -28,7 +24,6 @@
+ import androidx.compose.material3.Text
+ import androidx.compose.material3.TopAppBar
+ import androidx.compose.runtime.Composable
+-import androidx.compose.runtime.LaunchedEffect
+ import androidx.compose.runtime.collectAsState
+ import androidx.compose.runtime.derivedStateOf
+ import androidx.compose.runtime.getValue
+@@ -39,10 +34,8 @@
+ import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.res.painterResource
+ import androidx.compose.ui.res.stringResource
+-import androidx.compose.ui.tooling.preview.Preview
+ import androidx.compose.ui.unit.dp
+ import dev.borisochieng.autocaretag.R
+-import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
+ import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
+ import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents
+ import dev.borisochieng.autocaretag.ui.components.CustomTextField
+@@ -50,7 +43,6 @@
+ import dev.borisochieng.autocaretag.ui.components.WriteDialog
+ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
+ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
+-import org.koin.androidx.compose.koinViewModel
+ import java.text.SimpleDateFormat
+ import java.util.Locale
+ 
+@@ -71,49 +63,61 @@
+     val calendar = Calendar.getInstance()
+     val isButtonEnabled by viewModel.buttonEnabled.collectAsState()
+ 
++    val nameEntered = remember { mutableStateOf(false) }
+     val nameError by remember {
+         derivedStateOf {
+             validateTextField(
+-                "Name",
+-                viewModel.customerName.value.customerName
++                label = "Name",
++                inputEntered = nameEntered.value,
++                input = viewModel.customerName.value.customerName
+             )
+         }
+     }
++    val contactEntered = remember { mutableStateOf(false) }
+     val contactError by remember {
+         derivedStateOf {
+             validateTextField(
+-                "Contact Details",
+-                viewModel.customerPhoneNo.value.customerPhoneNo
++                label = "Contact Details",
++                inputEntered = contactEntered.value,
++                input = viewModel.customerPhoneNo.value.customerPhoneNo
+             )
+         }
+     }
++    val vehicleModelEntered = remember { mutableStateOf(false) }
+     val vehicleModelError by remember {
+         derivedStateOf {
+             validateTextField(
+-                "Vehicle Model",
+-                viewModel.vehicleModel.value.vehicleModel
++                label = "Vehicle Model",
++                inputEntered = vehicleModelEntered.value,
++                input = viewModel.vehicleModel.value.vehicleModel
+             )
+         }
+     }
++    val repairEntered = remember { mutableStateOf(false) }
+     val repairError by remember {
+         derivedStateOf {
+             validateTextField(
+-                "Maintenance Done",
+-                viewModel.workDone.value.workDone
++                label = "Maintenance Done",
++                inputEntered = repairEntered.value,
++                input = viewModel.workDone.value.workDone
+             )
+         }
+     }
++    val dateIconClicked = remember { mutableStateOf(false) }
+     val appointmentDateError by remember {
+         derivedStateOf {
+             checkIfDateIsToday(
+-                viewModel.appointmentDate.value.appointmentDate ?: ""
++                dateIconClicked.value && !isDialogForAppointmentDate,
++                viewModel.appointmentDate.value.appointmentDate
+             )
+         }
+     }
++    val nextDateIconClicked = remember { mutableStateOf(false) }
+     val nextAppointmentDateError by remember {
+         derivedStateOf {
+             checkIfDateIsInFuture(
+-                viewModel.nextAppointmentDate.value.nextAppointmentDate ?: ""
++                nextDateIconClicked.value && !isDialogForNextAppointmentDate,
++                viewModel.nextAppointmentDate.value.nextAppointmentDate
+             )
+         }
+     }
+@@ -193,6 +197,7 @@
+                         onTrailingIconClick = {},
+                         inputValue = viewModel.customerName.value.customerName,
+                         onInputValueChange = {
++                            nameEntered.value = true
+                             viewModel.onEvent(
+                                 InfoScreenEvents.EnteredCustomerName(
+                                     it
+@@ -210,6 +215,7 @@
+                         onTrailingIconClick = {},
+                         inputValue = viewModel.customerPhoneNo.value.customerPhoneNo,
+                         onInputValueChange = {
++                            contactEntered.value = true
+                             viewModel.onEvent(
+                                 InfoScreenEvents.EnteredCustomerPhoneNo(
+                                     it
+@@ -237,6 +243,7 @@
+                         onTrailingIconClick = {},
+                         inputValue = viewModel.vehicleModel.value.vehicleModel,
+                         onInputValueChange = {
++                            vehicleModelEntered.value = true
+                             viewModel.onEvent(
+                                 InfoScreenEvents.EnteredVehicleModel(
+                                     it
+@@ -253,7 +260,10 @@
+                         isTrailingIcon = false,
+                         onTrailingIconClick = {},
+                         inputValue = viewModel.workDone.value.workDone,
+-                        onInputValueChange = { viewModel.onEvent(InfoScreenEvents.EnteredWorkDone(it)) },
++                        onInputValueChange = {
++                            repairEntered.value = true
++                            viewModel.onEvent(InfoScreenEvents.EnteredWorkDone(it))
++                        },
+                         errorMessage = repairError
+                     )
+ 
+@@ -263,10 +273,10 @@
+                         inputType = String,
+                         isTrailingIcon = true,
+                         onTrailingIconClick = {
++                            dateIconClicked.value = true
+                             isDialogForAppointmentDate = !isDialogForAppointmentDate
+                         },
+-                        inputValue = viewModel.appointmentDate.value.appointmentDate
+-                            ?: "DD-MM-YYYY",
++                        inputValue = viewModel.appointmentDate.value.appointmentDate,
+                         onInputValueChange = {},
+                         errorMessage = appointmentDateError,
+                         isReadable = true
+@@ -278,10 +288,10 @@
+                         inputType = String,
+                         isTrailingIcon = true,
+                         onTrailingIconClick = {
++                            nextDateIconClicked.value = true
+                             isDialogForNextAppointmentDate = !isDialogForNextAppointmentDate
+                         },
+-                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate
+-                            ?: "DD-MM-YYYY",
++                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate,
+                         onInputValueChange = {},
+                         errorMessage = nextAppointmentDateError,
+                         isReadable = true
+@@ -333,7 +343,11 @@
+     return format.format(calendar.time)
+ }
+ 
+-fun checkIfDateIsInFuture(dateString: String?): String? {
++fun checkIfDateIsInFuture(
++    dateIconClicked: Boolean,
++    dateString: String?
++): String? {
++    if (!dateIconClicked) return null
+     if (dateString.isNullOrEmpty()) {
+         return "Date cannot be empty"
+     }
+@@ -348,7 +362,11 @@
+     }
+ }
+ 
+-fun checkIfDateIsToday(dateString: String?): String? {
++fun checkIfDateIsToday(
++    dateIconClicked: Boolean,
++    dateString: String?
++): String? {
++    if (!dateIconClicked) return null
+     if (dateString.isNullOrEmpty()) {
+         return "Date cannot be empty"
+     }
+@@ -376,8 +394,12 @@
+ }
+ 
+ 
+-fun validateTextField(label: String, input: String): String? =
+-    if (input.isEmpty()) "$label cannot be empty" else null
++fun validateTextField(
++    label: String,
++    inputEntered: Boolean,
++    input: String,
++): String? =
++    if (input.isEmpty() && inputEntered) "$label cannot be empty" else null
+ 
+ /*
+ @Preview(showBackground = true)
+Index: app/src/main/java/dev/borisochieng/autocaretag/ui/screens/HomeScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.ui.screens\r\n\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.border\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Box\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.lazy.LazyColumn\r\nimport androidx.compose.foundation.lazy.items\r\nimport androidx.compose.foundation.shape.CircleShape\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.ButtonDefaults\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TopAppBar\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.graphics.vector.ImageVector\r\nimport androidx.compose.ui.res.stringResource\r\nimport androidx.compose.ui.res.vectorResource\r\nimport androidx.compose.ui.text.SpanStyle\r\nimport androidx.compose.ui.text.buildAnnotatedString\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.text.withStyle\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.lifecycle.viewmodel.compose.viewModel\r\nimport dev.borisochieng.autocaretag.R\r\nimport dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel\r\nimport dev.borisochieng.autocaretag.ui.components.ReadDialog\r\nimport dev.borisochieng.autocaretag.ui.components.ClientCard\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography\r\nimport dev.borisochieng.autocaretag.utils.Dummies.fakeClients\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun HomeScreen(\r\n    onNavigateToAddClient: () -> Unit,\r\n    onNavigateToManage: () -> Unit,\r\n    clients: List<Client>,\r\n    viewModel: NFCReaderViewModel\r\n) {\r\n    var isReadDialogVisible by remember {\r\n        mutableStateOf(false)\r\n    }\r\n    val screenTitle = buildAnnotatedString {\r\n        withStyle(\r\n            style = SpanStyle(\r\n                color = colorScheme.onBackground\r\n            )\r\n        ) {\r\n            append(stringResource(R.string.auto))\r\n        }\r\n        withStyle(\r\n            style = SpanStyle(\r\n                color = colorScheme.primary\r\n            )\r\n        ) {\r\n            append(stringResource(R.string.care))\r\n        }\r\n    }\r\n    if (isReadDialogVisible) {\r\n        ReadDialog(viewModel = viewModel, onCancel = { isReadDialogVisible = false })\r\n    }\r\n    Scaffold(\r\n        modifier = Modifier.background(colorScheme.background),\r\n        topBar = {\r\n            TopAppBar(\r\n                title = {\r\n                    Box(\r\n                        modifier = Modifier.fillMaxWidth(),\r\n                       contentAlignment = Alignment.Center\r\n                    ) {\r\n                        Text(\r\n                            text = screenTitle,\r\n                            style = typography.title,\r\n                            modifier = Modifier\r\n                                .fillMaxWidth()\r\n                        )\r\n                    }\r\n                },\r\n            )\r\n        }\r\n    ) { innerPadding ->\r\n        LazyColumn(\r\n            modifier = Modifier.padding(innerPadding),\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n            item {\r\n                Box(\r\n                    modifier = Modifier\r\n                        .size(200.dp)\r\n                        .border(\r\n                            width = 1.dp,\r\n                            color = colorScheme.primary,\r\n                            shape = CircleShape\r\n                        )\r\n                        .background(\r\n                            color = colorScheme.background,\r\n                            shape = CircleShape\r\n                        )\r\n                        .clickable {\r\n                            isReadDialogVisible = true\r\n                        },\r\n                    contentAlignment = Alignment.Center\r\n                ) {\r\n                    Text(\r\n                        modifier = Modifier\r\n                            .padding(4.dp),\r\n                        text = stringResource(R.string.tap_to_scan_nfc_tag),\r\n                        style = typography.title,\r\n                    )\r\n                }\r\n            }\r\n\r\n            item {\r\n                Row(\r\n                    modifier = Modifier.padding(vertical = 16.dp),\r\n                    verticalAlignment = Alignment.CenterVertically,\r\n                    horizontalArrangement = Arrangement.SpaceBetween\r\n                )\r\n                {\r\n\r\n                    Text(\r\n                        text = stringResource(R.string.nfc_status),\r\n                        modifier = Modifier\r\n                            .padding(vertical = 2.dp)\r\n                            .align(Alignment.CenterVertically),\r\n                        style = typography.body,\r\n                        fontWeight = FontWeight.SemiBold\r\n                    )\r\n\r\n                    Spacer(\r\n                        modifier = Modifier\r\n                            .padding(horizontal = 4.dp, vertical = 2.dp)\r\n                            .size(6.dp)\r\n                            .background(colorScheme.onBackgroundVariant, shape = CircleShape)\r\n                    )\r\n                }\r\n            }\r\n\r\n            item {\r\n                Button(\r\n                    modifier = Modifier\r\n                        .padding(horizontal = 16.dp)\r\n                        .fillMaxWidth()\r\n                        .height(50.dp),\r\n                    onClick = onNavigateToAddClient,\r\n                    shape = shape.button,\r\n                    colors = ButtonDefaults.buttonColors(\r\n                        containerColor = colorScheme.primary,\r\n                        contentColor = Color.White\r\n                    ),\r\n                ) {\r\n                    Row(\r\n                        verticalAlignment = Alignment.CenterVertically,\r\n                        horizontalArrangement = Arrangement.Absolute.SpaceBetween\r\n                    ) {\r\n                        Icon(\r\n                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_add),\r\n                            contentDescription = stringResource(\r\n                                id = R.string.scan_nfc\r\n                            )\r\n                        )\r\n                        Text(\r\n                            text = stringResource(R.string.add_client),\r\n                            style = typography.bodyLarge\r\n                        )\r\n\r\n                    }\r\n                }\r\n            }\r\n\r\n            item {\r\n                Row(\r\n                    modifier = Modifier.padding(\r\n                        start = 16.dp,\r\n                        top = 24.dp,\r\n                        bottom = 16.dp,\r\n                        end = 24.dp\r\n                    ),\r\n                    verticalAlignment = Alignment.CenterVertically,\r\n                    horizontalArrangement = Arrangement.SpaceBetween\r\n                ) {\r\n                    Text(\r\n                        modifier = Modifier.weight(1f),\r\n                        text = stringResource(R.string.recent_activity),\r\n                        style = typography.title,\r\n                        color = colorScheme.primary\r\n                    )\r\n\r\n                    Text(\r\n                        text = stringResource(R.string.view_all),\r\n                        style = typography.body,\r\n                        color = colorScheme.primary,\r\n                        modifier = Modifier\r\n                            .clickable(\r\n                                onClick =\r\n                                onNavigateToManage\r\n                            )\r\n                    )\r\n                }\r\n            }\r\n            if (clients.isNotEmpty()) {\r\n                items(items = clients) { client ->\r\n                    ClientCard(client = client, onNavigateToClient = {})\r\n                }\r\n            } else {\r\n                item {\r\n                    Box(\r\n                        modifier = Modifier.fillMaxSize(),\r\n                        contentAlignment = Alignment.Center\r\n                    ) {\r\n                        Text(\r\n                            text = stringResource(R.string.no_activity),\r\n                            style = typography.bodyLarge,\r\n                            modifier = Modifier\r\n                                .align(Alignment.Center)\r\n                                .fillMaxWidth()\r\n                                .padding(16.dp)\r\n                        )\r\n                    }\r\n                }\r\n\r\n            }\r\n\r\n        }\r\n\r\n\r\n    }\r\n\r\n}\r\n\r\n@Preview(showBackground = true)\r\n@Composable\r\nfun HomeScreenPreview() {\r\n    HomeScreen(\r\n        onNavigateToAddClient = {},\r\n        onNavigateToManage = {},\r\n        clients = fakeClients,\r\n        viewModel()\r\n    )\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/ui/screens/HomeScreen.kt b/app/src/main/java/dev/borisochieng/autocaretag/ui/screens/HomeScreen.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/ui/screens/HomeScreen.kt	(revision 52be947555909f7496dee13ee4b4c20a5934dc8f)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/ui/screens/HomeScreen.kt	(date 1722426338446)
+@@ -84,17 +84,11 @@
+         topBar = {
+             TopAppBar(
+                 title = {
+-                    Box(
+-                        modifier = Modifier.fillMaxWidth(),
+-                       contentAlignment = Alignment.Center
+-                    ) {
+-                        Text(
+-                            text = screenTitle,
+-                            style = typography.title,
+-                            modifier = Modifier
+-                                .fillMaxWidth()
+-                        )
+-                    }
++                    Text(
++                        text = screenTitle,
++                        style = typography.title,
++                        modifier = Modifier.fillMaxWidth()
++                    )
+                 },
+             )
+         }
+@@ -135,9 +129,7 @@
+                     modifier = Modifier.padding(vertical = 16.dp),
+                     verticalAlignment = Alignment.CenterVertically,
+                     horizontalArrangement = Arrangement.SpaceBetween
+-                )
+-                {
+-
++                ) {
+                     Text(
+                         text = stringResource(R.string.nfc_status),
+                         modifier = Modifier
+@@ -147,11 +139,12 @@
+                         fontWeight = FontWeight.SemiBold
+                     )
+ 
++                    val statusColor = if (viewModel.nfcIsEnabled) Color.Green else colorScheme.onBackgroundVariant
+                     Spacer(
+                         modifier = Modifier
+                             .padding(horizontal = 4.dp, vertical = 2.dp)
+                             .size(6.dp)
+-                            .background(colorScheme.onBackgroundVariant, shape = CircleShape)
++                            .background(statusColor, shape = CircleShape)
+                     )
+                 }
+             }
+Index: app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/NFCReaderViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.nfc_reader.ui\r\n\r\nimport android.content.Intent\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.lifecycle.ViewModel\r\nimport androidx.lifecycle.viewModelScope\r\nimport dev.borisochieng.autocaretag.nfc_reader.data.State\r\nimport dev.borisochieng.autocaretag.nfc_reader.repository.NFCReaderRepository\r\nimport dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo\r\nimport dev.borisochieng.autocaretag.room_db.Client\r\nimport dev.borisochieng.autocaretag.room_db.repository.ClientRepository\r\nimport kotlinx.coroutines.flow.MutableStateFlow\r\nimport kotlinx.coroutines.flow.asStateFlow\r\nimport kotlinx.coroutines.flow.update\r\nimport kotlinx.coroutines.launch\r\nimport org.koin.core.component.KoinComponent\r\nimport org.koin.core.component.inject\r\n\r\nclass NFCReaderViewModel : ViewModel(), KoinComponent {\r\n\r\n\tprivate val nfcReaderRepository: NFCReaderRepository by inject()\r\n\tprivate val clientRepository: ClientRepository by inject()\r\n\r\n\tprivate val _tagInfo = MutableStateFlow<State<TagInfo>>(State.Loading)\r\n\tprivate val _clientUiState = MutableStateFlow(ClientUiState())\r\n\tvar clientUiState by mutableStateOf(_clientUiState.value); private set\r\n\tvar tagIsEmpty by mutableStateOf(false); private set\r\n\r\n\tprivate val nfcReadStateFlow: MutableStateFlow<NfcReadState<TagInfo>> = MutableStateFlow(NfcReadState.idle())\r\n\tval nfcReadState = nfcReadStateFlow.asStateFlow()\r\n\r\n\tinit {\r\n\t\tviewModelScope.launch {\r\n\t\t\t_tagInfo.collect {\r\n\t\t\t\tif (it !is State.Success) return@collect\r\n\t\t\t\ttagIsEmpty = it.data.vehicleModel.isEmpty()\r\n\t\t\t\tfetchClientDetails(it.data.id)\r\n\t\t\t}\r\n\t\t}\r\n\t\tviewModelScope.launch {\r\n\t\t\t_clientUiState.collect {\r\n\t\t\t\tclientUiState = it\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n\tfun readNFCTag(intent: Intent) {\r\n\t\t_tagInfo.value = nfcReaderRepository.readNFCTag(intent)\r\n\t}\r\n\r\n\tprivate fun fetchClientDetails(clientId: Long) {\r\n\t\tviewModelScope.launch {\r\n\t\t\tclientRepository.getClientById(clientId).collect { client ->\r\n\t\t\t\tif (client == null) return@collect\r\n\t\t\t\t_clientUiState.update { it.copy(client = client) }\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n\tfun updateClientDetails(client: Client) {\r\n\t\tviewModelScope.launch {\r\n\t\t\tclientRepository.update(client)\r\n\t\t}\r\n\t}\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/NFCReaderViewModel.kt b/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/NFCReaderViewModel.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/NFCReaderViewModel.kt	(revision 52be947555909f7496dee13ee4b4c20a5934dc8f)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/nfc_reader/ui/NFCReaderViewModel.kt	(date 1722419233707)
+@@ -26,6 +26,7 @@
+ 	private val _tagInfo = MutableStateFlow<State<TagInfo>>(State.Loading)
+ 	private val _clientUiState = MutableStateFlow(ClientUiState())
+ 	var clientUiState by mutableStateOf(_clientUiState.value); private set
++	var nfcIsEnabled by mutableStateOf(false); private set
+ 	var tagIsEmpty by mutableStateOf(false); private set
+ 
+ 	private val nfcReadStateFlow: MutableStateFlow<NfcReadState<TagInfo>> = MutableStateFlow(NfcReadState.idle())
+@@ -65,4 +66,8 @@
+ 		}
+ 	}
+ 
++	fun toggleNfcEnabledStatus(enabled: Boolean) {
++		nfcIsEnabled = enabled
++	}
++
+ }
+\ No newline at end of file
+Index: app/src/main/java/dev/borisochieng/autocaretag/ui/components/CustomTextField.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.ui.components\r\n\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.WindowInsets\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.ime\r\nimport androidx.compose.foundation.layout.imePadding\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.windowInsetsPadding\r\nimport androidx.compose.foundation.text.KeyboardOptions\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.rounded.DateRange\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.IconButton\r\nimport androidx.compose.material3.OutlinedTextField\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TextFieldDefaults\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.res.stringResource\r\nimport androidx.compose.ui.text.input.KeyboardType\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport dev.borisochieng.autocaretag.R\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography\r\n\r\n@Composable\r\nfun CustomTextField(\r\n    label: String,\r\n    placeHolder: String,\r\n    inputType: Any,\r\n    isTrailingIcon: Boolean,\r\n    onTrailingIconClick: () -> Unit,\r\n    onInputValueChange: (String) -> Unit,\r\n    inputValue: String,\r\n    errorMessage: String? = null,\r\n    isReadable: Boolean = false\r\n) {\r\n    Column(\r\n        modifier = Modifier\r\n            .fillMaxWidth(),\r\n        verticalArrangement = Arrangement.spacedBy(4.dp)\r\n    ) {\r\n        Text(\r\n            text = label,\r\n            modifier = Modifier\r\n                .fillMaxWidth()\r\n        )\r\n        OutlinedTextField(\r\n            value = inputValue,\r\n            onValueChange = {\r\n                onInputValueChange(it)\r\n\r\n            },\r\n            readOnly = isReadable,\r\n            shape = shape.button,\r\n            singleLine = true,\r\n            keyboardOptions = KeyboardOptions(keyboardType = checkInputType(inputType)),\r\n            modifier = Modifier\r\n                .fillMaxWidth(),\r\n            colors = TextFieldDefaults.colors(\r\n                focusedContainerColor = colorScheme.background,\r\n                unfocusedContainerColor = colorScheme.background,\r\n                focusedIndicatorColor = colorScheme.primary,\r\n                unfocusedIndicatorColor = colorScheme.onBackground,\r\n                cursorColor = colorScheme.primary\r\n            ),\r\n            placeholder = {\r\n                Text(\r\n                    text = placeHolder,\r\n                    style = typography.bodyLight\r\n                )\r\n            },\r\n            isError = errorMessage != null,\r\n            supportingText = {\r\n                if (errorMessage != null) {\r\n                    Text(\r\n                        text = errorMessage,\r\n                        style = typography.body,\r\n                        color = colorScheme.error,\r\n                        modifier = Modifier.padding(vertical = 4.dp)\r\n                    )\r\n                }\r\n            },\r\n            trailingIcon = {\r\n                if (isTrailingIcon) {\r\n                    IconButton(onClick = onTrailingIconClick) {\r\n                        Icon(\r\n                            imageVector = Icons.Rounded.DateRange,\r\n                            contentDescription = stringResource(\r\n                                R.string.appointment_date\r\n                            )\r\n                        )\r\n                    }\r\n                }\r\n            }\r\n        )\r\n    }\r\n}\r\n\r\nprivate fun checkInputType(input: Any): KeyboardType =\r\n    when (input) {\r\n        is Int -> KeyboardType.Phone\r\n        else -> KeyboardType.Text\r\n    }\r\n\r\n\r\n@Preview(showBackground = true)\r\n@Composable\r\nfun CustomTextFieldPreview() {\r\n    CustomTextField(\r\n        label = \"Owner Name\",\r\n        placeHolder = \"Enter vehicle owner's name\",\r\n        inputType = 500,\r\n        isTrailingIcon = true,\r\n        onTrailingIconClick = {},\r\n        inputValue = \"Rasta man\",\r\n        onInputValueChange = {}\r\n    )\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/ui/components/CustomTextField.kt b/app/src/main/java/dev/borisochieng/autocaretag/ui/components/CustomTextField.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/ui/components/CustomTextField.kt	(revision 52be947555909f7496dee13ee4b4c20a5934dc8f)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/ui/components/CustomTextField.kt	(date 1722421574155)
+@@ -57,14 +57,12 @@
+             value = inputValue,
+             onValueChange = {
+                 onInputValueChange(it)
+-
+             },
+             readOnly = isReadable,
+             shape = shape.button,
+             singleLine = true,
+             keyboardOptions = KeyboardOptions(keyboardType = checkInputType(inputType)),
+-            modifier = Modifier
+-                .fillMaxWidth(),
++            modifier = Modifier.fillMaxWidth(),
+             colors = TextFieldDefaults.colors(
+                 focusedContainerColor = colorScheme.background,
+                 unfocusedContainerColor = colorScheme.background,
+Index: app/src/main/java/dev/borisochieng/autocaretag/ui/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dev.borisochieng.autocaretag.ui\r\n\r\nimport android.app.PendingIntent\r\nimport android.content.Intent\r\nimport android.content.IntentFilter\r\nimport android.nfc.NfcAdapter\r\nimport android.nfc.Tag\r\nimport android.os.Bundle\r\nimport android.widget.Toast\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport androidx.activity.enableEdgeToEdge\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.layout.WindowInsets\r\nimport androidx.compose.foundation.layout.systemBars\r\nimport androidx.compose.foundation.layout.windowInsetsPadding\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.navigation.compose.rememberNavController\r\nimport dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel\r\nimport dev.borisochieng.autocaretag.nfc_writer.data.NfcWriter\r\nimport dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel\r\nimport dev.borisochieng.autocaretag.ui.commons.NavBar\r\nimport dev.borisochieng.autocaretag.ui.navigation.AppRoute\r\nimport dev.borisochieng.autocaretag.ui.navigation.NavActions\r\nimport dev.borisochieng.autocaretag.ui.navigation.Screens\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme\r\nimport dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme\r\nimport org.koin.android.ext.android.inject\r\n\r\nclass MainActivity : ComponentActivity() {\r\n\r\n    private val nfcReaderViewModel: NFCReaderViewModel by inject()\r\n    private var nfcAdapter: NfcAdapter? = null\r\n    private lateinit var navActions: NavActions\r\n\r\n    private var tag: Tag? = null\r\n    private lateinit var pendingIntent: PendingIntent\r\n    private val actions = arrayOf(\r\n        NfcAdapter.ACTION_NDEF_DISCOVERED,\r\n        NfcAdapter.ACTION_TAG_DISCOVERED,\r\n        NfcAdapter.ACTION_TECH_DISCOVERED\r\n    )\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        nfcAdapter = NfcAdapter.getDefaultAdapter(this)\r\n\r\n\r\n        enableEdgeToEdge()\r\n        setContent {\r\n            val navController = rememberNavController()\r\n            navActions = NavActions(navController)\r\n\r\n            AutoCareTagTheme {\r\n                Scaffold(\r\n                    modifier = Modifier\r\n                        .windowInsetsPadding(WindowInsets.systemBars)\r\n                        .background(colorScheme.background),\r\n                    bottomBar = { NavBar(navController) }\r\n                ) { paddingValues ->\r\n                    AppRoute(\r\n                        navActions = navActions,\r\n                        navController = navController,\r\n                        paddingValues = paddingValues,\r\n                        scanNfc = { shouldScan ->\r\n                            if (shouldScan) startNfcScanning() else stopNfcScanning()\r\n                        },\r\n                        tag = tag,\r\n                        setupNfc = { setupNfc() }\r\n                    )\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    override fun onNewIntent(intent: Intent) {\r\n        super.onNewIntent(intent)\r\n        if (intent.action !in actions) return\r\n        nfcReaderViewModel.readNFCTag(intent)\r\n        Toast.makeText(this, \"Tag detected\", Toast.LENGTH_LONG).show()\r\n\r\n        val screen = if (nfcReaderViewModel.tagIsEmpty) {\r\n            Screens.AddScreen\r\n        } else Screens.ClientDetailsScreen(\r\n            nfcReaderViewModel.clientUiState.client.clientId.toString()\r\n        )\r\n        navActions.navigate(screen)\r\n\r\n        // NFC tag discovered\r\n        tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)\r\n    }\r\n\r\n    override fun onResume() {\r\n        super.onResume()\r\n        startNfcScanning(alertUser = false)\r\n    }\r\n\r\n    override fun onPause() {\r\n        super.onPause()\r\n        nfcAdapter?.disableForegroundDispatch(this)\r\n    }\r\n\r\n    private fun startNfcScanning(alertUser: Boolean = true) {\r\n        // Enable foreground dispatch to handle NFC intents\r\n        val intent = Intent(this, javaClass)\r\n            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)\r\n        val pendingIntent = PendingIntent\r\n            .getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE)\r\n        val intentFilters = actions.map { IntentFilter(it) }.toTypedArray()\r\n        nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)\r\n        if (!alertUser) return\r\n        Toast.makeText(this, \"NFC scanning started\", Toast.LENGTH_SHORT).show()\r\n    }\r\n\r\n    private fun stopNfcScanning() {\r\n        // Disable foreground dispatch to stop handling NFC intents\r\n        nfcAdapter?.disableForegroundDispatch(this)\r\n        Toast.makeText(this, \"NFC scanning stopped\", Toast.LENGTH_SHORT).show()\r\n    }\r\n\r\n    private fun setupNfc() {\r\n        nfcAdapter = NfcAdapter.getDefaultAdapter(this)\r\n        val intent = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)\r\n        pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/dev/borisochieng/autocaretag/ui/MainActivity.kt b/app/src/main/java/dev/borisochieng/autocaretag/ui/MainActivity.kt
+--- a/app/src/main/java/dev/borisochieng/autocaretag/ui/MainActivity.kt	(revision 52be947555909f7496dee13ee4b4c20a5934dc8f)
++++ b/app/src/main/java/dev/borisochieng/autocaretag/ui/MainActivity.kt	(date 1722419927763)
+@@ -46,7 +46,6 @@
+         super.onCreate(savedInstanceState)
+         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+ 
+-
+         enableEdgeToEdge()
+         setContent {
+             val navController = rememberNavController()
+@@ -94,6 +93,9 @@
+     override fun onResume() {
+         super.onResume()
+         startNfcScanning(alertUser = false)
++        nfcReaderViewModel.toggleNfcEnabledStatus(
++            enabled = nfcAdapter != null && nfcAdapter?.isEnabled == true
++        )
+     }
+ 
+     override fun onPause() {
