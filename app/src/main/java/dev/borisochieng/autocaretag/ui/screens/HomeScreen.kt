@@ -56,7 +56,11 @@ import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.components.ReadDialog
 import dev.borisochieng.autocaretag.ui.components.ClientCard
+<<<<<<< HEAD
 import dev.borisochieng.autocaretag.ui.components.ScreenTitle
+=======
+import dev.borisochieng.autocaretag.ui.navigation.Screens
+>>>>>>> main
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
@@ -66,16 +70,20 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToAddClient: () -> Unit,
-    onNavigateToManage: () -> Unit,
     clients: List<Client>,
     viewModel: NFCReaderViewModel,
+<<<<<<< HEAD
     scanNFC: () -> Unit
+=======
+    scanForNfcTag: () -> Unit,
+    navigate: (Screens) -> Unit
+>>>>>>> main
 ) {
     var isReadDialogVisible by remember {
         mutableStateOf(false)
     }
     if (isReadDialogVisible) {
+<<<<<<< HEAD
         ReadDialog(viewModel = viewModel, onCancel = { isReadDialogVisible = false }, scanNFC )
     }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -103,6 +111,108 @@ fun HomeScreen(
                 NavigationDrawerItem(
                     modifier = Modifier.padding(4.dp),
                     label = {
+=======
+        ReadDialog(
+            viewModel = viewModel,
+            navigate = navigate,
+            onCancel = { isReadDialogVisible = false }
+        )
+    }
+    Scaffold(
+        modifier = Modifier.background(colorScheme.background),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = screenTitle,
+                        style = typography.title,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+            )
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier.padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .size(200.dp)
+                        .border(
+                            width = 1.dp,
+                            color = colorScheme.primary,
+                            shape = CircleShape
+                        )
+                        .background(
+                            color = colorScheme.background,
+                            shape = CircleShape
+                        )
+                        .clickable {
+                            scanForNfcTag()
+                            isReadDialogVisible = true
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(4.dp),
+                        text = stringResource(R.string.tap_to_scan_nfc_tag),
+                        style = typography.title,
+                    )
+                }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(R.string.nfc_status),
+                        modifier = Modifier
+                            .padding(vertical = 2.dp)
+                            .align(Alignment.CenterVertically),
+                        style = typography.body,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    val statusColor = if (viewModel.nfcIsEnabled) Color.Green else colorScheme.onBackgroundVariant
+                    Spacer(
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp, vertical = 2.dp)
+                            .size(6.dp)
+                            .background(statusColor, shape = CircleShape)
+                    )
+                }
+            }
+
+            item {
+                Button(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    onClick = { navigate(Screens.AddScreen) },
+                    shape = shape.button,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorScheme.primary,
+                        contentColor = Color.White
+                    ),
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Absolute.SpaceBetween
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_add),
+                            contentDescription = stringResource(
+                                id = R.string.scan_nfc
+                            )
+                        )
+>>>>>>> main
                         Text(
                             text = "Rate this app",
                             style = typography.bodyLarge
@@ -149,6 +259,7 @@ fun HomeScreen(
                     }
                 )
             }
+<<<<<<< HEAD
         ) { innerPadding ->
             LazyColumn(
                 modifier = Modifier
@@ -156,6 +267,41 @@ fun HomeScreen(
                     .padding(top = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+=======
+
+            item {
+                Row(
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        top = 24.dp,
+                        bottom = 16.dp,
+                        end = 24.dp
+                    ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(R.string.recent_activity),
+                        style = typography.title,
+                        color = colorScheme.primary
+                    )
+
+                    Text(
+                        text = stringResource(R.string.view_all),
+                        style = typography.body,
+                        color = colorScheme.primary,
+                        modifier = Modifier
+                            .clickable { navigate(Screens.ManageScreen) }
+                    )
+                }
+            }
+            if (clients.isNotEmpty()) {
+                items(items = clients) { client ->
+                    ClientCard(client = client, onNavigateToClient = {})
+                }
+            } else {
+>>>>>>> main
                 item {
                     Box(
                         modifier = Modifier
@@ -306,6 +452,7 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
+<<<<<<< HEAD
     HomeScreen(
         onNavigateToAddClient = {},
         onNavigateToManage = {},
@@ -313,4 +460,7 @@ fun HomeScreenPreview() {
         viewModel(),
         {}
     )
+=======
+    HomeScreen(fakeClients, viewModel(), {}) {}
+>>>>>>> main
 }
