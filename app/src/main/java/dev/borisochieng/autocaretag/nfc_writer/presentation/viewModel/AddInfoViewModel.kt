@@ -1,14 +1,16 @@
 package dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel
 
-import android.content.Context
 import android.nfc.Tag
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.borisochieng.autocaretag.nfc_writer.data.NfcWriter
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
 import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
+import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -19,6 +21,8 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
 
 
     private val nfcWriter: NfcWriter by inject()
+    private val savedStateHandle: SavedStateHandle by inject()
+    private val clientRepository: ClientRepository by inject()
 
     private val _customerName = mutableStateOf(
         InfoScreenState()
@@ -51,6 +55,75 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
     val appointmentDate: State<InfoScreenState> = _appointmentDate
     val nextAppointmentDate: State<InfoScreenState> = _nextAppointmentDate
 
+    init {
+        savedStateHandle.get<Int>("noteId")?.let { noteId ->
+            if (noteId != -1) {
+                //_playNoteState.value = true
+                viewModelScope.launch {
+                    Log.d("NoteId", noteId.toString())
+                    voiceJournalRepository.getNote(noteId).collect { note ->
+                        _noteState.value = noteState.value.copy(voiceJournal = note)
+                        if (note != null) {
+                            currentNoteId = note.id
+                        }
+                        if (note != null) {
+                            _noteTitle.value = _noteTitle.value.copy(text =note.title, isHintVisible = false )
+                            Log.d("NoteTitleNew", note.title)
+                        }
+                        if (note != null) {
+                            _noteContent.value = _noteContent.value.copy(
+                                text = note.content,
+                                isHintVisible = false)
+                        }
+
+                        if (note != null) {
+                            _created.value = _created.value.copy(
+                                created = note.created,
+                                isHintVisible = false
+                            )
+                        }
+
+                        if (note != null) {
+                            _noteColor.value = note.color
+                        }
+                        if (note != null) {
+                            tempFileName = note.fileName
+                            _noteFileName.value = _noteFileName.value.copy(
+                                text = tempFileName
+                            )
+                        }
+                        if (note != null) {
+                            if (note.imageUris?.isNotEmpty()== true) {
+                                tempUris = note.imageUris!!
+                                _tempImageUris.value = _tempImageUris.value.copy(
+                                    imageFileUris = note.imageUris
+                                )
+                                Log.d("Image from file", "${note.imageUris}")
+                            }
+                        }
+                        if (note != null) {
+                            if (note.tags != null) {
+                                _tags.value = note.tags!!
+                            }
+                        }
+                        if (note != null) {
+                            if(note.favourite!=null) {
+                                _favourite.value = _favourite.value.copy(
+                                    favourite = note.favourite!!
+                                )
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+        }
+        Log.d("_NoteTitle",_noteTitle.value.text)
+        getSelectedImageUris()
+
+    }
 
     private fun areAllFieldsValid(): Boolean {
         return _customerName.value.customerName.isNotEmpty() &&
