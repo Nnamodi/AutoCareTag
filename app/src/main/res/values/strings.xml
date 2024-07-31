@@ -2,7 +2,7 @@
     <string name="app_name">AutoCareTag</string>
     <string name="home">Home</string>
     <string name="add">Add</string>
-    <string name="manage">Manage</string>
+    <string name="clients">Clients</string>
     <string name="notifications">Notifications</string>
     <string name="scan_nfc">Scan NFC</string>
     <string name="client_avatar">Client Avatar</string>
@@ -41,7 +41,7 @@
     <string name="add_client">Add client</string>
     <string name="no_recent_activity">No recent Activity</string>
     <string name="no_activity">No activity</string>
-    <string name="tap_to_scan_nfc_tag">Tap to Scan</string>
+    <string name="tap_to_scan_nfc_tag">Tap to Scan \n NFC tag</string>
     <string name="nfc_status">NFC Status</string>
     <string name="vehicle_details">Vehicle Details</string>
 </resources>

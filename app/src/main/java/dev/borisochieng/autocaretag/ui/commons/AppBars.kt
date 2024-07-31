@@ -3,6 +3,7 @@ package dev.borisochieng.autocaretag.ui.commons
 import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -135,14 +136,14 @@ private enum class NavBarItems(
 		icon = R.drawable.home_icon,
 		route = AppRoute.HomeScreen.route
 	),
-	Add(
-		title = R.string.add,
-		icon = R.drawable.add_icon,
-		route = AppRoute.AddScreen.route
-	),
+//	Add(
+//		title = R.string.add,
+//		icon = R.drawable.add_icon,
+//		route = AppRoute.AddScreen.route
+//	),
 	Manage(
-		title = R.string.manage,
-		icon = R.drawable.manage_icon,
+		title = R.string.clients,
+		icon = R.drawable.ic_user,
 		route = AppRoute.ManageScreen.route
 	)
 }

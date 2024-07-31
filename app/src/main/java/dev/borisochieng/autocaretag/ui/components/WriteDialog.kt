@@ -24,10 +24,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,15 +51,20 @@ import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteStatus
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun WriteDialog(
     viewModel: AddInfoViewModel,
     onCancel: () -> Unit,
-    onOk: () -> Unit
+    onOk: () -> Unit,
+    navigateToClientDetails: () -> Unit
 ) {
     var readyToScan by remember { mutableStateOf("") }
     var supportingText by remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
 
     // A dialog with a custom content
     Dialog(onDismissRequest = onCancel) {
@@ -107,6 +114,15 @@ fun WriteDialog(
                                 contentDescription = "Successful"
                             )
                         }
+
+                        LaunchedEffect(Unit) {
+                            scope.launch {
+                                delay(2000L)
+                                navigateToClientDetails()
+                            }
+
+
+                        }
                     }
 
                     NfcWriteStatus.ERROR -> {
@@ -125,14 +141,14 @@ fun WriteDialog(
                                 .padding(16.dp)
                                 .size(100.dp)
                                 .clip(CircleShape)
-                                .background(Color.Green, shape = CircleShape)
+                                .background(colorScheme.error, shape = CircleShape)
                         ) {
                             Icon(
                                 modifier = Modifier
                                     .padding(16.dp)
                                     .size(100.dp),
                                 imageVector = Icons.Rounded.Close,
-                                tint = colorScheme.error,
+                                tint = Color.White,
                                 contentDescription = "Error"
                             )
                         }
@@ -140,7 +156,35 @@ fun WriteDialog(
 
                     NfcWriteStatus.LOADING -> {
                         // Show loading UI
-                        //CircularProgressIndicator()
+                        readyToScan = "Ready to Scan"
+                        supportingText = "Hold your device near the NFC Tag"
+                        Text(
+                            text = readyToScan,
+                            style = typography.title,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                        Text(
+                            text = supportingText,
+                            style = typography.bodyLarge,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(100.dp)
+                                .clip(CircleShape)
+                                .background(shape = CircleShape, color = Color.Transparent),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .clip(CircleShape),
+                                painter = painterResource(id = R.drawable.scanning),
+                                contentDescription = "Scanning",
+                                contentScale = ContentScale.Fit
+                            )
+                        }
                     }
 
                     NfcWriteStatus.IDLE -> {
@@ -187,7 +231,7 @@ fun WriteDialog(
 @Preview(showBackground = true)
 @Composable
 fun WriteDialogPreview() {
-    WriteDialog(viewModel = viewModel(), onCancel = {}, onOk = {})
+    WriteDialog(viewModel = viewModel(), onCancel = {}, onOk = {}, {})
 
 
 }

@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,7 +39,7 @@ fun ClientSearchBar(
 //    val textState = remember { mutableStateOf(TextFieldValue("")) }
 //    val isSearchViewVisible = remember { mutableStateOf(false) }
 
-    OutlinedTextField(
+    TextField(
         value = query,
         onValueChange = { newValue ->
             onQueryChange(newValue)
@@ -52,8 +53,8 @@ fun ClientSearchBar(
         colors = TextFieldDefaults.colors(
             focusedContainerColor = colorScheme.container,
             unfocusedContainerColor = colorScheme.container,
-            focusedIndicatorColor = colorScheme.primary,
-            unfocusedIndicatorColor = colorScheme.onContainer,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
             cursorColor = colorScheme.primary
         ),
         placeholder = {

@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,7 +28,12 @@ private val typography = AutoCareTypography(
     title = TextStyle(
         fontFamily = inter,
         fontSize = 18.sp,
-        fontWeight = FontWeight.W600,
+        fontWeight = FontWeight.SemiBold,
+    ),
+    titleLarge = TextStyle(
+        fontFamily = inter,
+        fontSize = 22.sp,
+        fontWeight = FontWeight.SemiBold
     ),
     body = TextStyle(
         fontFamily = inter ,

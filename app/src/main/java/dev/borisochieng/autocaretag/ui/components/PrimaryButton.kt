@@ -48,5 +48,5 @@ fun PrimaryButton(
 @Preview(showBackground = true)
 @Composable
 fun PrimaryButtonReview() {
-    PrimaryButton(onClick = {}, label = "Update", isEnabled = true)
+    PrimaryButton(onClick = {}, label = "Update", isEnabled = false)
 }

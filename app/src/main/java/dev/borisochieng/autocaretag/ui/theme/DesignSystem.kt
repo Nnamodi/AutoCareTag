@@ -19,6 +19,7 @@ data class AutoCareColorScheme(
 
 data class AutoCareTypography(
     val title: TextStyle,
+    val titleLarge: TextStyle,
     val body: TextStyle,
     val bodyLight: TextStyle,
     val bodyLarge: TextStyle
@@ -48,7 +49,8 @@ val LocalTypography = staticCompositionLocalOf {
         title = TextStyle.Default,
         body = TextStyle.Default,
         bodyLight = TextStyle.Default,
-        bodyLarge = TextStyle.Default
+        bodyLarge = TextStyle.Default,
+        titleLarge = TextStyle.Default
     )
 }
 

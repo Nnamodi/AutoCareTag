@@ -35,7 +35,7 @@ class NavActions(private val navController: NavHostController) {
 		navController.navigate(AppRoute.ManageScreen.route)
 	}
 
-	private fun navigateToClientDetailsScreen(clientId: String) {
+	private fun navigateToClientDetailsScreen(clientId: Long) {
 		navController.navigate(
 			AppRoute.ClientDetailsScreen.routeWithId(clientId)
 		)
@@ -63,7 +63,7 @@ sealed class AppRoute(val route: String) {
 	}
 	data object ManageScreen: AppRoute("manage_screen")
 	data object ClientDetailsScreen: AppRoute("client_details_screen/{clientId}") {
-		fun routeWithId(clientId: String) = String.format("vehicle_details_screen/%s", clientId)
+		fun routeWithId(clientId: Long) = String.format("vehicle_details_screen/%s", clientId)
 	}
 	data object VehicleDetailsScreen: AppRoute("vehicle_details_screen/{clientId}") {
 		fun routeWithId(clientId: String) = String.format("vehicle_details_screen/%s", clientId)
@@ -78,7 +78,7 @@ sealed class Screens {
 	data object AddScreen : Screens() // This is the `add client` screen
 	data class AddRepairDetailsScreen(val vehicleId: String) : Screens()
 	data object ManageScreen : Screens()
-	data class ClientDetailsScreen(val clientId: String) : Screens()
+	data class ClientDetailsScreen(val clientId: Long) : Screens()
 	data class VehicleDetailsScreen(val clientId: String) : Screens()
 	data class RepairHistoryScreen(val vehicleId: String) : Screens()
 	data object Back : Screens()

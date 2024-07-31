@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfc_reader.data.State
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
+import dev.borisochieng.autocaretag.nfc_reader.ui.NfcReadStatus
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
@@ -135,9 +136,9 @@ fun ReadDialog(
                         }
                     }
 
-                    State.Loading -> {
+                    is State.Loading -> {
                         // Show loading UI
-//                        readyToScan = "Ready to Scan"
+                        //CircularProgressIndicator()
                         readyToScan = "Scanning"
                         supportingText = "Hold your device near the NFC Tag"
                         Text(
@@ -167,6 +168,38 @@ fun ReadDialog(
                             )
                         }
                     }
+
+//                    NfcReadStatus.IDLE -> {
+//                        // Show idle UI
+////                        readyToScan = "Ready to Scan"
+////                        supportingText = "Hold your device near the NFC Tag"
+////                        Text(
+////                            text = readyToScan,
+////                            style = typography.title,
+////                            fontWeight = FontWeight.SemiBold,
+////                            modifier = Modifier.padding(4.dp)
+////                        )
+////                        Text(
+////                            text = supportingText,
+////                            style = typography.bodyLarge,
+////                            modifier = Modifier.padding(4.dp)
+////                        )
+////                        Box(
+////                            modifier = Modifier
+////                                .padding(16.dp)
+////                                .size(100.dp)
+////                                .clip(CircleShape)
+////                                .background(Color.Transparent, shape = CircleShape),
+////                            contentAlignment = Alignment.Center
+////                        ) {
+////                            Image(
+////                                modifier = Modifier.clip(CircleShape),
+////                                painter = painterResource(id = R.drawable.scanning),
+////                                contentDescription = "Scanning",
+////                                contentScale = ContentScale.Fit
+////                            )
+////                        }
+//                    }
                 }
 
                 LaunchedEffect(nfcReadState) {
@@ -175,7 +208,7 @@ fun ReadDialog(
                     val screen = if (viewModel.tagIsEmpty) {
                         Screens.AddScreen
                     } else Screens.ClientDetailsScreen(
-                        viewModel.clientUiState.client.clientId.toString()
+                        viewModel.clientUiState.client.clientId
                     )
                     navigate(screen)
                 }
@@ -190,5 +223,5 @@ fun ReadDialog(
 @Preview(showBackground = true)
 @Composable
 fun ReadDialogPreview() {
-    ReadDialog(viewModel = viewModel(), {}) {}
+    ReadDialog(viewModel = viewModel(), {}, {})
 }

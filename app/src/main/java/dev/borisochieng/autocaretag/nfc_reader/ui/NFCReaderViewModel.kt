@@ -70,4 +70,18 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
 		nfcIsEnabled = enabled
 	}
 
+	fun getClients(clientId: Long) =
+		viewModelScope.launch {
+			clientRepository.getClientById(clientId).collect{ clientFromDB ->
+				_clientUiState.update {
+					it.copy(
+						client = clientFromDB!!
+					)
+				}
+
+			}
+
+
+		}
+
 }

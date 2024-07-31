@@ -32,6 +32,7 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import dev.borisochieng.autocaretag.ui.theme.onBackgroundVariant
+import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 
 @Composable
 fun ClientDetailsScreen(
@@ -39,7 +40,7 @@ fun ClientDetailsScreen(
     updateClientInfo: (Client) -> Unit,
     navigate: (Screens) -> Unit
 ) {
-    val (client) = uiState
+    val client = uiState.client
     val note = rememberSaveable { mutableStateOf("") }
 
     Scaffold(
@@ -96,7 +97,7 @@ fun ClientDetailsScreen(
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
-                text = "Lamborghini Urus",
+                text = client.model,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -107,7 +108,7 @@ fun ClientDetailsScreen(
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
-                text = "28-07-2024",
+                text = client.lastMaintained,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -118,7 +119,7 @@ fun ClientDetailsScreen(
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
-                text = "28-08-2024",
+                text = client.nextAppointmentDate,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -131,7 +132,7 @@ fun ClientDetailsScreen(
             Text(
                 modifier = Modifier
                     .padding(vertical = 4.dp),
-                text = "Oil change",
+                text = client.note,
                 style = typography.body,
                 color = Color.Gray
             )
@@ -159,13 +160,13 @@ fun ClientDetailsScreen(
                         clientId = client.clientId,
                         name = client.name,
                         contactInfo = client.contactInfo,
+                        note = note.value.takeIf { it.isNotEmpty() } ?: client.note,
                         model = client.model,
                         lastMaintained = client.lastMaintained,
                         nextAppointmentDate = client.nextAppointmentDate,
-                        note = note.value.takeIf { it.isNotEmpty() } ?: client.note
                     )
                     updateClientInfo(updatedInfo)
-                    navigate(Screens.ClientDetailsScreen(client.clientId.toString()))
+                    navigate(Screens.ClientDetailsScreen(client.clientId))
                 },
                 modifier = Modifier
                     .padding(16.dp)
@@ -213,6 +214,6 @@ private fun DetailItem(
 @Composable
 private fun ClientDetailsScreenPreview() {
     AutoCareTagTheme {
-        ClientDetailsScreen(uiState = ClientUiState(), {}) {}
+        ClientDetailsScreen(uiState = ClientUiState(fakeClients[0]), {}) {}
     }
 }
