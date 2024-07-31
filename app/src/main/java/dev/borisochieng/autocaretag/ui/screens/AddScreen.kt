@@ -4,8 +4,6 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.icu.util.Calendar
 import android.nfc.Tag
-import android.util.Log
-import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,8 +14,6 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,10 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.borisochieng.autocaretag.R
-import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.UiEvent
@@ -55,7 +49,6 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -78,49 +71,61 @@ fun AddScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val nameEntered = remember { mutableStateOf(false) }
     val nameError by remember {
         derivedStateOf {
             validateTextField(
-                "Name",
-                viewModel.customerName.value.customerName
+                label = "Name",
+                inputEntered = nameEntered.value,
+                input = viewModel.customerName.value.customerName
             )
         }
     }
+    val contactEntered = remember { mutableStateOf(false) }
     val contactError by remember {
         derivedStateOf {
             validateTextField(
-                "Contact Details",
-                viewModel.customerPhoneNo.value.customerPhoneNo
+                label = "Contact Details",
+                inputEntered = contactEntered.value,
+                input = viewModel.customerPhoneNo.value.customerPhoneNo
             )
         }
     }
+    val vehicleModelEntered = remember { mutableStateOf(false) }
     val vehicleModelError by remember {
         derivedStateOf {
             validateTextField(
-                "Vehicle Model",
-                viewModel.vehicleModel.value.vehicleModel
+                label = "Vehicle Model",
+                inputEntered = vehicleModelEntered.value,
+                input = viewModel.vehicleModel.value.vehicleModel
             )
         }
     }
+    val repairEntered = remember { mutableStateOf(false) }
     val repairError by remember {
         derivedStateOf {
             validateTextField(
-                "Maintenance Done",
-                viewModel.note.value.note
+                label = "Maintenance Done",
+                inputEntered = repairEntered.value,
+                input = viewModel.note.value.note
             )
         }
     }
+    val dateIconClicked = remember { mutableStateOf(false) }
     val appointmentDateError by remember {
         derivedStateOf {
             checkIfDateIsToday(
-                viewModel.appointmentDate.value.appointmentDate ?: ""
+                dateIconClicked.value && !isDialogForAppointmentDate,
+                viewModel.appointmentDate.value.appointmentDate
             )
         }
     }
+    val nextDateIconClicked = remember { mutableStateOf(false) }
     val nextAppointmentDateError by remember {
         derivedStateOf {
             checkIfDateIsInFuture(
-                viewModel.nextAppointmentDate.value.nextAppointmentDate ?: ""
+                nextDateIconClicked.value && !isDialogForNextAppointmentDate,
+                viewModel.nextAppointmentDate.value.nextAppointmentDate
             )
         }
     }
@@ -228,6 +233,7 @@ fun AddScreen(
                         onTrailingIconClick = {},
                         inputValue = viewModel.customerName.value.customerName,
                         onInputValueChange = {
+                            nameEntered.value = true
                             viewModel.onEvent(
                                 InfoScreenEvents.EnteredCustomerName(
                                     it
@@ -245,6 +251,7 @@ fun AddScreen(
                         onTrailingIconClick = {},
                         inputValue = viewModel.customerPhoneNo.value.customerPhoneNo,
                         onInputValueChange = {
+                            contactEntered.value = true
                             viewModel.onEvent(
                                 InfoScreenEvents.EnteredCustomerPhoneNo(
                                     it
@@ -272,6 +279,7 @@ fun AddScreen(
                         onTrailingIconClick = {},
                         inputValue = viewModel.vehicleModel.value.vehicleModel,
                         onInputValueChange = {
+                            vehicleModelEntered.value = true
                             viewModel.onEvent(
                                 InfoScreenEvents.EnteredVehicleModel(
                                     it
@@ -288,7 +296,10 @@ fun AddScreen(
                         isTrailingIcon = false,
                         onTrailingIconClick = {},
                         inputValue = viewModel.note.value.note,
-                        onInputValueChange = { viewModel.onEvent(InfoScreenEvents.EnteredNote(it)) },
+                        onInputValueChange = {
+                            repairEntered.value = true
+                            viewModel.onEvent(InfoScreenEvents.EnteredNote(it))
+                        },
                         errorMessage = repairError
                     )
 
@@ -298,10 +309,10 @@ fun AddScreen(
                         inputType = String,
                         isTrailingIcon = true,
                         onTrailingIconClick = {
+                            dateIconClicked.value = true
                             isDialogForAppointmentDate = !isDialogForAppointmentDate
                         },
-                        inputValue = viewModel.appointmentDate.value.appointmentDate
-                            ?: "DD-MM-YYYY",
+                        inputValue = viewModel.appointmentDate.value.appointmentDate,
                         onInputValueChange = {},
                         errorMessage = appointmentDateError,
                         isReadable = true
@@ -313,10 +324,10 @@ fun AddScreen(
                         inputType = String,
                         isTrailingIcon = true,
                         onTrailingIconClick = {
+                            nextDateIconClicked.value = true
                             isDialogForNextAppointmentDate = !isDialogForNextAppointmentDate
                         },
-                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate
-                            ?: "DD-MM-YYYY",
+                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate,
                         onInputValueChange = {},
                         errorMessage = nextAppointmentDateError,
                         isReadable = true
@@ -363,7 +374,11 @@ fun formatDate(day: Int, month: Int, year: Int): String {
     return format.format(calendar.time)
 }
 
-fun checkIfDateIsInFuture(dateString: String?): String? {
+fun checkIfDateIsInFuture(
+    dateIconClicked: Boolean,
+    dateString: String?
+): String? {
+    if (!dateIconClicked) return null
     if (dateString.isNullOrEmpty()) {
         return "Date cannot be empty"
     }
@@ -378,7 +393,11 @@ fun checkIfDateIsInFuture(dateString: String?): String? {
     }
 }
 
-fun checkIfDateIsToday(dateString: String?): String? {
+fun checkIfDateIsToday(
+    dateIconClicked: Boolean,
+    dateString: String?
+): String? {
+    if (!dateIconClicked) return null
     if (dateString.isNullOrEmpty()) {
         return "Date cannot be empty"
     }
@@ -406,8 +425,12 @@ fun checkIfDateIsToday(dateString: String?): String? {
 }
 
 
-fun validateTextField(label: String, input: String): String? =
-    if (input.isEmpty()) "$label cannot be empty" else null
+fun validateTextField(
+    label: String,
+    inputEntered: Boolean,
+    input: String,
+): String? =
+    if (input.isEmpty() && inputEntered) "$label cannot be empty" else null
 
 /*
 @Preview(showBackground = true)

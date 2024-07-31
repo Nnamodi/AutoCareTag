@@ -57,14 +57,12 @@ fun CustomTextField(
             value = inputValue,
             onValueChange = {
                 onInputValueChange(it)
-
             },
             readOnly = isReadable,
             shape = shape.button,
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = checkInputType(inputType)),
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = colorScheme.background,
                 unfocusedContainerColor = colorScheme.background,
