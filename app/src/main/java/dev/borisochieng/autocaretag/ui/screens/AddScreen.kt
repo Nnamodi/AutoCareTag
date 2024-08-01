@@ -16,7 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -180,15 +185,19 @@ fun AddScreen(
     }
 
     Scaffold(
-        modifier = Modifier.background(color = colorScheme.background),
+        containerColor = colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.write_to_nfc),
+                        text = stringResource(R.string.add_client),
                         style = typography.title
                     )
                 },
+				navigationIcon = {
+					IconButton(onClick = { navigate(Screens.Back) }) }
+	                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+				}
             )
         },
         content = { innerPadding ->
@@ -300,8 +309,7 @@ fun AddScreen(
                             dateIconClicked.value = true
                             isDialogForAppointmentDate = !isDialogForAppointmentDate
                         },
-                        inputValue = viewModel.appointmentDate.value.appointmentDate
-                            ?: "DD-MM-YYYY",
+                        inputValue = viewModel.appointmentDate.value.appointmentDate,
                         onInputValueChange = {},
                         errorMessage = appointmentDateError,
                         isReadable = true
@@ -316,8 +324,7 @@ fun AddScreen(
                             nextDateIconClicked.value = true
                             isDialogForNextAppointmentDate = !isDialogForNextAppointmentDate
                         },
-                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate
-                            ?: "DD-MM-YYYY",
+                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate,
                         onInputValueChange = {},
                         errorMessage = nextAppointmentDateError,
                         isReadable = true
@@ -334,15 +341,7 @@ fun AddScreen(
                             navigate(Screens.WriteStatusScreen)
 
                             viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
-//                            val client = Client(
-//                                clientId = Math.random().toLong(),
-//                                name = viewModel.customerName.value.customerName,
-//                                contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
-//                                model = viewModel.vehicleModel.value.vehicleModel,
-//                                lastMaintained = viewModel.appointmentDate.value.appointmentDate,
-//                                nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
-//                                note = viewModel.note.value.note
-//                            )
+
                             //clear fields
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerPhoneNo(""))
@@ -355,8 +354,7 @@ fun AddScreen(
                                 viewModel.saveClientToDB(client)
                             }
                         },
-                        modifier = Modifier.padding(bottom = 50.dp),
-                        label = stringResource(R.string.upload),
+                        label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled
                     )
                 }

@@ -35,9 +35,9 @@
     <string name="repair_label">Maintenance Done</string>
     <string name="repair_placeholder">e.g Oil Change</string>
     <string name="appointment_date_label">Appointment Date</string>
-    <string name="appointment_date_placeholder">DD MMMM YYYY</string>
+    <string name="appointment_date_placeholder">Tap to select</string>
     <string name="next_appointment_date_label">Next Appointment Date</string>
-    <string name="next_appointment_date_placeholder">DD MMMM YYYY</string>
+    <string name="next_appointment_date_placeholder">Tap to select</string>
     <string name="bt_write_to_nfc">Upload</string>
     <string name="view_all">View all</string>
     <string name="add_client">Add client</string>

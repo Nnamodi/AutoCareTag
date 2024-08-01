@@ -12,6 +12,8 @@ class NavActions(private val navController: NavHostController) {
             Screens.WriteStatusScreen -> navigateToWriteStatusScreen()
             Screens.ManageScreen -> navigateToManageScreen()
             Screens.MoreScreen -> navigateToMoreScreen()
+            Screens.ClientAddedScreen -> navigateToClientAddedScreen()
+            Screens.ScanningScreen -> navigateToScanningScreen()
             is Screens.ClientDetailsScreen -> navigateToClientDetailsScreen(screen.clientId)
             Screens.Back -> navController.navigateUp()
         }
@@ -50,6 +52,23 @@ class NavActions(private val navController: NavHostController) {
     private fun navigateToMoreScreen() {
         navController.navigate(AppRoute.MoreScreen.route)
     }
+    private fun navigateToClientAddedScreen() {
+        navController.navigate(AppRoute.ClientAddedScreen.route) {
+            popUpTo(AppRoute.HomeScreen.route) {
+                inclusive
+            }
+            launchSingleTop = true
+        }
+    }
+
+    private fun navigateToScanningScreen() {
+        navController.navigate(AppRoute.ScanningScreen.route) {
+            popUpTo(AppRoute.HomeScreen.route) {
+                inclusive
+            }
+            launchSingleTop = true
+        }
+    }
 
     private fun navigateToClientDetailsScreen(clientId: Long) {
         navController.navigate(
@@ -71,6 +90,8 @@ sealed class AppRoute(val route: String) {
     data object WriteStatusScreen : AppRoute("write_status_screen")
     data object ManageScreen : AppRoute("manage_screen")
     data object MoreScreen : AppRoute("more_screen")
+    data object ClientAddedScreen: AppRoute("client_added_screen")
+    data object ScanningScreen: AppRoute("scanning_screen")
     data object ClientDetailsScreen : AppRoute("client_details_screen/{clientId}") {
         fun routeWithId(clientId: Long) = String.format("client_details_screen/%s", clientId)
     }
@@ -84,5 +105,7 @@ sealed class Screens {
     data object ManageScreen : Screens()
     data object MoreScreen : Screens()
     data class ClientDetailsScreen(val clientId: Long) : Screens()
+    data object ClientAddedScreen: Screens()
+    data object ScanningScreen: Screens()
     data object Back : Screens()
 }

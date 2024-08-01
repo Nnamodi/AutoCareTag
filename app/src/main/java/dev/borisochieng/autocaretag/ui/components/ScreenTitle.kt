@@ -1,6 +1,8 @@
 package dev.borisochieng.autocaretag.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -39,8 +41,8 @@ fun ScreenTitle(
     }
     Box(
         modifier = modifier
-            .padding(4.dp)
-            .fillMaxWidth(),
+            .fillMaxSize()
+            .background(colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Text(

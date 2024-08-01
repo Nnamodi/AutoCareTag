@@ -54,9 +54,20 @@ fun HomeScreen(
     scanForNFCTag: () -> Unit,
     navigate: (Screens) -> Unit
 ) {
+//    var isReadDialogVisible by remember {
+//        mutableStateOf(false)
+//    }
+//    if (isReadDialogVisible) {
+//        ReadDialog(
+//            viewModel = viewModel,
+//            onCancel = { isReadDialogVisible = false },
+//            navigate = navigate
+//        )
+//    }
+
     val uiState by viewModel.clientUiState.collectAsState()
     Scaffold(
-        modifier = Modifier.background(colorScheme.background),
+        containerColor = colorScheme.background,
         topBar = {
             TopAppBar(
                 modifier = Modifier.background(colorScheme.background),

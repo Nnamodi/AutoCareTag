@@ -1,10 +1,9 @@
 # AutoCareTag
-This is an Android application that aims to streamline the process of logging, tracking and managing vehicle maintenance.
+This is an Android application that helps in the process of logging, tracking and managing vehicle maintenance.
 
 ## Features
 - Write vehicle information to NFC Tags.
 - Read vehicle information from NFC Tags.
-- Push notifications
 
 ## Getting Started
 ### Prerequisites
@@ -20,7 +19,19 @@ cd AutoCareTag/
 ```
 
 ## Contribution
-Following the guideline in [Contribution](./CONTRIBUTION.md)
+Use the following [guidelines](./CONTRIBUTION.md).
+
+## Screenshots
+![Splash Screen](./screenshots/SplashScreen.png)
+![Home](./screenshots/Home.png)
+![Scanning](./screenshots/Scanning.png)
+![HomeEmptyState](./screenshots/HomeEmptyState.png)
+![Add Client](./screenshots/FormValidation.png)
+![Client List](./screenshots/ClientList.png)
+![ClientListEmptyState](./screenshots/ClientsListEmptyState.png)
+![More](./screenshots/More.png)
+
+
 
 ## License
 This project is licensed under the Apache 2.0 License - see [LICENSE](./LICENSE) file for details.
