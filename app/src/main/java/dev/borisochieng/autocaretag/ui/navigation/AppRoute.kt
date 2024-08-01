@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import dev.borisochieng.autocaretag.nfc_reader.ui.ClientAddedScreen
 import dev.borisochieng.autocaretag.nfc_reader.ui.ClientDetailsScreen
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
+import dev.borisochieng.autocaretag.nfc_reader.ui.ScanningScreen
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.manage.ClientScreen
 import dev.borisochieng.autocaretag.ui.manage.ClientScreenViewModel
@@ -43,7 +44,6 @@ fun AppRoute(
         composable(AppRoute.HomeScreen.route) {
             HomeScreen(
                 viewModel = nfcReaderViewModel,
-                scanForNFCTag = { scanNfc(true) },
                 navigate = navActions::navigate
             )
         }
@@ -73,6 +73,9 @@ fun AppRoute(
             ClientAddedScreen(
                 navigate = navActions::navigate
             )
+        }
+        animatedComposable(AppRoute.ScanningScreen.route) {
+            ScanningScreen(scanNFC = { scanNfc(true) })
         }
     }
 }
