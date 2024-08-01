@@ -52,19 +52,18 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 @Composable
 fun HomeScreen(
     viewModel: NFCReaderViewModel,
-    scanForNFCTag: () -> Unit,
     navigate: (Screens) -> Unit
 ) {
-    var isReadDialogVisible by remember {
-        mutableStateOf(false)
-    }
-    if (isReadDialogVisible) {
-        ReadDialog(
-            viewModel = viewModel,
-            onCancel = { isReadDialogVisible = false },
-            navigate = navigate
-        )
-    }
+//    var isReadDialogVisible by remember {
+//        mutableStateOf(false)
+//    }
+//    if (isReadDialogVisible) {
+//        ReadDialog(
+//            viewModel = viewModel,
+//            onCancel = { isReadDialogVisible = false },
+//            navigate = navigate
+//        )
+//    }
 
     val uiState by viewModel.clientUiState.collectAsState()
     Scaffold(
@@ -73,7 +72,7 @@ fun HomeScreen(
             TopAppBar(
                 modifier = Modifier.background(colorScheme.background),
                 title = {
-                    Box(
+                    Box( 
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
@@ -105,8 +104,7 @@ fun HomeScreen(
                             shape = CircleShape
                         )
                         .clickable {
-                            isReadDialogVisible = true
-                            scanForNFCTag()
+                            navigate(Screens.ScanningScreen)
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -247,5 +245,5 @@ fun HomeScreenPreview() {
     HomeScreen(
         viewModel(),
         {}
-    ) {}
+    )
 }

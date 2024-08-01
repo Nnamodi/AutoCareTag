@@ -356,18 +356,10 @@ fun AddScreen(
                                 viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                             }
                             //viewModel.writeButtonState(true)
-                            isWriteDialogVisible = true
+                            //isWriteDialogVisible = true
 
                             viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
-//                            val client = Client(
-//                                clientId = Math.random().toLong(),
-//                                name = viewModel.customerName.value.customerName,
-//                                contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
-//                                model = viewModel.vehicleModel.value.vehicleModel,
-//                                lastMaintained = viewModel.appointmentDate.value.appointmentDate,
-//                                nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
-//                                note = viewModel.note.value.note
-//                            )
+
                             //clear fields
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerPhoneNo(""))
@@ -375,6 +367,8 @@ fun AddScreen(
                             viewModel.onEvent(InfoScreenEvents.EnteredNote(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(""))
+
+                            navigate(Screens.ScanningScreen)
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled
