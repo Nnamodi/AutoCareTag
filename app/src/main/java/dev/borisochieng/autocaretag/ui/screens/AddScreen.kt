@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -35,26 +33,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.UiEvent
+import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.components.CustomTextField
+import dev.borisochieng.autocaretag.ui.components.Inputs
 import dev.borisochieng.autocaretag.ui.components.PrimaryButton
-import dev.borisochieng.autocaretag.ui.components.WriteDialog
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.UUID.randomUUID
-import dev.borisochieng.autocaretag.room_db.Client
-import dev.borisochieng.autocaretag.ui.components.Inputs
-import dev.borisochieng.autocaretag.ui.navigation.Screens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +61,6 @@ fun AddScreen(
 ) {
     var isDialogForAppointmentDate by remember { mutableStateOf(false) }
     var isDialogForNextAppointmentDate by remember { mutableStateOf(false) }
-    var isWriteDialogVisible by remember { mutableStateOf(false) }
 
 
     val context = LocalContext.current
@@ -156,17 +150,6 @@ fun AddScreen(
             isDialogForNextAppointmentDate = false
         }
     }
-
-    if (isWriteDialogVisible) {
-        WriteDialog(
-            viewModel = viewModel,
-            onCancel = { isWriteDialogVisible = false },
-            navigate = {
-               navigate(Screens.ClientDetailsScreen(client.clientId))
-            }
-
-        )
-    }
     LaunchedEffect(key1 = true) {
 
         viewModel.eventFlow.collectLatest { event ->
@@ -177,7 +160,7 @@ fun AddScreen(
                         viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                     }
                     //viewModel.writeButtonState(true)
-                    isWriteDialogVisible = true
+                    navigate(Screens.WriteStatusScreen)
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             message = "Client Saved"
@@ -288,9 +271,7 @@ fun AddScreen(
                         inputValue = viewModel.vehicleModel.value.vehicleModel,
                         onInputValueChange = {
                             viewModel.onEvent(
-                                InfoScreenEvents.EnteredVehicleModel(
-                                    it
-                                )
+                                InfoScreenEvents.EnteredVehicleModel(it)
                             )
                         },
                         errorMessage = vehicleModelError
@@ -350,7 +331,7 @@ fun AddScreen(
                                 viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                             }
                             //viewModel.writeButtonState(true)
-                            isWriteDialogVisible = true
+                            navigate(Screens.WriteStatusScreen)
 
                             viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
 //                            val client = Client(
@@ -374,7 +355,8 @@ fun AddScreen(
                                 viewModel.saveClientToDB(client)
                             }
                         },
-                        label = stringResource(R.string.bt_write_to_nfc),
+                        modifier = Modifier.padding(bottom = 50.dp),
+                        label = stringResource(R.string.upload),
                         isEnabled = isButtonEnabled
                     )
                 }

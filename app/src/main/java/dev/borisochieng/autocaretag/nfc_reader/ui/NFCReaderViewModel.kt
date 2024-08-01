@@ -56,7 +56,7 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
         _tagInfo.value = nfcReaderRepository.readNFCTag(intent)
     }
 
-    private fun fetchClientDetails(clientId: Long) {
+    fun fetchClientDetails(clientId: Long) {
         viewModelScope.launch {
             clientRepository.getClientById(clientId).collect { client ->
                 if (client != null) {

@@ -9,6 +9,7 @@ class NavActions(private val navController: NavHostController) {
             Screens.HomeScreen -> navigateToHomeScreen()
             Screens.ReadStatusScreen -> navigateToReadStatusScreen()
             Screens.AddScreen -> navigateToAddScreen()
+            Screens.WriteStatusScreen -> navigateToWriteStatusScreen()
             Screens.ManageScreen -> navigateToManageScreen()
             Screens.MoreScreen -> navigateToMoreScreen()
             is Screens.ClientDetailsScreen -> navigateToClientDetailsScreen(screen.clientId)
@@ -26,6 +27,15 @@ class NavActions(private val navController: NavHostController) {
 
     private fun navigateToAddScreen() {
         navController.navigate(AppRoute.AddScreen.route) {
+            popUpTo(AppRoute.HomeScreen.route) {
+                inclusive
+            }
+            launchSingleTop = true
+        }
+    }
+
+    private fun navigateToWriteStatusScreen() {
+        navController.navigate(AppRoute.WriteStatusScreen.route) {
             popUpTo(AppRoute.HomeScreen.route) {
                 inclusive
             }
@@ -58,6 +68,7 @@ sealed class AppRoute(val route: String) {
     data object HomeScreen : AppRoute("home_screen")
     data object ReadStatusScreen : AppRoute("read_status_screen")
     data object AddScreen : AppRoute("add_screen")
+    data object WriteStatusScreen : AppRoute("write_status_screen")
     data object ManageScreen : AppRoute("manage_screen")
     data object MoreScreen : AppRoute("more_screen")
     data object ClientDetailsScreen : AppRoute("client_details_screen/{clientId}") {
@@ -69,6 +80,7 @@ sealed class Screens {
     data object HomeScreen : Screens()
     data object ReadStatusScreen : Screens()
     data object AddScreen : Screens() // This is the `add client` screen
+    data object WriteStatusScreen : Screens()
     data object ManageScreen : Screens()
     data object MoreScreen : Screens()
     data class ClientDetailsScreen(val clientId: Long) : Screens()

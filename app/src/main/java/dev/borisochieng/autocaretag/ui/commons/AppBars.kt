@@ -3,6 +3,10 @@ package dev.borisochieng.autocaretag.ui.commons
 import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,9 +53,27 @@ fun TopBar(
 	)
 }
 
-@SuppressLint("RestrictedApi")
 @Composable
 fun NavBar(
+	navController: NavController,
+	modifier: Modifier = Modifier
+) {
+	val navBackStackEntry = navController.currentBackStackEntryAsState()
+	val currentRoute = navBackStackEntry.value?.destination?.route
+	val homeScreens = setOf(AppRoute.HomeScreen, AppRoute.ManageScreen, AppRoute.MoreScreen).map { it.route }
+	val inHomeScreens = currentRoute in homeScreens
+	AnimatedVisibility(
+		visible = inHomeScreens,
+		enter = slideInVertically(tween(durationMillis = 350, delayMillis = 1000)) { it },
+		exit = ExitTransition.None
+	) {
+		NavBarVisuals(navController, modifier)
+	}
+}
+
+@SuppressLint("RestrictedApi")
+@Composable
+private fun NavBarVisuals(
 	navController: NavController,
 	modifier: Modifier = Modifier
 ) {

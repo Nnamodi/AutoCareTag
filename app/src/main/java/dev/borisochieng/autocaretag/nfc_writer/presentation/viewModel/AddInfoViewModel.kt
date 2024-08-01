@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.borisochieng.autocaretag.nfc_writer.data.NfcWriter
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
-import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteStatus
 import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.room_db.InvalidClientException
@@ -18,12 +17,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class AddInfoViewModel() : ViewModel(), KoinComponent {
+class AddInfoViewModel : ViewModel(), KoinComponent {
 
 
     val nfcWriter: NfcWriter by inject()
