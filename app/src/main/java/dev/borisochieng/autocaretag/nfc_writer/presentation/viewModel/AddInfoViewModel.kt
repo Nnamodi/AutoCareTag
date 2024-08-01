@@ -11,6 +11,7 @@ import dev.borisochieng.autocaretag.nfc_writer.data.NfcWriter
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
 import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteStatus
 import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
+import dev.borisochieng.autocaretag.nfc_writer.domain.toClient
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.room_db.InvalidClientException
 import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
@@ -115,7 +116,7 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
 
     }
 
-    fun saveClientToDB(client: Client) {
+    private fun saveClientToDB(client: Client) {
         viewModelScope.launch(Dispatchers.IO) {
             clientRepository.insert(client)
         }
@@ -218,7 +219,7 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
         viewModelScope.launch {
             setupNfc()
             val tagInfo = TagInfo(
-                /* Tag id should go here */
+                id = Math.random().toLong(),
                 customerName = customerName.value.customerName,
                 customerPhoneNo = customerPhoneNo.value.customerPhoneNo,
                 vehicleModel = vehicleModel.value.vehicleModel,
@@ -227,6 +228,7 @@ class AddInfoViewModel() : ViewModel(), KoinComponent {
                 appointmentDate = appointmentDate.value.appointmentDate
             )
           nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo)
+            saveClientToDB(tagInfo.toClient())
 
 
 

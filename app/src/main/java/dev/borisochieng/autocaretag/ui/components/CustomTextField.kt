@@ -1,6 +1,7 @@
 package dev.borisochieng.autocaretag.ui.components
 
 import android.text.InputType
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -42,7 +43,8 @@ fun CustomTextField(
     onInputValueChange: (String) -> Unit,
     inputValue: String,
     errorMessage: String? = null,
-    isReadable: Boolean = false
+    isReadable: Boolean = false,
+    onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -63,7 +65,7 @@ fun CustomTextField(
             shape = shape.button,
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = checkInputType(inputType)),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = colorScheme.background,
                 unfocusedContainerColor = colorScheme.background,
@@ -126,6 +128,7 @@ fun CustomTextFieldPreview() {
         isTrailingIcon = true,
         onTrailingIconClick = {},
         inputValue = "Rasta man",
-        onInputValueChange = {}
+        onInputValueChange = {},
+        onClick = {}
     )
 }

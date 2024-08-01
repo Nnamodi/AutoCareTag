@@ -1,7 +1,7 @@
 package dev.borisochieng.autocaretag.nfc_writer.domain
 
 data class TagInfo(
-    val id: Long = 0,
+    val id: Long,
     val customerName: String,
     val customerPhoneNo: String,
     val vehicleModel: String,

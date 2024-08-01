@@ -68,7 +68,7 @@ fun HomeScreen(
 
     val uiState by viewModel.clientUiState.collectAsState()
     Scaffold(
-        modifier = Modifier.background(colorScheme.background),
+        containerColor = colorScheme.background,
         topBar = {
             TopAppBar(
                 modifier = Modifier.background(colorScheme.background),

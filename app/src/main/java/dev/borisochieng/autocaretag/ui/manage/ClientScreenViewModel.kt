@@ -19,6 +19,7 @@ class ClientScreenViewModel() : ViewModel(), KoinComponent {
     val clientUiState: StateFlow<ClientsUIState> get() = _clientUiState.asStateFlow()
 
     private var clientListCache = emptyList<Client>()
+    private var currentSearchKeyword = ""
 
     init {
         getClients()
@@ -39,34 +40,33 @@ class ClientScreenViewModel() : ViewModel(), KoinComponent {
 
     fun searchClient(keyWord: String) {
         viewModelScope.launch {
-            val filteredClients = if (keyWord.isBlank()) {
-                clientListCache
-            } else {
-                clientListCache.filter { client ->
-                    client.name.contains(keyWord, ignoreCase = true) ||
-                            client.model.contains(keyWord,ignoreCase = true)
-                }
-            }
-
-            _clientUiState.update {
-                it.copy(
-                    clients = filteredClients
-                )
-            }
+           currentSearchKeyword = keyWord
+            applyFilter()
         }
     }
 
-    fun getClients() =
+   private fun getClients() =
         viewModelScope.launch {
             clientRepository.getAllClients().collect{ clients ->
-                _clientUiState.update {
-                    it.copy(
-                        clients = clients
-                    )
-                }
+                clientListCache = clients
+                applyFilter()
 
             }
         }
+
+    private fun applyFilter() {
+        val filteredClients = if(currentSearchKeyword.isBlank()){
+            clientListCache
+        }else {
+            clientListCache.filter { client ->
+                client.name.contains(currentSearchKeyword, ignoreCase = true) ||
+                        client.model.contains(currentSearchKeyword, ignoreCase = true)
+            }
+        }
+        _clientUiState.update {
+            it.copy(clients = filteredClients)
+        }
+    }
 
 
 }

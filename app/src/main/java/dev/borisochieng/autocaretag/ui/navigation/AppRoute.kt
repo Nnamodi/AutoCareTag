@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import dev.borisochieng.autocaretag.nfc_reader.ui.ClientAddedScreen
 import dev.borisochieng.autocaretag.nfc_reader.ui.ClientDetailsScreen
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
@@ -65,6 +66,11 @@ fun AppRoute(
             ClientDetailsScreen(
                 viewModel = nfcReaderViewModel,
                 updateClientInfo = nfcReaderViewModel::updateClientDetails,
+                navigate = navActions::navigate
+            )
+        }
+        animatedComposable(AppRoute.ClientAddedScreen.route) {
+            ClientAddedScreen(
                 navigate = navActions::navigate
             )
         }

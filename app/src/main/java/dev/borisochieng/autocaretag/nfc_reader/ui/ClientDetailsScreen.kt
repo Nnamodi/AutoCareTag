@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,6 +31,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.commons.TopBar
+import dev.borisochieng.autocaretag.ui.components.PrimaryButton
+import dev.borisochieng.autocaretag.ui.components.ScreenTitle
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
@@ -37,6 +41,7 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import dev.borisochieng.autocaretag.ui.theme.onBackgroundVariant
 import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClientDetailsScreen(
     viewModel: NFCReaderViewModel,
@@ -53,8 +58,14 @@ fun ClientDetailsScreen(
 
     // Scaffold layout for the screen
     Scaffold(
-        modifier = Modifier.background(colorScheme.background),
-        topBar = { TopBar(stringResource(R.string.view_details), navigate) }
+        containerColor = colorScheme.background,
+        topBar = {
+            TopAppBar(
+                title = {
+                    ScreenTitle()
+                }
+            )
+        }
     ) { paddingValues ->
         // Column layout for the content
         Column(
@@ -115,11 +126,11 @@ fun ClientDetailsScreen(
                     .fillMaxWidth(),
                 shape = shape.button,
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = colorScheme.background
+                    containerColor = colorScheme.background,
                 )
             ) {
                 Text(
-                    text = stringResource(R.string.update),
+                    text = "Back to home",
                     style = typography.bodyLarge,
                     color = colorScheme.primary
                 )
