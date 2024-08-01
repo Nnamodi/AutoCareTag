@@ -35,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.ui.commons.NavBar
 import dev.borisochieng.autocaretag.ui.components.ScreenTitle
@@ -62,6 +63,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var navActions: NavActions
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_AutoCareTag)
         super.onCreate(savedInstanceState)
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 

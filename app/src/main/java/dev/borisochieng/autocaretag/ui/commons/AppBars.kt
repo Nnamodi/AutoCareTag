@@ -3,7 +3,6 @@ package dev.borisochieng.autocaretag.ui.commons
 import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -136,14 +134,14 @@ private enum class NavBarItems(
 		icon = R.drawable.home_icon,
 		route = AppRoute.HomeScreen.route
 	),
-//	Add(
-//		title = R.string.add,
-//		icon = R.drawable.add_icon,
-//		route = AppRoute.AddScreen.route
-//	),
-	Manage(
+	Clients(
 		title = R.string.clients,
 		icon = R.drawable.ic_user,
 		route = AppRoute.ManageScreen.route
+	),
+	More(
+		title = R.string.more,
+		icon = R.drawable.more_icon,
+		route = AppRoute.MoreScreen.route
 	)
 }
