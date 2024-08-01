@@ -92,6 +92,9 @@ dependencies {
     // gson
     implementation(libs.gson)
 
+    // splash screen
+    implementation(libs.splash)
+
     // test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
