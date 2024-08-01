@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primaryColor">#FFFFFF</color>
 
-    <style name="Theme.AutoCareTag" parent="android:Theme.Material.Light.NoActionBar" />
+    // App theme
+    <style name="Theme.AutoCareTag" parent="Theme.AppCompat.Light.NoActionBar" />
+
+    // Splash theme
+    <style name="Theme.Splash" parent="Theme.SplashScreen">
+        <item name="android:colorPrimary">@color/primaryColor</item>
+        <item name="windowSplashScreenBackground">@color/primaryColor</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/app_logo</item>
+        <item name="android:windowSplashScreenBehavior">icon_preferred</item>
+        <item name="postSplashScreenTheme">@style/Theme.AutoCareTag</item>
+    </style>
+
 </resources>
