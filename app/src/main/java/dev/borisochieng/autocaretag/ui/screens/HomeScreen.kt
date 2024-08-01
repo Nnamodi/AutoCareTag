@@ -41,7 +41,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.ui.components.ClientCard
-import dev.borisochieng.autocaretag.ui.components.ReadDialog
 import dev.borisochieng.autocaretag.ui.components.ScreenTitle
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
@@ -55,17 +54,6 @@ fun HomeScreen(
     scanForNFCTag: () -> Unit,
     navigate: (Screens) -> Unit
 ) {
-    var isReadDialogVisible by remember {
-        mutableStateOf(false)
-    }
-    if (isReadDialogVisible) {
-        ReadDialog(
-            viewModel = viewModel,
-            onCancel = { isReadDialogVisible = false },
-            navigate = navigate
-        )
-    }
-
     val uiState by viewModel.clientUiState.collectAsState()
     Scaffold(
         modifier = Modifier.background(colorScheme.background),
@@ -105,7 +93,7 @@ fun HomeScreen(
                             shape = CircleShape
                         )
                         .clickable {
-                            isReadDialogVisible = true
+                            navigate(Screens.ReadStatusScreen)
                             scanForNFCTag()
                         },
                     contentAlignment = Alignment.Center

@@ -30,14 +30,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfc_reader.data.State
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
-import dev.borisochieng.autocaretag.nfc_reader.ui.NfcReadStatus
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
@@ -45,18 +41,19 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import kotlinx.coroutines.delay
 
 @Composable
-fun ReadDialog(
+fun ReadStatusScreen(
     viewModel: NFCReaderViewModel,
-    navigate: (Screens) -> Unit,
-    onCancel: () -> Unit
+    navigate: (Screens) -> Unit
 ) {
     var readyToScan by remember { mutableStateOf("") }
     var supportingText by remember { mutableStateOf("") }
 
     val uiState by viewModel.clientUiState.collectAsState()
 
-    // A dialog with a custom content
-    Dialog(onDismissRequest = onCancel) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         // Use a card as the content of the dialog
         Card(
             modifier = Modifier
@@ -173,6 +170,10 @@ fun ReadDialog(
                 }
 
                 LaunchedEffect(nfcReadState) {
+                    if (nfcReadState is State.Error) {
+                        delay(2000)
+                        navigate(Screens.Back)
+                    }
                     if (nfcReadState !is State.Success) return@LaunchedEffect
                     delay(2000)
                     val screen = if (viewModel.tagIsEmpty) {
@@ -192,10 +193,4 @@ fun ReadDialog(
         }
 
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ReadDialogPreview() {
-    ReadDialog(viewModel = viewModel(), {}, {})
 }
