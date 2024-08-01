@@ -87,16 +87,6 @@ fun ClientScreen(
                 }
             }
 
-            item {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    text = " Clients",
-                    style = typography.bodyLarge
-                )
-            }
-
             if (clientsUIState.clients.isEmpty()) {
                 item {
                     Box(
