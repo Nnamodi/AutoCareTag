@@ -104,7 +104,7 @@ private fun NavigationBarItem(
 	modifier: Modifier = Modifier,
 	onClick: () -> Unit
 ) {
-	val color = if (selected) colorScheme.primary else colorScheme.onBackgroundVariant
+	val color = if (selected) colorScheme.primary else colorScheme.onBackground
 
 	Column(
 		modifier = modifier

@@ -74,9 +74,9 @@ class MainActivity : ComponentActivity() {
 
             AutoCareTagTheme {
                 Scaffold(
+                    containerColor = colorScheme.background,
                     modifier = Modifier
-                        .windowInsetsPadding(WindowInsets.systemBars)
-                        .background(colorScheme.background),
+                        .windowInsetsPadding(WindowInsets.systemBars),
                     bottomBar = { NavBar(navController) },
                 ) { paddingValues ->
                     AppRoute(

@@ -92,7 +92,7 @@ fun ClientCard(
                         modifier = Modifier.padding(vertical = 2.dp),
                         text = client.model,
                         style = typography.bodyLight,
-                        color = colorScheme.primary
+                        color = Color.Gray
                     )
                     Spacer(
                         modifier = Modifier

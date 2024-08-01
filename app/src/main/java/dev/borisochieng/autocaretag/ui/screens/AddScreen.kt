@@ -54,6 +54,7 @@ import java.util.Locale
 import java.util.UUID.randomUUID
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.ui.components.Inputs
+import dev.borisochieng.autocaretag.ui.components.ScreenTitle
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -177,7 +178,7 @@ fun AddScreen(
                         viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                     }
                     //viewModel.writeButtonState(true)
-                    isWriteDialogVisible = true
+                    //isWriteDialogVisible = true
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             message = "Client Saved"
@@ -197,15 +198,12 @@ fun AddScreen(
     }
 
     Scaffold(
-        modifier = Modifier.background(color = colorScheme.background),
+        containerColor = colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(R.string.write_to_nfc),
-                        style = typography.title
-                    )
-                },
+                    ScreenTitle()
+                }
             )
         },
         content = { innerPadding ->
@@ -248,7 +246,8 @@ fun AddScreen(
                                 )
                             )
                         },
-                        errorMessage = nameError
+                        errorMessage = nameError,
+                        onClick = {}
                     )
 
                     CustomTextField(
@@ -266,7 +265,8 @@ fun AddScreen(
                                 )
                             )
                         },
-                        errorMessage = contactError
+                        errorMessage = contactError,
+                        onClick = {}
                     )
 
                     Text(
@@ -293,7 +293,8 @@ fun AddScreen(
                                 )
                             )
                         },
-                        errorMessage = vehicleModelError
+                        errorMessage = vehicleModelError,
+                        onClick = {}
                     )
 
                     CustomTextField(
@@ -307,7 +308,8 @@ fun AddScreen(
                             repairEntered.value = true
                             viewModel.onEvent(InfoScreenEvents.EnteredNote(it))
                         },
-                        errorMessage = repairError
+                        errorMessage = repairError,
+                        onClick = {}
                     )
 
                     CustomTextField(
@@ -319,11 +321,13 @@ fun AddScreen(
                             dateIconClicked.value = true
                             isDialogForAppointmentDate = !isDialogForAppointmentDate
                         },
-                        inputValue = viewModel.appointmentDate.value.appointmentDate
-                            ?: "DD-MM-YYYY",
+                        inputValue = viewModel.appointmentDate.value.appointmentDate,
                         onInputValueChange = {},
                         errorMessage = appointmentDateError,
-                        isReadable = true
+                        isReadable = true,
+                        onClick = {
+                            isDialogForAppointmentDate = true
+                        }
                     )
 
                     CustomTextField(
@@ -335,11 +339,13 @@ fun AddScreen(
                             nextDateIconClicked.value = true
                             isDialogForNextAppointmentDate = !isDialogForNextAppointmentDate
                         },
-                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate
-                            ?: "DD-MM-YYYY",
+                        inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate,
                         onInputValueChange = {},
                         errorMessage = nextAppointmentDateError,
-                        isReadable = true
+                        isReadable = true,
+                        onClick = {
+                            isDialogForNextAppointmentDate = true
+                        }
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -369,10 +375,6 @@ fun AddScreen(
                             viewModel.onEvent(InfoScreenEvents.EnteredNote(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(""))
-
-                            scope.launch {
-                                viewModel.saveClientToDB(client)
-                            }
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled

@@ -25,11 +25,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.ui.components.ScreenTitle
+import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoreScreen() {
 	Scaffold(
+		containerColor = colorScheme.background,
 		topBar = { TopAppBar(title = { ScreenTitle() }) }
 	) { paddingValues ->
 		Column(

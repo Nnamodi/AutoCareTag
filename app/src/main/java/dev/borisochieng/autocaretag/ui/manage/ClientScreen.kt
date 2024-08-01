@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +59,7 @@ fun ClientScreen(
 
 
     Scaffold(
-        modifier = Modifier.background(colorScheme.background),
+        containerColor = colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -69,7 +70,9 @@ fun ClientScreen(
 
     ) {
         LazyColumn(
-            modifier = Modifier.padding(it),
+            modifier = Modifier
+                .padding(it)
+                .padding(vertical = 8.dp),
             state = lazyListState
         ) {
             stickyHeader {
@@ -90,7 +93,9 @@ fun ClientScreen(
             if (clientsUIState.clients.isEmpty()) {
                 item {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -102,10 +107,7 @@ fun ClientScreen(
                     }
                 }
             } else {
-                items(clientsUIState.clients, key = { it.clientId }) { client ->
-//                        ClientCard(client = client) {
-//                            onNavigateToClient(client)
-//                        }
+                items(clientsUIState.clients, key = { client -> client.clientId }) { client ->
                     ClientCard(
                         client = client,
                         navigate = {
