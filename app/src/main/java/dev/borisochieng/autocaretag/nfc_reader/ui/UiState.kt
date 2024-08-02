@@ -4,5 +4,5 @@ import dev.borisochieng.autocaretag.room_db.Client
 
 data class ClientUiState(
     val client: Client? = null,
-    val clients: List<Client> = emptyList()
+    val clients: List<Client> = emptyList(),
 )
