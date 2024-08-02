@@ -1,0 +1,54 @@
+Index: gradle/libs.versions.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[versions]\r\nagp = \"8.5.1\"\r\nkoinAndroidxCompose = \"3.4.2\"\r\nkotlin = \"2.0.0\"\r\nktlint = \"12.1.1\"\r\nroom =  \"2.6.1\"\r\nksp = \"2.0.0-1.0.23\"\r\n\r\nactivityCompose = \"1.9.1\"\r\ncomposeBom = \"2024.06.00\"\r\ncoreKtx = \"1.13.1\"\r\ngson = \"2.11.0\"\r\nkoinBom = \"3.6.0-wasm-alpha2\"\r\nlifecycleRuntimeKtx = \"2.8.4\"\r\nmaterial3 = \"1.2.1\"\r\nnavigationCompose = \"2.7.7\"\r\nespressoCore = \"3.6.1\"\r\njunit = \"4.13.2\"\r\njunitVersion = \"1.2.1\"\r\nroomKtx = \"2.6.1\"\r\nroomPaging = \"2.6.1\"\r\nroomRuntime = \"2.6.1\"\r\n\r\n[libraries]\r\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\nandroidx-lifecycle-runtime-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-ktx\", version.ref = \"lifecycleRuntimeKtx\" }\r\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\r\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\r\nandroidx-room-ktx = { module = \"androidx.room:room-ktx\", version.ref = \"roomKtx\" }\r\nandroidx-room-paging = { module = \"androidx.room:room-paging\", version.ref = \"roomPaging\" }\r\nandroidx-room-runtime = { module = \"androidx.room:room-runtime\", version.ref = \"roomRuntime\" }\r\nkoin-androidx-compose = { module = \"io.insert-koin:koin-androidx-compose\", version.ref = \"kotlin\" }\r\nroom-annotation-processor = { group = \"androidx.room\", name = \"room-compiler\", version.ref = \"room\"}\r\nandroidx-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\r\nandroidx-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\r\nandroidx-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\r\nandroidx-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\", version.ref = \"material3\" }\r\ngson = { module = \"com.google.code.gson:gson\", version.ref = \"gson\" }\r\nkoin-android = { module = \"io.insert-koin:koin-android\" }\r\nkoin-bom = { module = \"io.insert-koin:koin-bom\", version.ref = \"koinBom\" }\r\nkoin-core = { module = \"io.insert-koin:koin-core\" }\r\nandroidx-compose-navigation = { group = \"androidx.navigation\", name = \"navigation-compose\", version.ref = \"navigationCompose\"}\r\n\r\nandroidx-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nandroidx-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"junitVersion\" }\r\nandroidx-ui-test-junit4 = { group = \"androidx.compose.ui\", name = \"ui-test-junit4\" }\r\nandroidx-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\r\njunit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\ncompose-compiler = { id = \"org.jetbrains.kotlin.plugin.compose\", version.ref = \"kotlin\" }\r\njetbrains-kotlin-android = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }\r\nktlint-gradle = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }\r\nandroidx-room = { id = \"androidx.room\", version.ref = \"room\"}\r\nksp-kotlin = { id =\"com.google.devtools.ksp\", version.ref = \"ksp\" }\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+--- a/gradle/libs.versions.toml	(revision a4f2b879d4872b8a1ca360d3c65c4ffea5b6f454)
++++ b/gradle/libs.versions.toml	(date 1722479354981)
+@@ -20,12 +20,14 @@
+ roomKtx = "2.6.1"
+ roomPaging = "2.6.1"
+ roomRuntime = "2.6.1"
++splashScreen = "1.0.0"
+ 
+ [libraries]
+ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+ androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+ androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
++androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose"}
+ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
+ androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "roomPaging" }
+ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+@@ -40,7 +42,7 @@
+ koin-android = { module = "io.insert-koin:koin-android" }
+ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
+ koin-core = { module = "io.insert-koin:koin-core" }
+-androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose"}
++splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
+ 
+ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import org.jlleitschuh.gradle.ktlint.reporter.ReporterType\r\n\r\nplugins {\r\n    alias(libs.plugins.android.application)\r\n    alias(libs.plugins.jetbrains.kotlin.android)\r\n    alias(libs.plugins.compose.compiler)\r\n    alias(libs.plugins.ktlint.gradle)\r\n    alias(libs.plugins.ksp.kotlin)\r\n    alias(libs.plugins.androidx.room)\r\n}\r\n\r\nandroid {\r\n    namespace = \"dev.borisochieng.autocaretag\"\r\n    compileSdk = 34\r\n\r\n    defaultConfig {\r\n        applicationId = \"dev.borisochieng.autocaretag\"\r\n        minSdk = 24\r\n        targetSdk = 34\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n        vectorDrawables {\r\n            useSupportLibrary = true\r\n        }\r\n\r\n        room {\r\n            schemaDirectory(path = \"$projectDir/schemas\")\r\n        }\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\",\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_1_8\r\n        targetCompatibility = JavaVersion.VERSION_1_8\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"1.8\"\r\n    }\r\n    buildFeatures {\r\n        compose = true\r\n    }\r\n    composeOptions {\r\n        kotlinCompilerExtensionVersion = \"1.5.1\"\r\n    }\r\n    packaging {\r\n        resources {\r\n            excludes += \"/META-INF/{AL2.0,LGPL2.1}\"\r\n        }\r\n    }\r\n}\r\n\r\nktlint {\r\n    android = true\r\n    ignoreFailures = false\r\n    reporters {\r\n        reporter(ReporterType.JSON)\r\n        reporter(ReporterType.HTML)\r\n    }\r\n}\r\n\r\ndependencies {\r\n    // android\r\n    implementation(libs.androidx.core.ktx)\r\n    implementation(libs.androidx.lifecycle.runtime.ktx)\r\n\r\n    // compose\r\n    implementation(libs.androidx.activity.compose)\r\n    implementation(platform(libs.androidx.compose.bom))\r\n    implementation(libs.androidx.ui)\r\n    implementation(libs.androidx.ui.graphics)\r\n    implementation(libs.androidx.ui.tooling.preview)\r\n    implementation(libs.androidx.material3)\r\n    implementation(libs.androidx.compose.navigation)\r\n\r\n    // di\r\n    implementation(libs.koin.android)\r\n    implementation(platform(libs.koin.bom))\r\n//    implementation(libs.koin.compose)\r\n    implementation(libs.koin.core)\r\n    implementation(libs.koin.androidx.compose)\r\n\r\n    // gson\r\n    implementation(libs.gson)\r\n\r\n    // test\r\n    testImplementation(libs.junit)\r\n    androidTestImplementation(libs.androidx.junit)\r\n    androidTestImplementation(libs.androidx.espresso.core)\r\n    androidTestImplementation(platform(libs.androidx.compose.bom))\r\n    androidTestImplementation(libs.androidx.ui.test.junit4)\r\n    debugImplementation(libs.androidx.ui.tooling)\r\n    debugImplementation(libs.androidx.ui.test.manifest)\r\n\r\n    //room\r\n    implementation(libs.androidx.room.runtime)\r\n    implementation(libs.androidx.room.paging)\r\n    implementation(libs.androidx.room.ktx)\r\n    annotationProcessor(libs.room.annotation.processor)\r\n    ksp(libs.room.annotation.processor)\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision a4f2b879d4872b8a1ca360d3c65c4ffea5b6f454)
++++ b/app/build.gradle.kts	(date 1722479354894)
+@@ -92,6 +92,9 @@
+     // gson
+     implementation(libs.gson)
+ 
++    // splash screen
++    implementation(libs.splash)
++
+     // test
+     testImplementation(libs.junit)
+     androidTestImplementation(libs.androidx.junit)

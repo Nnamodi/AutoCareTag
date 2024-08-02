@@ -23,6 +23,6 @@ interface ClientDao {
     fun getAllClients(): Flow<List<Client>>
 
     @Query("SELECT * FROM Client WHERE clientId = :clientId")
-    fun getClientById(clientId: Long): Flow<Client>
+    fun getClientById(clientId: String): Flow<Client>
 }
 

@@ -1,4 +1,4 @@
-package dev.borisochieng.autocaretag.ui.components
+package dev.borisochieng.autocaretag.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,43 +29,41 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
-import dev.borisochieng.autocaretag.nfc_reader.data.State
-import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
-import dev.borisochieng.autocaretag.nfc_reader.ui.NfcReadStatus
+import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
+import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteStatus
+import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
+import dev.borisochieng.autocaretag.room_db.Client
+import dev.borisochieng.autocaretag.ui.components.PrimaryButton
+import dev.borisochieng.autocaretag.ui.components.PrimaryOutlinedButton
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
-import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
-fun ReadDialog(
-    viewModel: NFCReaderViewModel,
-    navigate: (Screens) -> Unit,
-    onCancel: () -> Unit
+fun WriteStatusScreen(
+    viewModel: AddInfoViewModel,
+    navigate: (Screens) -> Unit
 ) {
     var readyToScan by remember { mutableStateOf("") }
     var supportingText by remember { mutableStateOf("") }
 
-    val uiState by viewModel.clientUiState.collectAsState()
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        val nfcWriteState by viewModel.nfcWriter.nfcWriteState.collectAsState(NfcWriteState.idle())
 
-    // A dialog with a custom content
-    Dialog(onDismissRequest = onCancel) {
-        // Use a card as the content of the dialog
         Card(
             modifier = Modifier
                 .padding(16.dp)
-                .size(width = 280.dp, height = 280.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = colorScheme.background
-            ),
-            shape = shape.card
+                .size(width = 280.dp, height = 280.dp)
+
         ) {
             // Add your UI elements here
             Column(
@@ -73,11 +71,8 @@ fun ReadDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Sorry Toby. I had to refactor this
-
-                val nfcReadState by viewModel.nfcReadState.collectAsState()
-                when (nfcReadState) {
-                    is State.Success -> {
+                when (nfcWriteState.status) {
+                    NfcWriteStatus.SUCCESS -> {
                         // Show success UI
                         readyToScan = "Successful"
                         supportingText = "Details imported successfully"
@@ -110,9 +105,10 @@ fun ReadDialog(
                         }
                     }
 
-                    is State.Error -> {
+                    NfcWriteStatus.ERROR -> {
                         // Show error UI
-                        supportingText = (nfcReadState as State.Error).errorMessage
+                        supportingText =
+                            nfcWriteState.errorMessage ?: "Something went wrong, please try again"
 
                         Text(
                             text = supportingText,
@@ -125,23 +121,22 @@ fun ReadDialog(
                                 .padding(16.dp)
                                 .size(100.dp)
                                 .clip(CircleShape)
-                                .background(Color.Green, shape = CircleShape)
+                                .background(colorScheme.error, shape = CircleShape)
                         ) {
                             Icon(
                                 modifier = Modifier
                                     .padding(16.dp)
                                     .size(100.dp),
                                 imageVector = Icons.Rounded.Close,
-                                tint = colorScheme.error,
+                                tint = Color.White,
                                 contentDescription = "Error"
                             )
                         }
                     }
 
-                    is State.Loading -> {
+                    NfcWriteStatus.LOADING -> {
                         // Show loading UI
-                        //CircularProgressIndicator()
-                        readyToScan = "Scanning"
+                        readyToScan = "Ready to Scan"
                         supportingText = "Hold your device near the NFC Tag"
                         Text(
                             text = readyToScan,
@@ -159,11 +154,45 @@ fun ReadDialog(
                                 .padding(16.dp)
                                 .size(100.dp)
                                 .clip(CircleShape)
-                                .background(Color.Transparent, shape = CircleShape),
+                                .background(shape = CircleShape, color = Color.Transparent),
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
-                                modifier = Modifier.clip(CircleShape),
+                                modifier = Modifier
+                                    .clip(CircleShape),
+                                painter = painterResource(id = R.drawable.scanning),
+                                contentDescription = "Scanning",
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    }
+
+                    NfcWriteStatus.IDLE -> {
+                        // Show idle UI
+                        readyToScan = "Ready to Scan"
+                        supportingText = "Hold your device near the NFC Tag"
+                        Text(
+                            text = readyToScan,
+                            style = typography.title,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                        Text(
+                            text = supportingText,
+                            style = typography.bodyLarge,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(100.dp)
+                                .clip(CircleShape)
+                                .background(shape = CircleShape, color = Color.Transparent),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .clip(CircleShape),
                                 painter = painterResource(id = R.drawable.scanning),
                                 contentDescription = "Scanning",
                                 contentScale = ContentScale.Fit
@@ -171,31 +200,23 @@ fun ReadDialog(
                         }
                     }
                 }
-
-                LaunchedEffect(nfcReadState) {
-                    if (nfcReadState !is State.Success) return@LaunchedEffect
-                    delay(2000)
-                    val screen = if (viewModel.tagIsEmpty) {
-                        Screens.AddScreen
-                    } else uiState.client?.clientId?.let {
-                        Screens.ClientDetailsScreen(
-                            it
-                        )
-                    }
-                    if (screen != null) {
-                        navigate(screen)
-                    }
-                }
             }
 
 
         }
 
+        if (nfcWriteState.status == NfcWriteStatus.SUCCESS) {
+            PrimaryOutlinedButton(
+                onClick = { navigate(Screens.HomeScreen) },
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        end = 50.dp,
+                        bottom = 66.dp
+                    ),
+                label = stringResource(R.string.back_to_home),
+                isEnabled = true
+            )
+        }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ReadDialogPreview() {
-    ReadDialog(viewModel = viewModel(), {}, {})
 }

@@ -1,12 +1,7 @@
 package dev.borisochieng.autocaretag.room_db
 
-import androidx.room.AutoMigration
 import androidx.room.Database
-import androidx.room.Delete
-import androidx.room.DeleteTable
 import androidx.room.RoomDatabase
-import androidx.room.migration.AutoMigrationSpec
-import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [Client::class],

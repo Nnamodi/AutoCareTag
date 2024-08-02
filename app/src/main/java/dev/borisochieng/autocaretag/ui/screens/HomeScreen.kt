@@ -41,7 +41,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.ui.components.ClientCard
-import dev.borisochieng.autocaretag.ui.components.ReadDialog
 import dev.borisochieng.autocaretag.ui.components.ScreenTitle
 import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
@@ -52,6 +51,7 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 @Composable
 fun HomeScreen(
     viewModel: NFCReaderViewModel,
+    scanForNFCTag: () -> Unit,
     navigate: (Screens) -> Unit
 ) {
 //    var isReadDialogVisible by remember {
@@ -72,7 +72,7 @@ fun HomeScreen(
             TopAppBar(
                 modifier = Modifier.background(colorScheme.background),
                 title = {
-                    Box( 
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
@@ -104,7 +104,8 @@ fun HomeScreen(
                             shape = CircleShape
                         )
                         .clickable {
-                            navigate(Screens.ScanningScreen)
+                            navigate(Screens.ScanningScreen(false))
+                            scanForNFCTag()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -134,11 +135,12 @@ fun HomeScreen(
                         fontWeight = FontWeight.SemiBold
                     )
 
+                    val indicatorColor = if (viewModel.nfcIsEnabledOnDevice) Color.Green else colorScheme.onBackgroundVariant
                     Spacer(
                         modifier = Modifier
                             .padding(horizontal = 4.dp, vertical = 2.dp)
                             .size(6.dp)
-                            .background(colorScheme.onBackgroundVariant, shape = CircleShape)
+                            .background(indicatorColor, shape = CircleShape)
                     )
                 }
             }
@@ -245,5 +247,5 @@ fun HomeScreenPreview() {
     HomeScreen(
         viewModel(),
         {}
-    )
+    ) {}
 }
