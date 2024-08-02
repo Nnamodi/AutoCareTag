@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.icu.util.Calendar
 import android.nfc.Tag
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -45,20 +44,17 @@ import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoVie
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.UiEvent
 import dev.borisochieng.autocaretag.ui.components.CustomTextField
+import dev.borisochieng.autocaretag.ui.components.Inputs
 import dev.borisochieng.autocaretag.ui.components.PrimaryButton
-import dev.borisochieng.autocaretag.ui.components.WriteDialog
+import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.UUID.randomUUID
-import dev.borisochieng.autocaretag.room_db.Client
-import dev.borisochieng.autocaretag.ui.components.Inputs
-import dev.borisochieng.autocaretag.ui.components.ScreenTitle
-import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +66,6 @@ fun AddScreen(
 ) {
     var isDialogForAppointmentDate by remember { mutableStateOf(false) }
     var isDialogForNextAppointmentDate by remember { mutableStateOf(false) }
-    var isWriteDialogVisible by remember { mutableStateOf(false) }
 
 
     val context = LocalContext.current
@@ -137,15 +132,6 @@ fun AddScreen(
             )
         }
     }
-    val client = Client(
-        clientId = Math.random().toLong(),
-        name = viewModel.customerName.value.customerName,
-        contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
-        model = viewModel.vehicleModel.value.vehicleModel,
-        lastMaintained = viewModel.appointmentDate.value.appointmentDate,
-        nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
-        note = viewModel.note.value.note
-    )
 
     if (isDialogForAppointmentDate) {
         ShowDatePickerDialog(context, calendar) { selectedDate ->
@@ -161,27 +147,26 @@ fun AddScreen(
         }
     }
 
-    if (isWriteDialogVisible) {
-        WriteDialog(
-            viewModel = viewModel,
-            onCancel = { isWriteDialogVisible = false },
-            navigate = {
-                navigate(Screens.ClientDetailsScreen(client.clientId))
-            }
+//    if (isWriteDialogVisible) {
+//        WriteDialog(
+//            viewModel = viewModel,
+//            onCancel = { isWriteDialogVisible = false },
+//            navigate = {
+//                navigate(Screens.ClientDetailsScreen(client.clientId))
+//            }
+//
+//        )
+//    }
 
-        )
-    }
-    LaunchedEffect(key1 = true) {
-
+    LaunchedEffect(true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-
                 UiEvent.SaveClientInfo -> {
                     if (tag != null) {
                         viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                     }
                     //viewModel.writeButtonState(true)
-                    //isWriteDialogVisible = true
+                    navigate(Screens.ScanningScreen(true))
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             message = "Client Saved"
@@ -220,8 +205,8 @@ fun AddScreen(
 
                     }
                 }
-            )
-        },
+                    )
+                },
         content = { innerPadding ->
             val scrollState = rememberScrollState()
             Surface(
@@ -262,8 +247,7 @@ fun AddScreen(
                                 )
                             )
                         },
-                        errorMessage = nameError,
-                        onClick = {}
+                        errorMessage = nameError
                     )
 
                     CustomTextField(
@@ -281,8 +265,7 @@ fun AddScreen(
                                 )
                             )
                         },
-                        errorMessage = contactError,
-                        onClick = {}
+                        errorMessage = contactError
                     )
 
                     Text(
@@ -304,13 +287,10 @@ fun AddScreen(
                         inputValue = viewModel.vehicleModel.value.vehicleModel,
                         onInputValueChange = {
                             viewModel.onEvent(
-                                InfoScreenEvents.EnteredVehicleModel(
-                                    it
-                                )
+                                InfoScreenEvents.EnteredVehicleModel(it)
                             )
                         },
-                        errorMessage = vehicleModelError,
-                        onClick = {}
+                        errorMessage = vehicleModelError
                     )
 
                     CustomTextField(
@@ -324,8 +304,7 @@ fun AddScreen(
                             repairEntered.value = true
                             viewModel.onEvent(InfoScreenEvents.EnteredNote(it))
                         },
-                        errorMessage = repairError,
-                        onClick = {}
+                        errorMessage = repairError
                     )
 
                     CustomTextField(
@@ -340,10 +319,7 @@ fun AddScreen(
                         inputValue = viewModel.appointmentDate.value.appointmentDate,
                         onInputValueChange = {},
                         errorMessage = appointmentDateError,
-                        isReadable = true,
-                        onClick = {
-                            isDialogForAppointmentDate = true
-                        }
+                        isReadable = true
                     )
 
                     CustomTextField(
@@ -358,10 +334,7 @@ fun AddScreen(
                         inputValue = viewModel.nextAppointmentDate.value.nextAppointmentDate,
                         onInputValueChange = {},
                         errorMessage = nextAppointmentDateError,
-                        isReadable = true,
-                        onClick = {
-                            isDialogForNextAppointmentDate = true
-                        }
+                        isReadable = true
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -372,9 +345,9 @@ fun AddScreen(
                                 viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                             }
                             //viewModel.writeButtonState(true)
-                            //isWriteDialogVisible = true
+                            navigate(Screens.ScanningScreen(true))
 
-                            viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
+                            viewModel.onEvent(InfoScreenEvents.SaveClientInfo(UUID.randomUUID().toString()))
 
                             //clear fields
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(""))
@@ -383,8 +356,6 @@ fun AddScreen(
                             viewModel.onEvent(InfoScreenEvents.EnteredNote(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(""))
-
-                            navigate(Screens.ScanningScreen)
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled

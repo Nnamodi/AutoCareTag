@@ -8,7 +8,7 @@ interface ClientRepository {
     suspend fun update(client: Client)
     suspend fun delete(client: Client)
     suspend fun getAllClients(): Flow<List<Client>>
-    suspend fun getClientById(clientId: Long): Flow<Client?>
+    suspend fun getClientById(clientId: String): Flow<Client?>
 }
 
 

@@ -19,7 +19,9 @@
     <string name="last_issue_resolved">Last issue resolved</string>
     <string name="last_appointment">Last appointment</string>
     <string name="update">Update</string>
+    <string name="upload">Upload</string>
     <string name="back">Back</string>
+    <string name="back_to_home">Back to Home</string>
     <string name="write_to_nfc">Add Client</string>
     <string name="navigate_up">Back</string>
     <string name="add_screen_title">Client Details</string>
@@ -38,14 +40,14 @@
     <string name="next_appointment_date_placeholder">Tap to select</string>
     <string name="bt_write_to_nfc">Upload</string>
     <string name="view_all">View all</string>
-    <string name="add_client">Add client</string>
+    <string name="add_client">Add Client</string>
     <string name="no_recent_activity">No recent Activity</string>
     <string name="no_activity">No activity</string>
     <string name="tap_to_scan_nfc_tag">Tap to Scan \n NFC tag</string>
     <string name="nfc_status">NFC Status</string>
     <string name="vehicle_details">Vehicle Details</string>
     <string name="more">More</string>
-    <string name="coming_soon">Coming soon...</string>
+    <string name="coming_soon">Coming soon…</string>
     <string name="help">Help</string>
     <string name="about">About us</string>
     <string name="rate_app">Rate this app</string>

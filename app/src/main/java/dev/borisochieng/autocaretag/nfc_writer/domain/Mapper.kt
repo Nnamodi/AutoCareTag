@@ -5,7 +5,7 @@ import dev.borisochieng.autocaretag.room_db.Client
 
 fun TagInfo.toClient(): Client {
     return Client(
-        clientId = id,
+        clientId = customerId,
         name = customerName,
         contactInfo = customerPhoneNo,
         model = vehicleModel,

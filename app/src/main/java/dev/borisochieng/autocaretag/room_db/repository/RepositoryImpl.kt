@@ -25,7 +25,7 @@ class ClientRepositoryImpl : ClientRepository, KoinComponent {
         return clientDao.getAllClients()
     }
 
-    override suspend fun getClientById(clientId: Long): Flow<Client?> {
+    override suspend fun getClientById(clientId: String): Flow<Client?> {
         return clientDao.getClientById(clientId) // Handle null case appropriately
     }
 }

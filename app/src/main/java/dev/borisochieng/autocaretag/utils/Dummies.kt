@@ -35,7 +35,7 @@ object Dummies {
 
 	val fakeClients = listOf(
     Client(
-        clientId = 1,
+        clientId = "1",
         name = "Alice Johnson",
         contactInfo = "alice.johnson@example.com",
         note = "Regular customer.",
@@ -44,7 +44,7 @@ object Dummies {
         nextAppointmentDate = "2024-08-01"
     ),
     Client(
-        clientId = 2,
+        clientId = "2",
         name = "Bob Smith",
         contactInfo = "bob.smith@example.com",
         note = "Needs urgent repair.",
@@ -53,7 +53,7 @@ object Dummies {
         nextAppointmentDate = "2024-09-05"
     ),
     Client(
-        clientId = 3,
+        clientId = "3",
         name = "Charlie Brown",
         contactInfo = "charlie.brown@example.com",
         note = "New customer.",
@@ -62,7 +62,7 @@ object Dummies {
         nextAppointmentDate = "2024-08-15"
     ),
     Client(
-        clientId = 4,
+        clientId = "4",
         name = "Daisy Miller",
         contactInfo = "daisy.miller@example.com",
         note = "Regular oil change.",
@@ -71,7 +71,7 @@ object Dummies {
         nextAppointmentDate = "2024-08-20"
     ),
     Client(
-        clientId = 5,
+        clientId = "5",
         name = "Ethan Hunt",
         contactInfo = "ethan.hunt@example.com",
         note = "Check engine light issue.",
@@ -80,7 +80,7 @@ object Dummies {
         nextAppointmentDate = "2024-08-10"
     ),
     Client(
-        clientId = 6,
+        clientId = "6",
         name = "Fiona Green",
         contactInfo = "fiona.green@example.com",
         note = "Tire rotation needed.",
@@ -89,7 +89,7 @@ object Dummies {
         nextAppointmentDate = "2024-09-01"
     ),
     Client(
-        clientId = 7,
+        clientId = "7",
         name = "George Black",
         contactInfo = "george.black@example.com",
         note = "Battery replacement required.",
@@ -98,7 +98,7 @@ object Dummies {
         nextAppointmentDate = "2024-08-05"
     ),
     Client(
-        clientId = 8,
+        clientId = "8",
         name = "Hannah White",
         contactInfo = "hannah.white@example.com",
         note = "Routine maintenance.",
@@ -107,7 +107,7 @@ object Dummies {
         nextAppointmentDate = "2024-08-25"
     ),
     Client(
-        clientId = 9,
+        clientId = "9",
         name = "Ian Gray",
         contactInfo = "ian.gray@example.com",
         note = "Needs brake inspection.",
@@ -116,7 +116,7 @@ object Dummies {
         nextAppointmentDate = "2024-09-10"
     ),
     Client(
-        clientId = 10,
+        clientId = "10",
         name = "Julia Roberts",
         contactInfo = "julia.roberts@example.com",
         note = "Oil leak detected.",
