@@ -8,7 +8,7 @@ sealed class InfoScreenEvents {
     data class EnteredAppointmentDate(val value: String):  InfoScreenEvents ()
     data class EnteredNextAppointmentDate(val value: String):  InfoScreenEvents ()
     data class EnteredNote(val value: String):  InfoScreenEvents ()
-    data object SaveClientInfo: InfoScreenEvents()
+    data class SaveClientInfo(val id: String): InfoScreenEvents()
 
 }
 

@@ -104,7 +104,7 @@ fun HomeScreen(
                             shape = CircleShape
                         )
                         .clickable {
-                            navigate(Screens.ReadStatusScreen)
+                            navigate(Screens.ScanningScreen(false))
                             scanForNFCTag()
                         },
                     contentAlignment = Alignment.Center
@@ -135,11 +135,12 @@ fun HomeScreen(
                         fontWeight = FontWeight.SemiBold
                     )
 
+                    val indicatorColor = if (viewModel.nfcIsEnabledOnDevice) Color.Green else colorScheme.onBackgroundVariant
                     Spacer(
                         modifier = Modifier
                             .padding(horizontal = 4.dp, vertical = 2.dp)
                             .size(6.dp)
-                            .background(colorScheme.onBackgroundVariant, shape = CircleShape)
+                            .background(indicatorColor, shape = CircleShape)
                     )
                 }
             }

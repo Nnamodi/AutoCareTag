@@ -55,6 +55,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -132,15 +133,6 @@ fun AddScreen(
             )
         }
     }
-    val client = Client(
-        clientId = Math.random().toLong(),
-        name = viewModel.customerName.value.customerName,
-        contactInfo = viewModel.customerPhoneNo.value.customerPhoneNo,
-        model = viewModel.vehicleModel.value.vehicleModel,
-        lastMaintained = viewModel.appointmentDate.value.appointmentDate,
-        nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
-        note = viewModel.note.value.note
-    )
 
     if (isDialogForAppointmentDate) {
         ShowDatePickerDialog(context, calendar) { selectedDate ->
@@ -155,17 +147,15 @@ fun AddScreen(
             isDialogForNextAppointmentDate = false
         }
     }
-    LaunchedEffect(key1 = true) {
-
+    LaunchedEffect(true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-
                 UiEvent.SaveClientInfo -> {
                     if (tag != null) {
                         viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                     }
                     //viewModel.writeButtonState(true)
-                    navigate(Screens.WriteStatusScreen)
+                    navigate(Screens.ScanningScreen(true))
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             message = "Client Saved"
@@ -195,8 +185,9 @@ fun AddScreen(
                     )
                 },
 				navigationIcon = {
-					IconButton(onClick = { navigate(Screens.Back) }) }
+					IconButton(onClick = { navigate(Screens.Back) }) {
 	                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+                    }
 				}
             )
         },
@@ -338,9 +329,9 @@ fun AddScreen(
                                 viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
                             }
                             //viewModel.writeButtonState(true)
-                            navigate(Screens.WriteStatusScreen)
+                            navigate(Screens.ScanningScreen(true))
 
-                            viewModel.onEvent(InfoScreenEvents.SaveClientInfo)
+                            viewModel.onEvent(InfoScreenEvents.SaveClientInfo(UUID.randomUUID().toString()))
 
                             //clear fields
                             viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(""))
@@ -349,10 +340,6 @@ fun AddScreen(
                             viewModel.onEvent(InfoScreenEvents.EnteredNote(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(""))
                             viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(""))
-
-                            scope.launch {
-                                viewModel.saveClientToDB(client)
-                            }
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled

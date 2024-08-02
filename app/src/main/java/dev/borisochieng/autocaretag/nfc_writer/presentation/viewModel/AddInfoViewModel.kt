@@ -29,22 +29,13 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
     private val savedStateHandle: SavedStateHandle by inject()
     private val clientRepository: ClientRepository by inject()
 
-    private val _customerName = mutableStateOf(
-        InfoScreenState()
-    )
-    private val _customerPhoneNo = mutableStateOf(
-        InfoScreenState()
-    )
-    private val _vehicleModel = mutableStateOf(
-        InfoScreenState()
-    )
-    private val _appointmentDate = mutableStateOf(
-        InfoScreenState()
-    )
-    private val _nextAppointmentDate = mutableStateOf(
-        InfoScreenState()
-    )
-    private val _note = mutableStateOf( InfoScreenState())
+    private val _customerId = mutableStateOf(InfoScreenState())
+    private val _customerName = mutableStateOf(InfoScreenState())
+    private val _customerPhoneNo = mutableStateOf(InfoScreenState())
+    private val _vehicleModel = mutableStateOf(InfoScreenState())
+    private val _appointmentDate = mutableStateOf(InfoScreenState())
+    private val _nextAppointmentDate = mutableStateOf(InfoScreenState())
+    private val _note = mutableStateOf(InfoScreenState())
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -56,6 +47,7 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
     val buttonEnabled: MutableStateFlow<Boolean> = _buttonEnabled
 
 
+    private val customerId: State<InfoScreenState> = _customerId
     val customerName: State<InfoScreenState> = _customerName
     val customerPhoneNo: State<InfoScreenState> = _customerPhoneNo
     val vehicleModel: State<InfoScreenState> = _vehicleModel
@@ -64,13 +56,18 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
     val note: State<InfoScreenState> = _note
 
     init {
-        savedStateHandle.get<Long>("clientId")?.let { clientId ->
-            if (clientId != 0L) {
+        savedStateHandle.get<String>("clientId")?.let { clientId ->
+            if (clientId.isNotEmpty()) {
                 //_playNoteState.value = true
                 viewModelScope.launch {
-                    Log.d("NoteId", clientId.toString())
+                    Log.d("NoteId", clientId)
                     clientRepository.getClientById(clientId).collect { client ->
 
+                        if (client != null) {
+                            _customerId.value = _customerId.value.copy(
+                                customerId = client.clientId,
+                            )
+                        }
                         if (client != null) {
                             _customerName.value = _customerName.value.copy(
                                 customerName = client.name,
@@ -179,19 +176,10 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
                 updateButtonEnabledState()
             }
 
-            InfoScreenEvents.SaveClientInfo -> {
+            is InfoScreenEvents.SaveClientInfo -> {
+                _customerId.value = _customerId.value.copy(customerId = event.id)
                 viewModelScope.launch {
                     try {
-
-                        val client = Client(
-                            name = customerName.value.customerName,
-                            contactInfo = customerPhoneNo.value.customerPhoneNo,
-                            model = vehicleModel.value.vehicleModel,
-                            lastMaintained = appointmentDate.value.appointmentDate,
-                            nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate,
-                            note = note.value.note
-                        )
-                        clientRepository.insert(client)
                         _eventFlow.emit(UiEvent.SaveClientInfo)
                         _eventFlow.emit(UiEvent.ShowSnackbar("Client saved!"))
                     } catch (e: InvalidClientException) {
@@ -217,7 +205,7 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             setupNfc()
             val tagInfo = TagInfo(
-                id = Math.random().toLong(),
+                customerId = customerId.value.customerId,
                 customerName = customerName.value.customerName,
                 customerPhoneNo = customerPhoneNo.value.customerPhoneNo,
                 vehicleModel = vehicleModel.value.vehicleModel,
@@ -225,14 +213,9 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
                 nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate,
                 appointmentDate = appointmentDate.value.appointmentDate
             )
-          nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo)
+            nfcWriter.writeLaundryInfoToNfcTag(tag = tag, info = tagInfo)
             saveClientToDB(tagInfo.toClient())
-
-
-
-
         }
-
     }
 
     fun writeButtonState(state: Boolean) {

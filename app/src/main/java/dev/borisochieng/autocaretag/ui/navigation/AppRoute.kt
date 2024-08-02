@@ -14,13 +14,12 @@ import dev.borisochieng.autocaretag.nfc_reader.ui.ClientDetailsScreen
 import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.nfc_reader.ui.ScanningScreen
 import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
-import dev.borisochieng.autocaretag.ui.screens.ReadStatusScreen
 import dev.borisochieng.autocaretag.ui.manage.ClientScreen
 import dev.borisochieng.autocaretag.ui.manage.ClientScreenViewModel
 import dev.borisochieng.autocaretag.ui.screens.AddScreen
 import dev.borisochieng.autocaretag.ui.screens.HomeScreen
 import dev.borisochieng.autocaretag.ui.screens.MoreScreen
-import dev.borisochieng.autocaretag.ui.screens.WriteStatusScreen
+import dev.borisochieng.autocaretag.ui.screens.ReadStatusScreen
 import dev.borisochieng.autocaretag.utils.animatedComposable
 import org.koin.androidx.compose.koinViewModel
 
@@ -46,6 +45,7 @@ fun AppRoute(
         composable(AppRoute.HomeScreen.route) {
             HomeScreen(
                 viewModel = nfcReaderViewModel,
+                scanForNFCTag = { scanNfc(true) },
                 navigate = navActions::navigate
             )
         }
@@ -63,12 +63,12 @@ fun AppRoute(
                 navigate = navActions::navigate
             )
         }
-        animatedComposable(AppRoute.WriteStatusScreen.route) {
-            WriteStatusScreen(
-                viewModel = addInfoViewModel,
-                navigate = navActions::navigate
-            )
-        }
+//        animatedComposable(AppRoute.WriteStatusScreen.route) {
+//            WriteStatusScreen(
+//                viewModel = addInfoViewModel,
+//                navigate = navActions::navigate
+//            )
+//        }
         composable(AppRoute.MoreScreen.route) { MoreScreen() }
         composable(AppRoute.ManageScreen.route) {
             ClientScreen(
@@ -79,7 +79,7 @@ fun AppRoute(
         animatedComposable(AppRoute.ClientDetailsScreen.route) { backstackEntry ->
             val clientId = backstackEntry.arguments?.getString("clientId") ?: ""
             LaunchedEffect(Unit) {
-                nfcReaderViewModel.fetchClientDetails(clientId.toLong())
+                nfcReaderViewModel.fetchClientDetails(clientId)
             }
 
             ClientDetailsScreen(
@@ -93,8 +93,15 @@ fun AppRoute(
                 navigate = navActions::navigate
             )
         }
-        animatedComposable(AppRoute.ScanningScreen.route) {
-            ScanningScreen(scanNFC = { scanNfc(true) })
+        animatedComposable(AppRoute.ScanningScreen.route) { backstackEntry ->
+            val fromWriteScreen = backstackEntry.arguments?.getBoolean("fromWriteScreen") ?: false
+
+            ScanningScreen(
+                viewModel = nfcReaderViewModel,
+                fromWriteScreen = fromWriteScreen,
+                scanNFC = { scanNfc(true) },
+                navigate = navActions::navigate
+            )
         }
     }
 }

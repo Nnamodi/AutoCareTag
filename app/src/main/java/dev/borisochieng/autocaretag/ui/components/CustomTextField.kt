@@ -1,15 +1,9 @@
 package dev.borisochieng.autocaretag.ui.components
 
-import android.text.InputType
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DateRange
@@ -19,10 +13,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,7 +34,7 @@ fun CustomTextField(
     inputValue: String,
     errorMessage: String? = null,
     isReadable: Boolean = false,
-    onClick: () -> Unit
+//    onClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -65,7 +55,7 @@ fun CustomTextField(
             shape = shape.button,
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = checkInputType(inputType)),
-            modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+            modifier = Modifier.fillMaxWidth(), //.clickable(onClick = onClick),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = colorScheme.background,
                 unfocusedContainerColor = colorScheme.background,
@@ -129,6 +119,6 @@ fun CustomTextFieldPreview() {
         onTrailingIconClick = {},
         inputValue = "Rasta man",
         onInputValueChange = {},
-        onClick = {}
+//        onClick = {}
     )
 }

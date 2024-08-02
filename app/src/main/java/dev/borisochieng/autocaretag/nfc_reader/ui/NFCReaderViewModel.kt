@@ -11,13 +11,11 @@ import dev.borisochieng.autocaretag.nfc_reader.repository.NFCReaderRepository
 import dev.borisochieng.autocaretag.nfc_writer.domain.TagInfo
 import dev.borisochieng.autocaretag.room_db.Client
 import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -30,7 +28,7 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
     private val _clientUiState = MutableStateFlow(ClientUiState())
     val clientUiState: StateFlow<ClientUiState> get() = _clientUiState
 
-    private var nfcIsEnabled by mutableStateOf(false); private set
+    var nfcIsEnabledOnDevice by mutableStateOf(false); private set
     var tagIsEmpty by mutableStateOf(true); private set
 
     val nfcReadState = _tagInfo.asStateFlow()
@@ -40,7 +38,7 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
             _tagInfo.collect { state ->
                 if (state !is State.Success) return@collect
                 tagIsEmpty = state.data.vehicleModel.isEmpty()
-                fetchClientDetails(state.data.id)
+                fetchClientDetails(state.data.customerId)
             }
         }
         viewModelScope.launch {
@@ -56,7 +54,7 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
         _tagInfo.value = nfcReaderRepository.readNFCTag(intent)
     }
 
-    fun fetchClientDetails(clientId: Long) {
+    fun fetchClientDetails(clientId: String) {
         viewModelScope.launch {
             clientRepository.getClientById(clientId).collect { client ->
                 if (client != null) {
@@ -73,7 +71,7 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
     }
 
     fun toggleNfcEnabledStatus(enabled: Boolean) {
-        nfcIsEnabled = enabled
+        nfcIsEnabledOnDevice = enabled
     }
 
     private fun getClients() = viewModelScope.launch {
