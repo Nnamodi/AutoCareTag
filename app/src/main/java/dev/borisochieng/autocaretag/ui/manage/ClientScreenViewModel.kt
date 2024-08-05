@@ -2,8 +2,8 @@ package dev.borisochieng.autocaretag.ui.manage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.borisochieng.autocaretag.room_db.Client
-import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
+import dev.borisochieng.autocaretag.database.Client
+import dev.borisochieng.autocaretag.database.repository.ClientRepository
 import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
