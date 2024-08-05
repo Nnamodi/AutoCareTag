@@ -7,9 +7,9 @@ class NavActions(private val navController: NavHostController) {
     fun navigate(screen: Screens) {
         when (screen) {
             Screens.HomeScreen -> navigateToHomeScreen()
-            Screens.ReadStatusScreen -> navigateToReadStatusScreen()
+//            Screens.ReadStatusScreen -> navigateToReadStatusScreen()
             Screens.AddScreen -> navigateToAddScreen()
-            Screens.WriteStatusScreen -> navigateToWriteStatusScreen()
+//            Screens.WriteStatusScreen -> navigateToWriteStatusScreen()
             Screens.ManageScreen -> navigateToManageScreen()
             Screens.MoreScreen -> navigateToMoreScreen()
             Screens.ClientAddedScreen -> navigateToClientAddedScreen()
@@ -23,9 +23,9 @@ class NavActions(private val navController: NavHostController) {
         navController.navigate(AppRoute.HomeScreen.route)
     }
 
-    private fun navigateToReadStatusScreen() {
-        navController.navigate(AppRoute.ReadStatusScreen.route)
-    }
+//    private fun navigateToReadStatusScreen() {
+//        navController.navigate(AppRoute.ReadStatusScreen.route)
+//    }
 
     private fun navigateToAddScreen() {
         navController.navigate(AppRoute.AddScreen.route) {
@@ -36,14 +36,14 @@ class NavActions(private val navController: NavHostController) {
         }
     }
 
-    private fun navigateToWriteStatusScreen() {
-        navController.navigate(AppRoute.WriteStatusScreen.route) {
-            popUpTo(AppRoute.HomeScreen.route) {
-                inclusive
-            }
-            launchSingleTop = true
-        }
-    }
+//    private fun navigateToWriteStatusScreen() {
+//        navController.navigate(AppRoute.WriteStatusScreen.route) {
+//            popUpTo(AppRoute.HomeScreen.route) {
+//                inclusive
+//            }
+//            launchSingleTop = true
+//        }
+//    }
 
     private fun navigateToManageScreen() {
         navController.navigate(AppRoute.ManageScreen.route)
@@ -87,9 +87,9 @@ class NavActions(private val navController: NavHostController) {
 
 sealed class AppRoute(val route: String) {
     data object HomeScreen : AppRoute("home_screen")
-    data object ReadStatusScreen : AppRoute("read_status_screen")
+//    data object ReadStatusScreen : AppRoute("read_status_screen")
     data object AddScreen : AppRoute("add_screen")
-    data object WriteStatusScreen : AppRoute("write_status_screen")
+//    data object WriteStatusScreen : AppRoute("write_status_screen")
     data object ManageScreen : AppRoute("manage_screen")
     data object MoreScreen : AppRoute("more_screen")
     data object ClientAddedScreen: AppRoute("client_added_screen")
@@ -103,9 +103,9 @@ sealed class AppRoute(val route: String) {
 
 sealed class Screens {
     data object HomeScreen : Screens()
-    data object ReadStatusScreen : Screens()
+//    data object ReadStatusScreen : Screens()
     data object AddScreen : Screens() // This is the `add client` screen
-    data object WriteStatusScreen : Screens()
+//    data object WriteStatusScreen : Screens()
     data object ManageScreen : Screens()
     data object MoreScreen : Screens()
     data class ClientDetailsScreen(val clientId: String) : Screens()

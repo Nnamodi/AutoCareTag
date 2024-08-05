@@ -1,16 +1,17 @@
 package dev.borisochieng.autocaretag.nfcreader.ui
 
 import android.content.Intent
+import android.nfc.Tag
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.borisochieng.autocaretag.nfcreader.data.State
-import dev.borisochieng.autocaretag.nfcreader.repository.NFCReaderRepository
-import dev.borisochieng.autocaretag.nfcwriter.domain.TagInfo
 import dev.borisochieng.autocaretag.database.Client
 import dev.borisochieng.autocaretag.database.repository.ClientRepository
+import dev.borisochieng.autocaretag.nfcreader.data.State
+import dev.borisochieng.autocaretag.nfcreader.repository.ClientId
+import dev.borisochieng.autocaretag.nfcreader.repository.NFCReaderRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,11 +25,12 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
     private val nfcReaderRepository: NFCReaderRepository by inject()
     private val clientRepository: ClientRepository by inject()
 
-    private val _tagInfo = MutableStateFlow<State<TagInfo>>(State.Loading)
+    var tag by mutableStateOf<Tag?>(null); private set
+
+    private val _tagInfo = MutableStateFlow<State<ClientId>>(State.Loading)
     private val _clientUiState = MutableStateFlow(ClientUiState())
     val clientUiState: StateFlow<ClientUiState> get() = _clientUiState
 
-    private var nfcIsEnabled by mutableStateOf(false);
     var nfcIsEnabledOnDevice by mutableStateOf(false); private set
     var tagIsEmpty by mutableStateOf(true); private set
 
@@ -38,29 +40,29 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             _tagInfo.collect { state ->
                 if (state !is State.Success) return@collect
-                tagIsEmpty = state.data.vehicleModel.isEmpty()
-                fetchClientDetails(state.data.customerId)
+                fetchClientDetails(state.data)
             }
         }
-        viewModelScope.launch {
-            _clientUiState.collect { state ->
-                // Update the clientUiState value
-            }
-        }
+//        viewModelScope.launch {
+//            _clientUiState.collect { state ->
+//                // Update the clientUiState value
+//            }
+//        }
         getClients()
     }
 
     fun readNFCTag(intent: Intent) {
         tagIsEmpty = true
+        _tagInfo.value = State.Loading
         _tagInfo.value = nfcReaderRepository.readNFCTag(intent)
     }
 
     fun fetchClientDetails(clientId: String) {
         viewModelScope.launch {
             clientRepository.getClientById(clientId).collect { client ->
-                if (client != null) {
-                    _clientUiState.update { it.copy(client = client) }
-                }
+                tagIsEmpty = clientId !in clientUiState.value.clients.map { it.clientId }
+                if (client == null) return@collect
+                _clientUiState.update { it.copy(client = client) }
             }
         }
     }
@@ -79,5 +81,9 @@ class NFCReaderViewModel : ViewModel(), KoinComponent {
         clientRepository.getAllClients().collect { clientsFromDB ->
             _clientUiState.update { it.copy(clients = clientsFromDB) }
         }
+    }
+
+    fun onTagFetched(fetchedTag: Tag) {
+        tag = fetchedTag
     }
 }

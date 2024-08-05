@@ -3,9 +3,7 @@ package dev.borisochieng.autocaretag.ui.screens
 import android.app.DatePickerDialog
 import android.content.Context
 import android.icu.util.Calendar
-import android.nfc.Tag
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -48,7 +45,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
-import dev.borisochieng.autocaretag.nfcwriter.domain.TagInfo
 import dev.borisochieng.autocaretag.nfcwriter.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.nfcwriter.presentation.viewModel.InfoScreenEvents
 import dev.borisochieng.autocaretag.nfcwriter.presentation.viewModel.UiEvent
@@ -56,23 +52,19 @@ import dev.borisochieng.autocaretag.ui.components.CustomTextField
 import dev.borisochieng.autocaretag.ui.components.Inputs
 import dev.borisochieng.autocaretag.ui.components.PrimaryButton
 import dev.borisochieng.autocaretag.ui.navigation.Screens
+import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
-import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
-import java.util.UUID
-import java.util.UUID.randomUUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddScreen(
-    navigate: (Screens) -> Unit,
     viewModel: AddInfoViewModel,
-    tag: Tag? = null,
-    setupNFC: () -> Unit
+    navigate: (Screens) -> Unit
 ) {
     var isDialogForAppointmentDate by remember { mutableStateOf(false) }
     var isDialogForNextAppointmentDate by remember { mutableStateOf(false) }
@@ -172,10 +164,6 @@ fun AddScreen(
     LaunchedEffect(true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-                is UiEvent.NavigateToClientAddedScreen -> {
-                    navigate(Screens.ClientAddedScreen)
-                }
-
                 is UiEvent.ShowSnackbar -> {
                     scope.launch {
                         snackbarHostState.showSnackbar(
@@ -363,21 +351,7 @@ fun AddScreen(
                     Spacer(modifier = Modifier.weight(1f))
 
                     PrimaryButton(
-                        onClick = {
-                            val info = TagInfo(
-                                customerId = randomUUID().toString(),
-                                customerName = viewModel.customerName.value.customerName,
-                                customerPhoneNo = viewModel.customerPhoneNo.value.customerPhoneNo,
-                                vehicleModel = viewModel.vehicleModel.value.vehicleModel,
-                                workDone = viewModel.note.value.note,
-                                nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
-                                appointmentDate = viewModel.appointmentDate.value.appointmentDate
-                            )
-                            tag?.let{
-                                viewModel.uploadInfo(tag = it, info = info, setupNFC = setupNFC)
-                            }
-                            //viewModel.writeButtonState(true)
-                        },
+                        onClick = { navigate(Screens.ScanningScreen(true)) },
                         label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled
                     )
@@ -476,6 +450,6 @@ fun validateTextField(
 @Composable
 fun AddScreenPreview() {
     AutoCareTagTheme {
-        AddScreen({}, viewModel(),null, {})
+        AddScreen(viewModel()) {}
     }
 }

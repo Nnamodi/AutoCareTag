@@ -21,7 +21,6 @@ import dev.borisochieng.autocaretag.nfcreader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.ui.commons.NavBar
 import dev.borisochieng.autocaretag.ui.navigation.AppRoute
 import dev.borisochieng.autocaretag.ui.navigation.NavActions
-import dev.borisochieng.autocaretag.ui.navigation.Screens
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import org.koin.android.ext.android.inject
@@ -31,8 +30,6 @@ class MainActivity : ComponentActivity() {
     private val nfcReaderViewModel: NFCReaderViewModel by inject()
     private var nfcAdapter: NfcAdapter? = null
 
-    private var tag: Tag? = null
-    private lateinit var pendingIntent: PendingIntent
     private val actions = arrayOf(
         NfcAdapter.ACTION_NDEF_DISCOVERED,
         NfcAdapter.ACTION_TAG_DISCOVERED,
@@ -63,9 +60,7 @@ class MainActivity : ComponentActivity() {
                         paddingValues = paddingValues,
                         scanNfc = { shouldScan ->
                             if (shouldScan) startNfcScanning() else stopNfcScanning()
-                        },
-                        tag = tag,
-                        setupNfc = ::setupNfc
+                        }
                     )
                 }
 
@@ -77,23 +72,11 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         if (intent.action !in actions) return
         // NFC tag discovered
-        tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+        intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)?.let {
+            nfcReaderViewModel.onTagFetched(it)
+        }
         nfcReaderViewModel.readNFCTag(intent)
         Toast.makeText(this, "Tag detected", Toast.LENGTH_LONG).show()
-
-        val ndef = IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
-        ndef.addDataType("application/json")
-
-//        val screen = if (nfcReaderViewModel.tagIsEmpty) {
-//            Screens.AddScreen
-//        } else nfcReaderViewModel.clientUiState.value.client?.clientId?.let {
-//            Screens.ClientDetailsScreen(
-//                it
-//            )
-//        }
-//        if (screen != null) {
-//            navActions.navigate(screen)
-//        }
     }
 
     override fun onResume() {
@@ -124,12 +107,5 @@ class MainActivity : ComponentActivity() {
         // Disable foreground dispatch to stop handling NFC intents
         nfcAdapter?.disableForegroundDispatch(this)
         Toast.makeText(this, "NFC scanning stopped", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun setupNfc() {
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        val intent =
-            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 }

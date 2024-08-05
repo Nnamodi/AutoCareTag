@@ -7,19 +7,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.borisochieng.autocaretag.database.Client
+import dev.borisochieng.autocaretag.database.repository.ClientRepository
+import dev.borisochieng.autocaretag.nfcreader.repository.ClientId
 import dev.borisochieng.autocaretag.nfcwriter.data.NfcWriter
 import dev.borisochieng.autocaretag.nfcwriter.domain.NfcWriteState
-import dev.borisochieng.autocaretag.nfcwriter.domain.TagInfo
-import dev.borisochieng.autocaretag.nfcwriter.domain.toClient
-import dev.borisochieng.autocaretag.database.Client
-import dev.borisochieng.autocaretag.database.InvalidClientException
-import dev.borisochieng.autocaretag.database.repository.ClientRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
@@ -45,9 +42,9 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
     val eventFlow = _eventFlow.asSharedFlow()
 
 
-    private val _nfcWriteState: MutableStateFlow<NfcWriteState<TagInfo>> =
+    private val _nfcWriteState: MutableStateFlow<NfcWriteState<ClientId>> =
         MutableStateFlow(NfcWriteState.idle())
-    val nfcWriteState: StateFlow<NfcWriteState<TagInfo>> get() = _nfcWriteState
+    val nfcWriteState: StateFlow<NfcWriteState<ClientId>> get() = _nfcWriteState
 
     private val _buttonEnabled = MutableStateFlow(false)
     val buttonEnabled: MutableStateFlow<Boolean> = _buttonEnabled
@@ -182,58 +179,57 @@ class AddInfoViewModel : ViewModel(), KoinComponent {
                 updateButtonEnabledState()
             }
 
-            is InfoScreenEvents.SaveClientInfo -> {
-                _customerId.value = _customerId.value.copy(customerId = event.id)
-                viewModelScope.launch {
-                    try {
-                        _eventFlow.emit(UiEvent.SaveClientInfo)
-                        _eventFlow.emit(UiEvent.ShowSnackbar("Client saved!"))
-                    } catch (e: InvalidClientException) {
-
-                        Log.d("Client", "could not save")
-                        _eventFlow.emit(
-                            UiEvent.ShowSnackbar(
-                                message = e.message ?: "Couldn't save client"
-                            )
-                        )
-
-                    }
-                }
-            }
+//            is InfoScreenEvents.SaveClientInfo -> {
+//                viewModelScope.launch {
+//                    try {
+////                        _eventFlow.emit(UiEvent.SaveClientInfo)
+//                        _eventFlow.emit(UiEvent.ShowSnackbar("Client saved!"))
+//                    } catch (e: InvalidClientException) {
+//                        Log.d("Client", "could not save")
+//                        _eventFlow.emit(
+//                            UiEvent.ShowSnackbar(
+//                                message = e.message ?: "Couldn't save client"
+//                            )
+//                        )
+//                    }
+//                }
+//            }
         }
     }
 
-
-    fun uploadInfo(
-        tag: Tag,
-        info: TagInfo,
-        setupNFC: () -> Unit
-    ) {
+    fun uploadIdToTag(tag: Tag) {
         _nfcWriteState.value = NfcWriteState.loading()
+        val clientId = randomUUID().toString()
 
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 nfcWriter.writeLaundryInfoToNfcTag(
                     tag = tag,
-                    info = info,
+                    clientId = clientId,
                     onSuccess = {
                         viewModelScope.launch {
-                            _nfcWriteState.value = NfcWriteState.success(info)
-                            Log.d("taginfo", info.toString())
-                            saveClientToDB(info.toClient())
+                            val client = Client(
+                                clientId = clientId,
+                                name = customerName.value.customerName,
+                                contactInfo = customerPhoneNo.value.customerPhoneNo,
+                                model = vehicleModel.value.vehicleModel,
+                                note = note.value.note,
+                                lastMaintained = appointmentDate.value.appointmentDate,
+                                nextAppointmentDate = nextAppointmentDate.value.nextAppointmentDate
+                            )
+                            saveClientToDB(client)
+                            _nfcWriteState.value = NfcWriteState.success(client.clientId)
+                            Log.d("TagInfo", client.clientId)
                             _eventFlow.emit(UiEvent.ShowSnackbar("NFC Tag written successfully!"))
-                            _eventFlow.emit(UiEvent.NavigateToClientAddedScreen)
                             clearAllFields()
-
                         }
                     },
                     onError = { error ->
                         viewModelScope.launch {
                             _nfcWriteState.value = NfcWriteState.error(error)
-                            _eventFlow.emit(UiEvent.ShowSnackbar("Failed to write to NFC tag: $error"))
+                            _eventFlow.emit(UiEvent.ShowSnackbar(error))
                         }
-                    },
-                    setupNFC = setupNFC
+                    }
                 )
             }
         }

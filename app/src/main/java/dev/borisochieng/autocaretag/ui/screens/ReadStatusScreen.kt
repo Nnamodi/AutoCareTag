@@ -17,6 +17,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,6 +36,7 @@ import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfcreader.data.State
 import dev.borisochieng.autocaretag.nfcreader.ui.NFCReaderViewModel
 import dev.borisochieng.autocaretag.ui.navigation.Screens
+import dev.borisochieng.autocaretag.ui.navigation.ShouldScan
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.shape
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
@@ -43,8 +45,15 @@ import kotlinx.coroutines.delay
 @Composable
 fun ReadStatusScreen(
     viewModel: NFCReaderViewModel,
+    scanNFC: (ShouldScan) -> Unit,
     navigate: (Screens) -> Unit
 ) {
+    LaunchedEffect(Unit) { scanNFC(true) }
+
+    DisposableEffect(Unit) {
+        onDispose { scanNFC(false) }
+    }
+
     var readyToScan by remember { mutableStateOf("") }
     var supportingText by remember { mutableStateOf("") }
 
