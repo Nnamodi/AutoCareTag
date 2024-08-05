@@ -9,11 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import dev.borisochieng.autocaretag.nfc_reader.ui.ClientAddedScreen
-import dev.borisochieng.autocaretag.nfc_reader.ui.ClientDetailsScreen
-import dev.borisochieng.autocaretag.nfc_reader.ui.NFCReaderViewModel
-import dev.borisochieng.autocaretag.nfc_reader.ui.ScanningScreen
-import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
+import dev.borisochieng.autocaretag.nfcreader.ui.ClientAddedScreen
+import dev.borisochieng.autocaretag.nfcreader.ui.ClientDetailsScreen
+import dev.borisochieng.autocaretag.nfcreader.ui.NFCReaderViewModel
+import dev.borisochieng.autocaretag.nfcreader.ui.ScanningScreen
+import dev.borisochieng.autocaretag.nfcwriter.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.manage.ClientScreen
 import dev.borisochieng.autocaretag.ui.manage.ClientScreenViewModel
 import dev.borisochieng.autocaretag.ui.screens.AddScreen
@@ -59,8 +59,8 @@ fun AppRoute(
             AddScreen(
                 viewModel = addInfoViewModel,
                 tag = tag,
-                setupNfc = setupNfc,
-                navigate = navActions::navigate
+                navigate = navActions::navigate,
+                setupNFC = setupNfc
             )
         }
 //        animatedComposable(AppRoute.WriteStatusScreen.route) {

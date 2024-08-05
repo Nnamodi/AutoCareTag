@@ -16,12 +16,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,19 +29,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
-import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteState
-import dev.borisochieng.autocaretag.nfc_writer.domain.NfcWriteStatus
-import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
-import dev.borisochieng.autocaretag.room_db.Client
-import dev.borisochieng.autocaretag.ui.components.PrimaryButton
+import dev.borisochieng.autocaretag.nfcwriter.domain.NfcWriteState
+import dev.borisochieng.autocaretag.nfcwriter.domain.NfcWriteStatus
+import dev.borisochieng.autocaretag.nfcwriter.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.components.PrimaryOutlinedButton
 import dev.borisochieng.autocaretag.ui.navigation.Screens
+import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun WriteStatusScreen(
@@ -57,7 +54,7 @@ fun WriteStatusScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
-        val nfcWriteState by viewModel.nfcWriter.nfcWriteState.collectAsState(NfcWriteState.idle())
+        val nfcWriteState by viewModel.nfcWriteState.collectAsState(NfcWriteState.idle())
 
         Card(
             modifier = Modifier
@@ -218,5 +215,13 @@ fun WriteStatusScreen(
                 isEnabled = true
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WriteStatusScreenPreview() {
+    AutoCareTagTheme{
+        WriteStatusScreen(viewModel = viewModel()) {}
     }
 }

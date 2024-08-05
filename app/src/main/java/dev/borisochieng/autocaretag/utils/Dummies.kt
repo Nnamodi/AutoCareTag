@@ -1,8 +1,8 @@
 package dev.borisochieng.autocaretag.utils
 
 
-import dev.borisochieng.autocaretag.room_db.Client
-import dev.borisochieng.autocaretag.room_db.Client as Room_dbClient
+import dev.borisochieng.autocaretag.database.Client
+import dev.borisochieng.autocaretag.database.Client as Room_dbClient
 
 object Dummies {
 

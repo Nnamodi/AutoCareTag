@@ -2,10 +2,10 @@ package dev.borisochieng.autocaretag.di
 
 import android.content.Context
 import androidx.room.Room
-import dev.borisochieng.autocaretag.room_db.AutoCareTagDatabase
-import dev.borisochieng.autocaretag.room_db.ClientDao
-import dev.borisochieng.autocaretag.room_db.repository.ClientRepository
-import dev.borisochieng.autocaretag.room_db.repository.ClientRepositoryImpl
+import dev.borisochieng.autocaretag.database.AutoCareTagDatabase
+import dev.borisochieng.autocaretag.database.ClientDao
+import dev.borisochieng.autocaretag.database.repository.ClientRepository
+import dev.borisochieng.autocaretag.database.repository.ClientRepositoryImpl
 import org.koin.dsl.module
 
 object PersistenceModule {

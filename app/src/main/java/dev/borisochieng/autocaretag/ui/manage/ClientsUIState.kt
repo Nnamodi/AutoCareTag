@@ -1,8 +1,7 @@
 package dev.borisochieng.autocaretag.ui.manage
 
 import androidx.compose.runtime.Immutable
-import dev.borisochieng.autocaretag.room_db.Client
-import dev.borisochieng.autocaretag.utils.Dummies.fakeClients
+import dev.borisochieng.autocaretag.database.Client
 
 @Immutable
 data class ClientsUIState (

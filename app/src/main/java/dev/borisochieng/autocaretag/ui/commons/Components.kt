@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents
 
 @Composable
 fun Avatar(

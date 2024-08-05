@@ -4,11 +4,15 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.icu.util.Calendar
 import android.nfc.Tag
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
@@ -16,13 +20,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,15 +39,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.borisochieng.autocaretag.R
-import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.AddInfoViewModel
-import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.InfoScreenEvents
-import dev.borisochieng.autocaretag.nfc_writer.presentation.viewModel.UiEvent
-import dev.borisochieng.autocaretag.room_db.Client
+import dev.borisochieng.autocaretag.nfcwriter.domain.TagInfo
+import dev.borisochieng.autocaretag.nfcwriter.presentation.viewModel.AddInfoViewModel
+import dev.borisochieng.autocaretag.nfcwriter.presentation.viewModel.InfoScreenEvents
+import dev.borisochieng.autocaretag.nfcwriter.presentation.viewModel.UiEvent
 import dev.borisochieng.autocaretag.ui.components.CustomTextField
 import dev.borisochieng.autocaretag.ui.components.Inputs
 import dev.borisochieng.autocaretag.ui.components.PrimaryButton
@@ -55,7 +62,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import java.util.UUID
+import java.util.UUID.randomUUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,11 +72,12 @@ fun AddScreen(
     navigate: (Screens) -> Unit,
     viewModel: AddInfoViewModel,
     tag: Tag? = null,
-    setupNfc: () -> Unit
+    setupNFC: () -> Unit
 ) {
     var isDialogForAppointmentDate by remember { mutableStateOf(false) }
     var isDialogForNextAppointmentDate by remember { mutableStateOf(false) }
 
+    val nfcWriteState by viewModel.nfcWriteState.collectAsState()
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -147,20 +157,23 @@ fun AddScreen(
             isDialogForNextAppointmentDate = false
         }
     }
+
+//    if (isWriteDialogVisible) {
+//        WriteDialog(
+//            viewModel = viewModel,
+//            onCancel = { isWriteDialogVisible = false },
+//            navigate = {
+//                navigate(Screens.ClientDetailsScreen(client.clientId))
+//            }
+//
+//        )
+//    }
+
     LaunchedEffect(true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-                UiEvent.SaveClientInfo -> {
-                    if (tag != null) {
-                        viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
-                    }
-                    //viewModel.writeButtonState(true)
-                    navigate(Screens.ScanningScreen(true))
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = "Client Saved"
-                        )
-                    }
+                is UiEvent.NavigateToClientAddedScreen -> {
+                    navigate(Screens.ClientAddedScreen)
                 }
 
                 is UiEvent.ShowSnackbar -> {
@@ -170,25 +183,51 @@ fun AddScreen(
                         )
                     }
                 }
+
+                else -> {
+                    Log.w("AddScreen", "Unexpected Event: $event")
+                }
             }
+        }
+    }
+
+    LaunchedEffect(nfcWriteState) {
+        if (nfcWriteState.errorMessage != null) {
+            snackbarHostState.showSnackbar(nfcWriteState.errorMessage!!)
         }
     }
 
     Scaffold(
         containerColor = colorScheme.background,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(R.string.add_client),
-                        style = typography.title
-                    )
-                },
-				navigationIcon = {
-					IconButton(onClick = { navigate(Screens.Back) }) {
-	                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+                    Box(
+                        modifier = Modifier
+                            .background(colorScheme.background)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.CenterStart
+
+                    ) {
+                        Text(
+                            text = "Add Client",
+                            style = typography.title,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .align(Alignment.CenterStart)
+                        )
                     }
-				}
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navigate(Screens.Back) }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_back),
+                            contentDescription = "Go Back"
+                        )
+
+                    }
+                }
             )
         },
         content = { innerPadding ->
@@ -325,21 +364,19 @@ fun AddScreen(
 
                     PrimaryButton(
                         onClick = {
-                            if (tag != null) {
-                                viewModel.uploadInfo(tag = tag, setupNfc = setupNfc)
+                            val info = TagInfo(
+                                customerId = randomUUID().toString(),
+                                customerName = viewModel.customerName.value.customerName,
+                                customerPhoneNo = viewModel.customerPhoneNo.value.customerPhoneNo,
+                                vehicleModel = viewModel.vehicleModel.value.vehicleModel,
+                                workDone = viewModel.note.value.note,
+                                nextAppointmentDate = viewModel.nextAppointmentDate.value.nextAppointmentDate,
+                                appointmentDate = viewModel.appointmentDate.value.appointmentDate
+                            )
+                            tag?.let{
+                                viewModel.uploadInfo(tag = it, info = info, setupNFC = setupNFC)
                             }
                             //viewModel.writeButtonState(true)
-                            navigate(Screens.ScanningScreen(true))
-
-                            viewModel.onEvent(InfoScreenEvents.SaveClientInfo(UUID.randomUUID().toString()))
-
-                            //clear fields
-                            viewModel.onEvent(InfoScreenEvents.EnteredCustomerName(""))
-                            viewModel.onEvent(InfoScreenEvents.EnteredCustomerPhoneNo(""))
-                            viewModel.onEvent(InfoScreenEvents.EnteredVehicleModel(""))
-                            viewModel.onEvent(InfoScreenEvents.EnteredNote(""))
-                            viewModel.onEvent(InfoScreenEvents.EnteredAppointmentDate(""))
-                            viewModel.onEvent(InfoScreenEvents.EnteredNextAppointmentDate(""))
                         },
                         label = stringResource(R.string.bt_write_to_nfc),
                         isEnabled = isButtonEnabled
@@ -434,9 +471,11 @@ fun validateTextField(
 ): String? =
     if (input.isEmpty() && inputEntered) "$label cannot be empty" else null
 
-/*
+
 @Preview(showBackground = true)
 @Composable
 fun AddScreenPreview() {
-    AddScreen(onNavigateToScanTag = {}, onNavigateUp = {}, viewModel = AddInfoViewModel())
-}*/
+    AutoCareTagTheme {
+        AddScreen({}, viewModel(),null, {})
+    }
+}
