@@ -1,65 +1,55 @@
 package dev.borisochieng.autocaretag.nfcwriter.data
 
-import android.content.Context
-import android.content.Intent
 import android.nfc.NdefMessage
 import android.nfc.NdefRecord
-import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.Ndef
+import android.nfc.tech.NdefFormatable
 import com.google.gson.Gson
-import dev.borisochieng.autocaretag.nfcwriter.domain.NfcWriteState
-import dev.borisochieng.autocaretag.nfcwriter.domain.TagInfo
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
-import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
 class NfcWriter {
 
     suspend fun writeLaundryInfoToNfcTag(
         tag: Tag,
-        info: TagInfo,
+        clientId: String,
         onSuccess: () -> Unit,
-        onError: (String) -> Unit,
-        setupNFC: () -> Unit
+        onError: (String) -> Unit
     ) {
-        setupNFC()
         withContext(Dispatchers.IO) {
-            val json = Gson().toJson(info)
-            val ndefRecord =
-                NdefRecord.createMime("application/json", json.toByteArray(StandardCharsets.UTF_8))
+            val ndefRecord = NdefRecord.createMime("text/plain", clientId.toByteArray(StandardCharsets.UTF_8))
             val ndefMessage = NdefMessage(arrayOf(ndefRecord))
 
-            var ndef: Ndef? = null
-
             try {
-                ndef = Ndef.get(tag)
-                if (ndef != null) {
-                    ndef.connect()
-                    if (ndef.isWritable) {
-                        if(ndefMessage.toByteArray().size > ndef.maxSize) {
-                            onError("Data is too large for this NFC tag")
-                            return@withContext
-                        }
-
-                        ndef.writeNdefMessage(ndefMessage)
+                val ndefTag = Ndef.get(tag)
+                ndefTag?.let {
+                    it.connect()
+                    if (ndefMessage.toByteArray().size > it.maxSize) {
+                        onError("Data is too large for this NFC tag")
+                        return@withContext
+                    }
+                    if (it.isWritable) {
+                        it.writeNdefMessage(ndefMessage)
+                        it.close()
                         onSuccess()
+                        return@withContext
                     } else {
                         onError("NFC tag is not writable")
+                        return@withContext
                     }
+                }
 
-
-                } else {
-                    onError("Device does not support NFC")
+                val ndefFormatableTag = NdefFormatable.get(tag)
+                ndefFormatableTag?.let {
+                    it.connect()
+                    it.format(ndefMessage)
+                    it.close()
+                    onSuccess()
                 }
             } catch (e: Exception) {
-                onError(e.message ?: "Unknown error")
-
-            } finally {
-                ndef?.close()
+                onError(e.message ?: "Failed to write to tag")
             }
         }
     }

@@ -8,15 +8,10 @@ sealed class InfoScreenEvents {
     data class EnteredAppointmentDate(val value: String):  InfoScreenEvents ()
     data class EnteredNextAppointmentDate(val value: String):  InfoScreenEvents ()
     data class EnteredNote(val value: String):  InfoScreenEvents ()
-    data class SaveClientInfo(val id: String): InfoScreenEvents()
-    //data class NavigateToClientDetailsScreen(val clientId: String)
-
+//    data class SaveClientInfo(val id: String): InfoScreenEvents()
 }
 
 sealed class UiEvent {
     data class ShowSnackbar(val message: String) : UiEvent()
-    object SaveClientInfo : UiEvent()
-    object NavigateToClientAddedScreen: UiEvent()
-
-
+//    data object SaveClientInfo : UiEvent()
 }

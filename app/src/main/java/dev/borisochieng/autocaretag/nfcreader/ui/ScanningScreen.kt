@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,23 +37,31 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import dev.borisochieng.autocaretag.R
 import dev.borisochieng.autocaretag.nfcreader.data.State
+import dev.borisochieng.autocaretag.nfcwriter.presentation.viewModel.AddInfoViewModel
 import dev.borisochieng.autocaretag.ui.components.PrimaryOutlinedButton
 import dev.borisochieng.autocaretag.ui.components.ScreenTitle
 import dev.borisochieng.autocaretag.ui.navigation.Screens
+import dev.borisochieng.autocaretag.ui.navigation.ShouldScan
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTagTheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.colorScheme
 import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 import kotlinx.coroutines.delay
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanningScreen(
-    viewModel: NFCReaderViewModel,
+    readViewModel: NFCReaderViewModel = koinViewModel(),
+    writeViewModel: AddInfoViewModel = koinViewModel(),
     fromWriteScreen: Boolean,
-    scanNFC: () -> Unit,
+    scanNFC: (ShouldScan) -> Unit,
     navigate: (Screens) -> Unit
 ) {
-    LaunchedEffect(Unit) { scanNFC() }
+    LaunchedEffect(Unit) { scanNFC(true) }
+
+    DisposableEffect(Unit) {
+        onDispose { scanNFC(false) }
+    }
 
     val composition by rememberLottieComposition(
         spec =
@@ -74,8 +83,8 @@ fun ScanningScreen(
             )
         }
     ) { paddingValues ->
+        val nfcReadState by readViewModel.nfcReadState.collectAsState()
 
-        val nfcReadState by viewModel.nfcReadState.collectAsState()
         Box(
             modifier = Modifier
                 .padding(paddingValues)
@@ -98,7 +107,7 @@ fun ScanningScreen(
                 val subtext = when (nfcReadState) {
                     is State.Loading -> "Hold your device near the NFC Tag"
                     is State.Error -> (nfcReadState as State.Error).errorMessage
-                    else -> "Details imported successfully"
+                    else -> if (fromWriteScreen) "Successfully written to NFC tag" else "Details imported successfully"
                 }
                 Text(
                     text = subtext,
@@ -178,15 +187,25 @@ fun ScanningScreen(
             }
 
             LaunchedEffect(Unit) {
-                if (nfcReadState == State.Loading || fromWriteScreen) return@LaunchedEffect
+                if (nfcReadState == State.Loading) return@LaunchedEffect
                 delay(2000)
                 if (nfcReadState is State.Error) {
                     navigate(Screens.Back)
                     return@LaunchedEffect
                 }
                 if (nfcReadState !is State.Success) return@LaunchedEffect
-                val clientId = (nfcReadState as State.Success).data.customerId
-                navigate(Screens.ClientDetailsScreen(clientId))
+                if (fromWriteScreen) {
+                    val tag = readViewModel.tag
+                    tag?.let { writeViewModel.uploadIdToTag(it) }
+                } else {
+                    val screen = if (readViewModel.tagIsEmpty) {
+                        Screens.AddScreen
+                    } else {
+                        val clientId = (nfcReadState as State.Success).data
+                        Screens.ClientDetailsScreen(clientId)
+                    }
+                    navigate(screen)
+                }
             }
         }
     }

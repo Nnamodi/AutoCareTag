@@ -1,6 +1,5 @@
 package dev.borisochieng.autocaretag.ui.navigation
 
-import android.nfc.Tag
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -19,7 +18,6 @@ import dev.borisochieng.autocaretag.ui.manage.ClientScreenViewModel
 import dev.borisochieng.autocaretag.ui.screens.AddScreen
 import dev.borisochieng.autocaretag.ui.screens.HomeScreen
 import dev.borisochieng.autocaretag.ui.screens.MoreScreen
-import dev.borisochieng.autocaretag.ui.screens.ReadStatusScreen
 import dev.borisochieng.autocaretag.utils.animatedComposable
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,9 +31,7 @@ fun AppRoute(
     scanNfc: (ShouldScan) -> Unit,
     addInfoViewModel: AddInfoViewModel = koinViewModel(),
     nfcReaderViewModel: NFCReaderViewModel = koinViewModel(),
-    clientScreenViewModel: ClientScreenViewModel = koinViewModel(),
-    tag: Tag? = null,
-    setupNfc: () -> Unit,
+    clientScreenViewModel: ClientScreenViewModel = koinViewModel()
 ) {
     NavHost(
         navController = navController,
@@ -45,22 +41,19 @@ fun AppRoute(
         composable(AppRoute.HomeScreen.route) {
             HomeScreen(
                 viewModel = nfcReaderViewModel,
-                scanForNFCTag = { scanNfc(true) },
                 navigate = navActions::navigate
             )
         }
-        animatedComposable(AppRoute.ReadStatusScreen.route) {
-            ReadStatusScreen(
-                viewModel = nfcReaderViewModel,
-                navigate = navActions::navigate
-            )
-        }
+//        animatedComposable(AppRoute.ReadStatusScreen.route) {
+//            ReadStatusScreen(
+//                viewModel = nfcReaderViewModel,
+//                navigate = navActions::navigate
+//            )
+//        }
         animatedComposable(AppRoute.AddScreen.route) {
             AddScreen(
                 viewModel = addInfoViewModel,
-                tag = tag,
-                navigate = navActions::navigate,
-                setupNFC = setupNfc
+                navigate = navActions::navigate
             )
         }
 //        animatedComposable(AppRoute.WriteStatusScreen.route) {
@@ -97,9 +90,8 @@ fun AppRoute(
             val fromWriteScreen = backstackEntry.arguments?.getBoolean("fromWriteScreen") ?: false
 
             ScanningScreen(
-                viewModel = nfcReaderViewModel,
                 fromWriteScreen = fromWriteScreen,
-                scanNFC = { scanNfc(true) },
+                scanNFC = scanNfc,
                 navigate = navActions::navigate
             )
         }

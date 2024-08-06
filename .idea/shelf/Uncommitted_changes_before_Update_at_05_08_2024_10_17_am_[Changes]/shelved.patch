@@ -1,0 +1,196 @@
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_27_07_2024_6_47_pm_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_27_07_2024_6_47_pm_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_27_07_2024_6_47_pm_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_27_07_2024_6_47_pm_[Changes]/shelved.patch	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
++++ /dev/null	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
+@@ -1,29 +0,0 @@
+-Index: .idea/.name
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/.name b/.idea/.name
+-new file mode 100644
+---- /dev/null	(date 1722102279515)
+-+++ b/.idea/.name	(date 1722102279515)
+-@@ -0,0 +1,1 @@
+-+TagTidy
+-\ No newline at end of file
+-Index: .idea/vcs.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+-new file mode 100644
+---- /dev/null	(date 1722101648453)
+-+++ b/.idea/vcs.xml	(date 1722101648453)
+-@@ -0,0 +1,6 @@
+-+<?xml version="1.0" encoding="UTF-8"?>
+-+<project version="4">
+-+  <component name="VcsDirectoryMappings">
+-+    <mapping directory="" vcs="Git" />
+-+  </component>
+-+</project>
+-\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_28_07_2024_7_29_pm__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_28_07_2024_7_29_pm__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_28_07_2024_7_29_pm__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_28_07_2024_7_29_pm__Changes_.xml	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
++++ /dev/null	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_28_07_2024_7_29_pm_[Changes]" date="1722191415963" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_28_07_2024_7_29_pm_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 28/07/2024 7:29 pm [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_7_28_2024_8_24_PM_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_7_28_2024_8_24_PM_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_7_28_2024_8_24_PM_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_7_28_2024_8_24_PM_[Changes]/shelved.patch	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
++++ /dev/null	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
+@@ -1,62 +0,0 @@
+-Index: app/src/main/java/dev/borisochieng/tagtidy/MainActivity.kt
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/dev/borisochieng/tagtidy/MainActivity.kt b/app/src/main/java/dev/borisochieng/tagtidy/MainActivity.kt
+---- a/app/src/main/java/dev/borisochieng/tagtidy/MainActivity.kt	(revision 2b69d94fab6852fb790807aed7e4212feefa26a7)
+-+++ b/app/src/main/java/dev/borisochieng/tagtidy/MainActivity.kt	(date 1722104070046)
+-@@ -1,0 +1,53 @@
+-+
+-+package dev.borisochieng.tagtidy.ui
+-+
+-+import android.app.PendingIntent
+-+import android.content.Intent
+-+import android.content.IntentFilter
+-+import android.nfc.NfcAdapter
+-+import android.os.Bundle
+-+import androidx.activity.ComponentActivity
+-+import androidx.activity.compose.setContent
+-+import androidx.activity.enableEdgeToEdge
+-+import dev.borisochieng.tagtidy.nfc_reader.NFCReaderViewModel
+-+import dev.borisochieng.tagtidy.ui.theme.TagTidyTheme
+-+import org.koin.android.ext.android.inject
+-+
+-+class MainActivity : ComponentActivity() {
+-+
+-+    private val nfcReaderViewModel: NFCReaderViewModel by inject()
+-+    private var nfcAdapter: NfcAdapter? = null
+-+
+-+    override fun onCreate(savedInstanceState: Bundle?) {
+-+        super.onCreate(savedInstanceState)
+-+        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+-+
+-+        enableEdgeToEdge()
+-+        setContent {
+-+            TagTidyTheme {}
+-+        }
+-+    }
+-+
+-+    override fun onNewIntent(intent: Intent) {
+-+        super.onNewIntent(intent)
+-+        if (intent.action != NfcAdapter.ACTION_NDEF_DISCOVERED) return
+-+        nfcReaderViewModel.readNFCTag(intent)
+-+    }
+-+
+-+    override fun onResume() {
+-+        super.onResume()
+-+        val intent = Intent(this, javaClass)
+-+            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+-+        val pendingIntent = PendingIntent
+-+            .getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE)
+-+        val intentFilters = arrayOf(
+-+            IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
+-+        )
+-+        nfcAdapter?.enableForegroundDispatch(this, pendingIntent, intentFilters, null)
+-+    }
+-+
+-+    override fun onPause() {
+-+        super.onPause()
+-+        nfcAdapter?.disableForegroundDispatch(this)
+-+    }
+-+}
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_27_07_2024_6_47_pm__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_27_07_2024_6_47_pm__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_27_07_2024_6_47_pm__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_27_07_2024_6_47_pm__Changes_.xml	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
++++ /dev/null	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_27_07_2024_6_47_pm_[Changes]" date="1722102471376" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_27_07_2024_6_47_pm_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 27/07/2024 6:47 pm [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_28_07_2024_7_29_pm_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_28_07_2024_7_29_pm_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_28_07_2024_7_29_pm_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_28_07_2024_7_29_pm_[Changes]/shelved.patch	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
++++ /dev/null	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
+@@ -1,48 +0,0 @@
+-Index: gradle/libs.versions.toml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>[versions]\r\nagp = \"8.5.1\"\r\nkotlin = \"1.9.0\"\r\n\r\nactivityCompose = \"1.9.0\"\r\ncomposeBom = \"2024.04.01\"\r\ncoreKtx = \"1.13.1\"\r\ngson = \"2.11.0\"\r\nkoinBom = \"3.6.0-wasm-alpha2\"\r\nlifecycleRuntimeKtx = \"2.8.3\"\r\n\r\nespressoCore = \"3.6.1\"\r\njunit = \"4.13.2\"\r\njunitVersion = \"1.2.1\"\r\n\r\n[libraries]\r\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\nandroidx-lifecycle-runtime-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-ktx\", version.ref = \"lifecycleRuntimeKtx\" }\r\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\r\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\r\nandroidx-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\r\nandroidx-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\r\nandroidx-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\r\nandroidx-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }\r\ngson = { module = \"com.google.code.gson:gson\", version.ref = \"gson\" }\r\nkoin-android = { module = \"io.insert-koin:koin-android\" }\r\nkoin-bom = { module = \"io.insert-koin:koin-bom\", version.ref = \"koinBom\" }\r\nkoin-core = { module = \"io.insert-koin:koin-core\" }\r\n\r\nandroidx-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nandroidx-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"junitVersion\" }\r\nandroidx-ui-test-junit4 = { group = \"androidx.compose.ui\", name = \"ui-test-junit4\" }\r\nandroidx-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\r\njunit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\njetbrains-kotlin-android = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }\r\n\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+---- a/gradle/libs.versions.toml	(revision 722b4700019277ee16468a7f05422cddf644b5c2)
+-+++ b/gradle/libs.versions.toml	(date 1722102674432)
+-@@ -1,13 +1,14 @@
+- [versions]
+- agp = "8.5.1"
+- kotlin = "1.9.0"
+-+ktlint = "12.1.1"
+- 
+--activityCompose = "1.9.0"
+--composeBom = "2024.04.01"
+-+activityCompose = "1.9.1"
+-+composeBom = "2024.06.00"
+- coreKtx = "1.13.1"
+- gson = "2.11.0"
+- koinBom = "3.6.0-wasm-alpha2"
+--lifecycleRuntimeKtx = "2.8.3"
+-+lifecycleRuntimeKtx = "2.8.4"
+- 
+- espressoCore = "3.6.1"
+- junit = "4.13.2"
+-@@ -36,5 +37,7 @@
+- 
+- [plugins]
+- android-application = { id = "com.android.application", version.ref = "agp" }
+-+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+- jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+-+ktlint-gradle = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+- 
+-Index: .idea/.name
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/.name b/.idea/.name
+-new file mode 100644
+---- /dev/null	(date 1722102469857)
+-+++ b/.idea/.name	(date 1722102469857)
+-@@ -0,0 +1,1 @@
+-+TagTidy
+-\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_7_28_2024_8_24_PM__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_7_28_2024_8_24_PM__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_7_28_2024_8_24_PM__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_7_28_2024_8_24_PM__Changes_.xml	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
++++ /dev/null	(revision 2aee4eb3da863dc01e4bea4ea9b1eb6faf943ab9)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_7_28_2024_8_24_PM_[Changes]" date="1722194700528" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_7_28_2024_8_24_PM_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 7/28/2024 8:24 PM [Changes]" />
+-</changelist>
+\ No newline at end of file

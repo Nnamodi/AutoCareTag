@@ -48,7 +48,6 @@ import dev.borisochieng.autocaretag.ui.theme.AutoCareTheme.typography
 @Composable
 fun HomeScreen(
     viewModel: NFCReaderViewModel,
-    scanForNFCTag: () -> Unit,
     navigate: (Screens) -> Unit
 ) {
 //    var isReadDialogVisible by remember {
@@ -102,7 +101,6 @@ fun HomeScreen(
                         )
                         .clickable {
                             navigate(Screens.ScanningScreen(false))
-                            scanForNFCTag()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -241,8 +239,5 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(
-        viewModel(),
-        {}
-    ) {}
+    HomeScreen(viewModel()) {}
 }
